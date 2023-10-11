@@ -2,29 +2,33 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
+const Sequalize = require('sequelize')
+const config = require('./config/config')
 
 const app = express()
+
 app.use(morgan('combined')) //logs connections
 app.use(bodyParser.json())
 app.use(cors()) ///!
 
+//Database
+const database = config.database
 
-app.post('/register', (req, res) => {
-  username = req.body.username
-    res.send({
-        message: req.body
-    })
-})
+//Database connection test
+database.authenticate()
+.then(() => console.log("Database Connected..."))
+.catch(err => console.log('Error: ', err))
+
+//imports the routes and sets up the middle ware for the routes on /test
+//localhost:PORT/test
+app.use('/test', require('../routes/routes'))
+
+app.listen(config.PORT, console.log("Server started listening on port : ", config.PORT));
 
 
-//declare port number for the api
-const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log("Server started listening on port : ", PORT);
-  });
 
-console.log("Database connection Success!")
+
 
 //error handler
 app.use(function (err, req, res, next) {
