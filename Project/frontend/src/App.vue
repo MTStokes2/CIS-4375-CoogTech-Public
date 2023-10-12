@@ -1,73 +1,119 @@
-<template>
-  <div id="landing-page" class="h-screen flex flex-col justify-center items-center bg-pink-500">
-    <!-- Header with Sign-up and Login buttons -->
-    <header class="absolute top-0 right-0 p-4">
-      <button @click="goToSignUp" class="bg-pink-500 text-white py-2 px-4 rounded-md mr-4">Sign Up</button>
-      <button @click="goToLogin" class="bg-pink-500 text-white py-2 px-4 rounded-md">Login</button>
-    </header>
-
-    <div></div>
-    <!-- Welcome Section -->
-    <section class="text-white text-center mb-8">
-      <h1 class="text-5xl font-bold mb-3">Welcome to TheCraftShack</h1>
-      <!-- Add the image under the title -->
-      <p class="text-lg">Discover a wide range of high-quality candles and stylish t-shirts.</p>
-    </section>
-
-    <!-- Product Section -->
-    <section class="text-white text-center mb-8">
-      <h2 class="text-3xl font-bold mb-2">Our Products</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <!-- Example product cards -->
-        <div class="p-4 border rounded-lg shadow-lg">
-          <img src="@/assets/candle2.jpg" alt="Product 1" class="w-full h-60 rounded-lg object-cover mb-2">
-          <h3 class="text-lg font-semibold">Product 1</h3>
-
-        </div>
-        <div class="p-4 border rounded-lg shadow-lg">
-          <img src="@/assets/candle1.jpg" alt="Product 2" class="w-full h-60 rounded-lg object-cover mb-2">
-          <h3 class="text-lg font-semibold">Product 2</h3>
-
-        </div>
-        <!-- Add more product cards here -->
-      </div>
-    </section>
-
-    <!-- Shop Now Button -->
-    <button class="bg-pink-500 text-white py-2 px-4 rounded-md text-xl mt-8">Shop Now</button>
-  </div>
-</template>
-
 <script>
+
+import axios from 'axios'
+
+const apiURL = import.meta.env.VITE_ROOT_API
+
+ 
+
 export default {
-  methods: {
-    goToSignUp() {
-      this.$router.push('/signuppage');
-    },
-    goToLogin() {
-      this.$router.push('/loginpage');
-    },
+
+  name: 'App',
+
+  data() {
+
+    return {
+
+      orgName: 'CRAFT SHACK'
+
+    }
+
+  },
+
+  created() {
+
+    axios.get(`${apiURL}/org`).then((res) => {
+
+      this.orgName = res.data.name
+
+    })
+
   }
-};
+
+}
+
 </script>
 
+<template>
+
+  <div id="landing-page" class="bg-pink-200">
+
+    <!-- Header -->
+
+    <header class="bg-green-700 py-4 px-6 shadow-md flex justify-between items-center ">
+
+      <div class="grow w-4/5">
+
+        <section class="justify-between items-center h-24 flex">
+
+          <div class="flex items-center">
+
+            <h1 class="mr-80  bold text-3xl text-pink-200">{{ this.orgName }}</h1>
+
+          </div>
+
+          <div class="flex space-x-4">
+
+            <a href="#about-us" class="text-pink-200 hover:text-pink-700" @click="scrollToAboutUs">
+
+              <span style="position: relative; top: 6px" class="material-icons">search</span>
+
+              About Us
+
+            </a>
+
+            <router-link to="/contact" class="text-pink-200 hover:text-pink-700">
+
+              <span style="position: relative; top: 6px" class="material-icons">phone</span>
+
+              Contact Us
+
+            </router-link>
+
+            <router-link to="/loginpage" class="text-pink-200 hover:text-pink-700">
+
+              <span style="position: relative; top: 6px" class="material-icons">person</span>
+
+              Login
+
+            </router-link>
+
+ 
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </header>
+
+    <div>
+
+      <main class="mt-20">
+
+        <router-view></router-view>
+
+      </main>
+
+    </div>
+
+  </div>
+
+</template>
+
 <style>
-#landing-page {
-  background-color: #ff6b81;
-  /* Pink background */
-}
 
-/* Style the header buttons */
-header button {
-  background-color: #2b6cb0;
-  /* Blue background */
-}
+/* Remove the background-color from #_container */
 
-/* Style the Shop Now button */
-section button {
-  background-color: #2b6cb0;
-  /* Blue background */
-}
+/* #_container {
 
-/* Add any additional CSS styling for your landing page components here */
+  background-color: #c8102e;
+
+  color: white;
+
+  padding: 18px;
+
+} */
+
 </style>

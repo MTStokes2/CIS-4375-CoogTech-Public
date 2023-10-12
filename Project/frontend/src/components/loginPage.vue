@@ -1,81 +1,125 @@
 <template>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form @submit.prevent="login">
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" v-model="username" />
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" v-model="password" />
-            </div>
-            <button class="pink-button" type="submit">Login</button>
-        </form>
-    </div>
+
+  <div class="bg-pink-200 min-h-screen flex flex-col items-center">
+
+    <form class="bg-pink-200 p-20 rounded shadow-md">
+
+      <h2 class="text-3xl text-green-700 font-bold mb-6">Login</h2>
+
+ 
+
+      <div class="mb-4">
+
+        <label class="block text-green-700 text-sm font-bold mb-2" for="username">Username</label>
+
+        <input class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
+
+          type="text" id="username" placeholder="Enter your username" />
+
+      </div>
+
+ 
+
+      <div class="mb-6">
+
+        <label class="block text-green-700 text-sm font-bold mb-2" for="password">Password</label>
+
+        <input class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
+
+          type="password" id="password" placeholder="Enter your password" />
+
+      </div>
+
+ 
+
+      <div v-if="showError" class="text-red-600 font-bold mb-4">
+
+        Invalid credentials. Please try again.
+
+      </div>
+
+ 
+
+      <div class="flex items-center justify-between">
+
+        <button
+
+          class="bg-green-700 hover-bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+
+          type="button" @click="handleLogin">
+
+          Login
+
+        </button>
+
+      </div>
+
+    </form>
+
+    <p class="mt-4 text-green-700 text-sm">
+
+      Don't have an account? <router-link to="/signuppage" class="text-green-700 font-bold">Sign up</router-link>
+
+    </p>
+
+  </div>
+
 </template>
-  
+
+ 
+
 <script>
+
 export default {
-    data() {
-        return {
-            username: "",
-            password: ""
-        };
+
+  data() {
+
+    return {
+
+      showError: false, // Initially, hide the error message
+
+    };
+
+  },
+
+  methods: {
+
+    handleLogin() {
+
+      const usernameInput = document.getElementById('username').value;
+
+      const passwordInput = document.getElementById('password').value;
+
+ 
+
+      // Check if the entered credentials match the hardcoded ones
+
+      if (usernameInput === 'e' && passwordInput === 'e') {
+
+        // Redirect to the shop page
+
+        this.$router.push('/shop'); // Assuming you're using Vue Router
+
+      } else {
+
+        // Show the error message
+
+        this.showError = true;
+
+      }
+
     },
-    methods: {
-        login() {
-            // Add your login logic here
-            // Example: send a request to the server to authenticate the user
-            // If authentication is successful, you can perform actions like storing a token
-            // or setting user information in Vuex (state management).
-            // For now, let's simply log the entered username and password.
-            console.log("Username:", this.username);
-            console.log("Password:", this.password);
 
-            // Optionally, you can clear the form fields after login.
-            this.username = "";
-            this.password = "";
-        }
-    }
+  },
+
 };
+
 </script>
-  
-<style scoped>
-.login-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
 
-.form-group {
-    margin-bottom: 15px;
-}
+ 
 
-label {
-    display: block;
-    font-weight: bold;
-}
+<style>
 
-input[type="text"],
-input[type="password"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
+/* Add any additional CSS styling for your login page components here */
 
-button.pink-button {
-    background-color: #ff6b81;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-weight: bold;
-    cursor: pointer;
-}
 </style>

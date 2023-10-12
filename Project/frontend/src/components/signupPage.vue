@@ -1,83 +1,111 @@
 <template>
-  <div class="signup-container">
-    <h2>Sign Up</h2>
-    <form @submit.prevent="signUp">
-      <div class="form-group">
-        <label for="firstname">First Name:</label>
-        <input type="text" id="firstname" v-model="firstname" />
+
+  <div class="bg-pink-200 min-h-screen flex justify-center items-center">
+
+    <form class="bg-pink-200 p-20 rounded shadow-md">
+
+      <h2 class="text-3xl text-green-700 font-bold mb-6">Sign Up</h2>
+
+ 
+
+      <div class="mb-4">
+
+        <label class="block text-green-700 text-sm font-bold mb-2" for="firstName">First Name</label>
+
+        <input class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
+
+          type="text" id="firstName" placeholder=" first name" />
+
       </div>
-      <div class="form-group">
-        <label for="lastname">Last Name:</label>
-        <input type="text" id="lastname" v-model="lastname" />
+
+ 
+
+      <div class="mb-4">
+
+        <label class="block text-green-700 text-sm font-bold mb-2" for="lastName">Last Name</label>
+
+        <input class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
+
+          type="text" id="lastName" placeholder="last name" />
+
       </div>
-      <div class="form-group">
-        <label for="email">Email Address:</label>
-        <input type="email" id="email" v-model="email" />
+
+ 
+
+      <div class="mb-4">
+
+        <label class="block text-green-700 text-sm font-bold mb-2" for="email">Email Address</label>
+
+        <input class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
+
+          type="email" id="email" placeholder="email address" />
+
       </div>
-      <button class="pink-button" type="submit">Sign Up</button>
+
+ 
+
+      <div class="mb-4">
+
+        <label class="block text-green-700 text-sm font-bold mb-2" for="phoneNumber">Phone Number</label>
+
+        <input class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
+
+          type="tel" id="phoneNumber" placeholder="phone number" />
+
+      </div>
+
+      <div class="mb-6">
+
+        <label class="block text-green-700 text-sm font-bold mb-2" for="password">Password</label>
+
+        <input class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
+
+          type="password" id="password" placeholder="Enter your password" />
+
+      </div>
+
+ 
+
+ 
+
+ 
+
+      <div class="flex items-center justify-between">
+
+        <button
+
+          class="bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+
+          type="button">
+
+          Sign Up
+
+        </button>
+
+      </div>
+
     </form>
+
   </div>
+
 </template>
 
+ 
+
 <script>
+
 export default {
-  data() {
-    return {
-      firstname: "",
-      lastname: "",
-      email: "",
-    };
-  },
-  methods: {
-    signUp() {
-      // Add your sign-up logic here
-      // Example: send a request to the server to create a new user
-      // You can handle the sign-up process here without redirection
-      alert("Sign-up successful!");
-      // Optionally, you can reset the form fields here if needed
-      this.firstname = "";
-      this.lastname = "";
-      this.email = "";
-    },
-  },
-};
+
+  // Your script logic can go here
+
+}
+
 </script>
 
-<style scoped>
-.signup-container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
+ 
 
-.form-group {
-  margin-bottom: 15px;
-}
+<style>
 
-label {
-  display: block;
-  font-weight: bold;
-}
+/* Add any additional CSS styling for your signup page components here */
 
-input[type="text"],
-input[type="email"] {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-button.pink-button {
-  background-color: #ff6b81;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-weight: bold;
-  cursor: pointer;
-}
 </style>
