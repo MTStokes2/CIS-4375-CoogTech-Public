@@ -12,4 +12,7 @@ router.get('/', (req, res) =>
         res.json(customers);
     })
     .catch(err => console.log(err)));
+
+
+    
 module.exports = router;
