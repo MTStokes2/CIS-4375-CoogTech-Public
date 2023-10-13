@@ -8,6 +8,30 @@ const config = require('../src/config/config')
 const database = config.database
 
 //---------------------------------------------------//
+//             Test Model                            //
+//---------------------------------------------------//
+const Test_Model = database.define('TEST', {
+    idTEST: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
+    },
+    TESTcol: {
+        type: Sequelize.CHAR
+    },
+    TESTcol1: {
+        type: Sequelize.CHAR
+    },
+    TESTcol2: {
+        type: Sequelize.CHAR
+    }},
+     {
+        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
+        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+    }
+);
+
+//---------------------------------------------------//
 //             Customers Model                        //
 //---------------------------------------------------//
 const Customers_Model = database.define('CUSTOMERS', {
@@ -51,39 +75,6 @@ const Customers_Model = database.define('CUSTOMERS', {
         updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
-
-//---------------------------------------------------//
-//             Test Model                            //
-//---------------------------------------------------//
-const Test_Model = database.define('TEST', {
-    idTEST: {
-        type: Sequelize.INTEGER,
-        primaryKey: true
-    },
-    TESTcol: {
-        type: Sequelize.CHAR
-    },
-    TESTcol1: {
-        type: Sequelize.CHAR
-    },
-    TESTcol2: {
-        type: Sequelize.CHAR
-    },
-    CustomerID: {
-        type: Sequelize.INTEGER,
-        references: {
-            model: Customers_Model,
-            key: 'CustomerID'
-        }
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
-    }
-);
-
-
 
 //---------------------------------------------------//
 //               Admins Model                        //
@@ -205,5 +196,46 @@ const State_Model = database.define('STATE', {
     }
 );
 
+//---------------------------------------------------//
+//                Orders Model                       //
+//---------------------------------------------------//
+const Orderss_Model = database.define('ORDERS', {
+    OrderID: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
+    },
+    CustomerID: {
+        type: Sequelize.INTEGER
+    },
+    StatusID: {
+        type: Sequelize.INTEGER
+    },
+    CityID: {
+        type: Sequelize.INTEGER
+    },
+    StateID: {
+        type: Sequelize.INTEGER
+    },
+    ZipCode: {
+        type: Sequelize.STRING
+    },
+    Total: {
+        type: Sequelize.FLOAT
+    },
+    DateOrdered: {
+        type: Sequelize.DATE
+    },
+    DateDelivered: {
+        type: Sequelize.DATE
+    },
+    DateScheduled: {
+        type: Sequelize.DATE
+    }},
+     {
+        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
+        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+    }
+);
 
 module.exports = {Test_Model, Customers_Model, Admins_Model, Usernames_Model, Passwords_Model, City_Model, State_Model}
