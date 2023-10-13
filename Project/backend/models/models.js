@@ -32,6 +32,46 @@ const Test_Model = database.define('TEST', {
 );
 
 //---------------------------------------------------//
+//                State Model                        //
+//---------------------------------------------------//
+const State_Model = database.define('STATE', {
+    StateID: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
+    },
+    State: {
+        type: Sequelize.STRING
+    }},
+     {
+        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
+        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+    }
+);
+
+//---------------------------------------------------//
+//                 City Model                        //
+//---------------------------------------------------//
+const City_Model = database.define('CITY', {
+    CityID: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
+    },
+    StateID: {
+        type: Sequelize.INTEGER,
+        
+    },
+    City: {
+        type: Sequelize.STRING
+    }},
+     {
+        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
+        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+    }
+);
+
+//---------------------------------------------------//
 //             Customers Model                        //
 //---------------------------------------------------//
 const Customers_Model = database.define('CUSTOMERS', {
@@ -151,42 +191,6 @@ const Passwords_Model = database.define('PASSWORDS', {
         type: Sequelize.INTEGER
     },
     Password: {
-        type: Sequelize.STRING
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
-    }
-);
-
-//---------------------------------------------------//
-//                 City Model                        //
-//---------------------------------------------------//
-const City_Model = database.define('CITY', {
-    CityID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true
-    },
-    City: {
-        type: Sequelize.STRING
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
-    }
-);
-
-//---------------------------------------------------//
-//                State Model                        //
-//---------------------------------------------------//
-const State_Model = database.define('STATE', {
-    StateID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true
-    },
-    State: {
         type: Sequelize.STRING
     }},
      {
