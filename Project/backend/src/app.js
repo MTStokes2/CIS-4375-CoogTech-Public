@@ -26,8 +26,9 @@ database.authenticate()
 
 //imports the routes and sets up the middle ware for the routes on /test
 //localhost:PORT/test
-app.use('/test', require('../routes/routes'))
+app.use('/', require('../routes/routes'))
 app.use('/customerData', require('../routes/customerRoutes'))
+app.use('/adminData', require('../routes/adminRoutes'))
 
 app.listen(config.PORT, console.log("Server started listening on port : ", config.PORT));
 
