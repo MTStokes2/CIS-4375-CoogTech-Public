@@ -1,5 +1,6 @@
 //Some of our tables have a circular dependancy. This file allows us to create the foreign keys after they were both initialized
 //An example is the Usernames and Passwords table (They both reference each other)
+//Documentaion for Associations: https://sequelize.org/docs/v6/core-concepts/assocs/
 
 let Models = require('./models')
 
