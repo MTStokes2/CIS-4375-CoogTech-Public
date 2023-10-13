@@ -5,6 +5,7 @@ const cors = require("cors");
 const Sequalize = require('sequelize')
 const config = require('./config/config')
 
+
 const app = express()
 
 app.use(morgan('combined')) //logs connections
