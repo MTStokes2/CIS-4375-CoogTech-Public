@@ -15,6 +15,8 @@ process.env.DB_PASS || 'Replace with Password',
       min: 0,
       acquire: 30000,
       idle: 10000
-    }
+    },
+
+    logging: false
   })
 }

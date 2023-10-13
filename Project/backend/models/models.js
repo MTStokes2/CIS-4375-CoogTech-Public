@@ -8,30 +8,6 @@ const config = require('../src/config/config')
 const database = config.database
 
 //---------------------------------------------------//
-//             Test Model                            //
-//---------------------------------------------------//
-const Test_Model = database.define('TEST', {
-    idTEST: {
-        type: Sequelize.INTEGER,
-        primaryKey: true
-    },
-    TESTcol: {
-        type: Sequelize.CHAR
-    },
-    TESTcol1: {
-        type: Sequelize.CHAR
-    },
-    TESTcol2: {
-        type: Sequelize.CHAR
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
-    }
-);
-
-//---------------------------------------------------//
 //             Customers Model                        //
 //---------------------------------------------------//
 const Customers_Model = database.define('CUSTOMERS', {
@@ -52,7 +28,7 @@ const Customers_Model = database.define('CUSTOMERS', {
         type: Sequelize.INTEGER
     },
     ZipCode: {
-        type: Sequelize.NUMBER
+        type: Sequelize.STRING
     },
     CustomerLastName: {
         type: Sequelize.STRING
@@ -75,6 +51,39 @@ const Customers_Model = database.define('CUSTOMERS', {
         updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
+
+//---------------------------------------------------//
+//             Test Model                            //
+//---------------------------------------------------//
+const Test_Model = database.define('TEST', {
+    idTEST: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
+    },
+    TESTcol: {
+        type: Sequelize.CHAR
+    },
+    TESTcol1: {
+        type: Sequelize.CHAR
+    },
+    TESTcol2: {
+        type: Sequelize.CHAR
+    },
+    CustomerID: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: Customers_Model,
+            key: 'CustomerID'
+        }
+    }},
+     {
+        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
+        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+    }
+);
+
+
 
 //---------------------------------------------------//
 //               Admins Model                        //
@@ -121,12 +130,10 @@ const Usernames_Model = database.define('USERNAMES', {
         primaryKey: true
     },
     CustomerID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true
+        type: Sequelize.INTEGER
     },
     AdminID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true
+        type: Sequelize.INTEGER
     },
     Username: {
         type: Sequelize.STRING
@@ -147,12 +154,10 @@ const Passwords_Model = database.define('PASSWORDS', {
         primaryKey: true
     },
     CustomerID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true
+        type: Sequelize.INTEGER
     },
     AdminID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true
+        type: Sequelize.INTEGER
     },
     Password: {
         type: Sequelize.STRING
@@ -201,4 +206,4 @@ const State_Model = database.define('STATE', {
 );
 
 
-module.exports = Test_Model
+module.exports = {Test_Model, Customers_Model, Admins_Model, Usernames_Model, Passwords_Model, City_Model, State_Model}

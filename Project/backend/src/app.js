@@ -15,6 +15,10 @@ app.use(cors()) ///!
 //Database
 const database = config.database
 
+database.sync(console.log("Beginning Database Synchronization.."))
+.then(() => console.log("Database Synchronized..."))
+.catch(err => console.log('Error: ', err))
+
 //Database connection test
 database.authenticate()
 .then(() => console.log("Database Connected..."))
@@ -23,6 +27,7 @@ database.authenticate()
 //imports the routes and sets up the middle ware for the routes on /test
 //localhost:PORT/test
 app.use('/test', require('../routes/routes'))
+app.use('/customerData', require('../routes/customerRoutes'))
 
 app.listen(config.PORT, console.log("Server started listening on port : ", config.PORT));
 
