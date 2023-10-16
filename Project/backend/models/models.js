@@ -71,6 +71,9 @@ const City_Model = database.define('CITY', {
     }
 );
 
+State_Model.hasMany(City_Model, {foreignKey: 'StateID'})
+City_Model.belongsTo(State_Model, {foreignKey: 'StateID'})
+
 //---------------------------------------------------//
 //             Customers Model                        //
 //---------------------------------------------------//
@@ -78,12 +81,6 @@ const Customers_Model = database.define('CUSTOMERS', {
     CustomerID: {
         type: Sequelize.INTEGER,
         primaryKey: true
-    },
-    UsernameID: {
-        type: Sequelize.INTEGER
-    },
-    PasswordID: {
-        type: Sequelize.INTEGER
     },
     CityID: {
         type: Sequelize.INTEGER
@@ -123,12 +120,6 @@ const Admins_Model = database.define('ADMINS', {
     AdminID: {
         type: Sequelize.INTEGER,
         primaryKey: true
-    },
-    UsernameID: {
-        type: Sequelize.INTEGER
-    },
-    PasswordID: {
-        type: Sequelize.INTEGER
     },
     AdminLastName: {
         type: Sequelize.STRING
@@ -491,10 +482,10 @@ const Custom_Products_Order_Model = database.define('CUSTOM_PRODUCT_ORDERS', {
         primaryKey: true
     },
     CustomOrderID: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
     },
     CustomProductID: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
