@@ -25,13 +25,6 @@ let Custom_Products_Order_Model = Models.Custom_Products_Order_Model
 let Feedback_Model = Models.Feedback_Model
 let Reports_Model = Models.Reports_Model
 
-
-Customers_Model.hasOne(Usernames_Model)
-Customers_Model.hasOne(Passwords_Model)
-
-Admins_Model.hasOne(Usernames_Model)
-Admins_Model.hasOne(Passwords_Model)
-
 State_Model.hasMany(City_Model, {foreignKey: 'StateID'})
 City_Model.belongsTo(State_Model, {foreignKey: 'StateID'})
 

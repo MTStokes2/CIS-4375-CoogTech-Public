@@ -398,6 +398,7 @@ const Combo_Orders_Model = database.define('COMBO_ORDERS', {
 const Products_Model = database.define('PRODUCTS', {
     ProductID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     ProductName: {
@@ -411,6 +412,9 @@ const Products_Model = database.define('PRODUCTS', {
     },
     ProductStock: {
         type: Sequelize.INTEGER
+    },
+    ProductImage: {
+        type: Sequelize.STRING
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs

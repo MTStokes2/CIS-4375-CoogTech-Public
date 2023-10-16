@@ -65,7 +65,7 @@ router.get('/Login', async (req, res) => {
   
     try {
         //First searches for a Username what matches with the username provided
-        const user = await Usernames_Model.findOne({
+        const customer = await Usernames_Model.findOne({
         where: {
             Username: req.body.Username,
         },
