@@ -1,5 +1,5 @@
 <template>
-    <v-btn @click="router.push({ name: 'Catalog' })" color="#ffb7c2" variant="elevated">
+    <v-btn @click="router.push({ name: 'Catalog' })" color="#F5F5DC" variant="elevated">
         Back to catalog
     </v-btn>
     <div v-if="!store.cart.length" style="text-align: center">
@@ -83,8 +83,8 @@ const removeFromCart = (id) => {
 }
 
 .checkout-button {
-    background-color: pink;
-    color: white;
+    background-color: #F5F5DC;
+    color: rgb(20, 67, 7);
     border: none;
     border-radius: 25px;
     padding: 10px 20px;

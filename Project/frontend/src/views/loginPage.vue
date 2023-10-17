@@ -1,33 +1,30 @@
 <template>
-    <div id="login-page" style="background-color: rgb(245, 245, 220);"></div>
-    <div class="bg-pink-200 min-h-screen flex flex-col items-center">
-        <form class="bg-pink-200 p-20 rounded shadow-md">
-            <h2 class="text-3xl text-green-700 font-bold mb-6">Login</h2>
+    <div id="login-page"></div>
+    <form class="b p-5 rounded shadow-ms center">
+        <h2 class="text-3xl text-green-900 font-bold mb-6">Login</h2>
+        <div class="mb-4">
+            <label class="block text-green-900 text-sm font-bold mb-2" for="username">Username</label>
+            <input class=" py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500" type="text"
+                id="username" placeholder="Enter your username" />
+        </div>
 
-            <div class="mb-4">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="username">Username</label>
-                <input class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
-                    type="text" id="username" placeholder="Enter your username" />
-            </div>
+        <div class="mb-6">
+            <label class="block text-green-900 text-sm font-bold mb-2" for="password">Password</label>
+            <input class="py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
+                type="password" id="password" placeholder="Enter your password" />
+        </div>
 
-            <div class="mb-6">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="password">Password</label>
-                <input class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
-                    type="password" id="password" placeholder="Enter your password" />
-            </div>
+        <div v-if="showError" class="text-red-600 font-bold mb-4">
+            Invalid credentials. Please try again.
+        </div>
 
-            <div v-if="showError" class="text-red-600 font-bold mb-4">
-                Invalid credentials. Please try again.
-            </div>
-
-            <div class="flex items-center justify-between">
-                <router-link to="/catalog" class="custom-button">Shop Now</router-link>
-            </div>
-        </form>
-        <p class="mt-4 text-green-700 text-sm">
-            Don't have an account? <router-link to="/signup" class="text-green-700 font-bold">Sign up</router-link>
-        </p>
-    </div>
+        <div class="flex items-center justify-between">
+            <router-link to="/catalog" class="custom-button">Login in</router-link>
+        </div>
+    </form>
+    <p class="mt-4 text-green-900 text-sm">
+        Don't have an account? <router-link to="/signup" class="text-green-700 font-bold">Sign up</router-link>
+    </p>
 </template>
   
 <script>

@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-pink-200 min-h-screen flex justify-center items-center">
-        <form class="bg-pink-200 p-20 rounded shadow-md">
+    <div class="min-h-screen flex justify-center items-center">
+        <form class="p-20 rounded shadow-md">
             <h2 class="text-3xl text-green-700 font-bold mb-6">Sign Up</h2>
 
             <div class="mb-4">

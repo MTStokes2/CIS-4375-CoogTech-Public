@@ -1,7 +1,6 @@
 <template>
-  <div id="landing-page" :style="{ backgroundColor: customBackgroundColor }">
-    <!-- Header -->
-    <header class="bg-green-700 py-4 px-6 shadow-md flex justify-between items-center">
+  <div id="landing-page">
+    <header class="py-4 px-6 shadow-md flex justify-between items-center" style="background-color: #F5F5DC;">
       <div class="grow w-4/5">
         <section class="justify-between items-center h-24 flex">
           <div class="flex items-center">
@@ -24,11 +23,17 @@
         </section>
       </div>
     </header>
-    <div>
-      <main class="mt-20">
-        <router-view></router-view>
-      </main>
-    </div>
+    <main class="mt-20">
+      <router-view></router-view>
+    </main>
+    <!-- Footer section -->
+    <footer style="background-color: #F5F5DC;">
+      <div class="text-center">
+
+        <p class="text-green-700 text-sm" style="color: rgb(4, 69, 4);">&copy; 2023 CraftShack. All rights reserved.</p>
+        <br>
+      </div>
+    </footer>
   </div>
 </template>
 <script>
@@ -40,25 +45,26 @@ export default {
   data() {
     return {
       orgName: 'CRAFT SHACK',
-      customBackgroundColor: 'var(--custom-background-color)',
     };
   },
   created() {
     axios.get(`${apiURL}/org`).then((res) => {
       this.orgName = res.data.name;
-      // Set the custom background color here
-      this.customBackgroundColor = 'var(--custom-background-color)';
     });
   },
 };
 </script>
-
 <style scoped>
 #landing-page {
   /* This CSS custom property allows dynamic background color */
-  --custom-background-color: rgb(245, 245, 220);
-  /* Change to pink color */
-  /* Default color or use any other color you prefer */
+  --custom-background-color: #ffb7c2;
+  /* Set background color of the #landing-page container to yellow */
+  background-color: #ffb7c2;
+}
+
+/* Set the background color of the entire body to yellow */
+body {
+  background-color: #ffb7c2;
 }
 
 /* Override text color with !important */
