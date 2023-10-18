@@ -14,6 +14,11 @@ router.get('/test', (req, res) =>
     })
     .catch(err => console.log(err)));
 
+router.get('/', (req, res) => {
+    res.send('<h1>Hello world</h1>');
+    });
+
+
 //SignUp
 router.post('/SignUp', async (req, res) => {
 
