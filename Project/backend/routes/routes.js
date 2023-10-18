@@ -26,7 +26,6 @@ router.post('/SignUp', async (req, res) => {
         //Adds Customer's information to Customers Table
         Customers_Model.create(
             {
-            CustomerID: req.body.CustomerID,
             CityID: req.body.CityID,
             StateID: req.body.StateID,
             ZipCode: req.body.ZipCode,

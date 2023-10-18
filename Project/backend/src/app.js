@@ -15,7 +15,7 @@ app.use(bodyParser.json())
 const ChatServer = http.createServer(app);
 const io = socketIo(ChatServer, {
   cors: {
-    origin: "http://localhost:5173", // Replace with your frontend origin
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]
   }
 });
