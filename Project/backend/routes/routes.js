@@ -61,7 +61,7 @@ router.post('/SignUp', async (req, res) => {
 
 
 //Login
-router.get('/Login', async (req, res) => {
+router.post('/Login', async (req, res) => {
   
     try {
         //First searches for a Username what matches with the username provided
@@ -71,6 +71,7 @@ router.get('/Login', async (req, res) => {
         },
         });
         
+        console.log('Customer:', customer)
         //If the customer exists (they have a username that matches)
         if (customer) {
         //checks to see if the password matches with the provided password and the CustomerID matches with the Username table's
