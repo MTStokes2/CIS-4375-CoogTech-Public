@@ -3,9 +3,7 @@ const router = express.Router();
 const config = require('../src/config/config')
 
 const testModel = require('../models/models')
-let {Usernames_Model} = require('../models/models')
-let {Passwords_Model} = require('../models/models')
-let {Customers_Model} = require('../models/models')
+let {Usernames_Model, Passwords_Model, Customers_Model} = require('../models/modelAssociations')
 
 //Test Route to find all, sends an OK to browser if anything returns and logs what was returned in the console
 router.get('/test', (req, res) =>

@@ -71,9 +71,6 @@ const City_Model = database.define('CITY', {
     }
 );
 
-State_Model.hasMany(City_Model, {foreignKey: 'StateID'})
-City_Model.belongsTo(State_Model, {foreignKey: 'StateID'})
-
 //---------------------------------------------------//
 //             Customers Model                        //
 //---------------------------------------------------//
@@ -432,10 +429,10 @@ const Order_Products_Model = database.define('ORDER_PRODUCTS', {
         primaryKey: true
     },
     OrderID: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
     },
     ProductID: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
@@ -542,6 +539,9 @@ const Reports_Model = database.define('REPORTS', {
         updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
+
+
+
 
 //There is probably a better and cleaner way to do this....
 module.exports = {
