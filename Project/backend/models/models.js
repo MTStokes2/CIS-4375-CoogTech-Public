@@ -13,6 +13,7 @@ const database = config.database
 const Test_Model = database.define('TEST', {
     idTEST: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     TESTcol: {
@@ -37,6 +38,7 @@ const Test_Model = database.define('TEST', {
 const State_Model = database.define('STATE', {
     StateID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     State: {
@@ -55,6 +57,7 @@ const State_Model = database.define('STATE', {
 const City_Model = database.define('CITY', {
     CityID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     StateID: {
@@ -77,6 +80,7 @@ const City_Model = database.define('CITY', {
 const Customers_Model = database.define('CUSTOMERS', {
     CustomerID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     CityID: {
@@ -116,6 +120,7 @@ const Customers_Model = database.define('CUSTOMERS', {
 const Admins_Model = database.define('ADMINS', {
     AdminID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     AdminLastName: {
@@ -146,6 +151,7 @@ const Admins_Model = database.define('ADMINS', {
 const Usernames_Model = database.define('USERNAMES', {
     UsernameID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     CustomerID: {
@@ -170,6 +176,7 @@ const Usernames_Model = database.define('USERNAMES', {
 const Passwords_Model = database.define('PASSWORDS', {
     PasswordID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     CustomerID: {
@@ -194,6 +201,7 @@ const Passwords_Model = database.define('PASSWORDS', {
 const Status_Model = database.define('STATUS', {
     StatusID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     Status: {
@@ -212,6 +220,7 @@ const Status_Model = database.define('STATUS', {
 const Customer_Chat_Model = database.define('CUSTOMER_CHAT', {
     CustomerChatID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     CustomerID: {
@@ -233,6 +242,7 @@ const Customer_Chat_Model = database.define('CUSTOMER_CHAT', {
 const Admin_Chat_Model = database.define('ADMIN_CHAT', {
     AdminChatID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     AdminID: {
@@ -254,6 +264,7 @@ const Admin_Chat_Model = database.define('ADMIN_CHAT', {
 const Chat_Model = database.define('CHAT', {
     ChatID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     CustomerChatID: {
@@ -275,6 +286,7 @@ const Chat_Model = database.define('CHAT', {
 const Orders_Model = database.define('ORDERS', {
     OrderID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     CustomerID: {
@@ -317,6 +329,7 @@ const Orders_Model = database.define('ORDERS', {
 const Custom_Orders_Model = database.define('CUSTOM_ORDERS', {
     CustomOrderID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     CustomerID: {
@@ -362,6 +375,7 @@ const Custom_Orders_Model = database.define('CUSTOM_ORDERS', {
 const Combo_Orders_Model = database.define('COMBO_ORDERS', {
     ComboOrderID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     OrderID: {
@@ -432,6 +446,7 @@ const Products_Model = database.define('PRODUCTS', {
 const Order_Products_Model = database.define('ORDER_PRODUCTS', {
     OrderProductsID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     OrderID: {
@@ -453,6 +468,7 @@ const Order_Products_Model = database.define('ORDER_PRODUCTS', {
 const Custom_Products_Model = database.define('CUSTOM_PRODUCTS', {
     CustomProductID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     ChatID: {
@@ -486,6 +502,7 @@ const Custom_Products_Model = database.define('CUSTOM_PRODUCTS', {
 const Custom_Products_Order_Model = database.define('CUSTOM_PRODUCT_ORDERS', {
     CustomProductOrderID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     CustomOrderID: {
@@ -507,6 +524,7 @@ const Custom_Products_Order_Model = database.define('CUSTOM_PRODUCT_ORDERS', {
 const Feedback_Model = database.define('FEEDBACK', {
     FeedbackID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     CustomerID: {
@@ -531,6 +549,7 @@ const Feedback_Model = database.define('FEEDBACK', {
 const Reports_Model = database.define('REPORTS', {
     ReportID: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     AdminID: {
