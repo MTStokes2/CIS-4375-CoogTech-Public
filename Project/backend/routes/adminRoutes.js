@@ -4,6 +4,7 @@ const config = require('../src/config/config')
 
 let {Admins_Model} = require('../models/modelAssociations')
 let {Products_Model} = require('../models/modelAssociations')
+let {Customers_Model} = require('../models/modelAssociations')
 
 //GET all Admins
 router.get('/', (req, res) =>
@@ -13,6 +14,16 @@ router.get('/', (req, res) =>
         res.json(admins);
     })
     .catch(err => console.log(err)));
+
+//GET all Customers
+router.get('/Customers', (req, res) =>
+    Customers_Model.findAll()
+    .then(customers => {
+        console.log(customers)
+        res.json(customers);
+    })
+    .catch(err => console.log(err)));
+
 
 //GET all Products
 router.get('/Products', (req, res) =>
