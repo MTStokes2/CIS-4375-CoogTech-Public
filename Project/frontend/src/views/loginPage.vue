@@ -1,12 +1,12 @@
 <template>
     <div class="login-form">
-
+<!-- v-model binds the input fields value to the data() located in export default -->
     <form @submit.prevent="login" class="b p-5 rounded shadow-ms center">
         <h2 class="text-3xl text-green-900 font-bold mb-6">Login</h2>
         <div class="mb-4">
             <label class="block text-green-900 text-sm font-bold mb-2" for="username">Username</label>
             <input class=" py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500" type="text"
-                id="username" v-model="username" required placeholder="Enter your username" />
+                id="username" v-model="username" required placeholder="Enter your username" />  
         </div>
 
         <div class="mb-6">
@@ -28,24 +28,6 @@
     </p>
     </div>
 </template>
-<!-- <template>
-    <div class="login-form">
-      <h2>Login</h2>
-      <form @submit.prevent="login">
-        <div class="form-group">
-          <label for="username">Username:</label>
-          <input type="text" id="username" v-model="username" required />
-        </div>
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" id="password" v-model="password" required />
-        </div>
-        <button type="submit">Login</button>
-        <div v-if="error" class="error-message">{{ error }}</div>
-      </form>
-    </div>
-  </template> -->
-  
 <script>
 import axios from 'axios';
 
