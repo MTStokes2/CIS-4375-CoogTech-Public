@@ -25,6 +25,24 @@ router.get('/Customers', (req, res) =>
     .catch(err => console.log(err)));
 
 
+//Get Product Details
+router.get('/Products/:id', async (req, res) => {
+    try {
+  
+        const ProductDetails = await Products_Model.findOne({
+        where: {
+            ProductID: req.params.id,
+        },
+        });
+
+        res.status(200).json({ ProductDetails });
+
+    } catch (err) {
+        console.log(err)
+    }
+  });
+
+
 //GET all Products
 router.get('/Products', (req, res) =>
     Products_Model.findAll()
@@ -42,6 +60,8 @@ router.post('/Products', async (req, res) => {
             {
             ProductName: req.body.ProductName,
             ProductType: req.body.ProductType,
+            ProductColor: req.body.ProductColor,
+            ProductSize: req.body.ProductSize,
             ProductPrice: req.body.ProductPrice,
             ProductStock: req.body.ProductStock,
             ProductImage: req.body.ProductImage
@@ -68,6 +88,8 @@ router.put('/Products', async (req, res) => {
             {
             ProductName: req.body.ProductName,
             ProductType: req.body.ProductType,
+            ProductColor: req.body.ProductColor,
+            ProductSize: req.body.ProductSize,
             ProductPrice: req.body.ProductPrice,
             ProductStock: req.body.ProductStock,
             ProductImage: req.body.ProductImage

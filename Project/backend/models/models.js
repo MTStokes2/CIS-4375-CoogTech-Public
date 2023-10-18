@@ -404,6 +404,12 @@ const Products_Model = database.define('PRODUCTS', {
     ProductType: {
         type: Sequelize.STRING
     },
+    ProductColor: {
+        type: Sequelize.STRING
+    },
+    ProductSize: {
+        type: Sequelize.STRING
+    },
     ProductPrice: {
         type: Sequelize.FLOAT
     },
