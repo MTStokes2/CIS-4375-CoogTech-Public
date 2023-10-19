@@ -304,6 +304,9 @@ const Orders_Model = database.define('ORDERS', {
     ZipCode: {
         type: Sequelize.STRING
     },
+    Address: {
+        type: Sequelize.STRING
+    },
     Total: {
         type: Sequelize.FLOAT
     },
@@ -348,6 +351,9 @@ const Custom_Orders_Model = database.define('CUSTOM_ORDERS', {
         type: Sequelize.INTEGER
     },
     ZipCode: {
+        type: Sequelize.STRING
+    },
+    Address: {
         type: Sequelize.STRING
     },
     Total: {

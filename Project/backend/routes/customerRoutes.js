@@ -3,7 +3,9 @@ const router = express.Router();
 const config = require('../src/config/config')
 
 let {Products_Model} = require('../models/modelAssociations')
-
+let {Orders_Model} = require('../models/modelAssociations')
+let {Custom_Orders_Model} = require('../models/modelAssociations')
+let {Feedback_Model} = require('../models/modelAssociations')
 
 //GET all Products
 router.get('/Products', (req, res) =>
@@ -102,5 +104,258 @@ router.put('/ChangePassword', async (req, res) => {
         console.log(err)
     }
   });
+
+
+//Get All Orders a customer has
+router.get('/Orders', async (req, res) => {
+  
+    try {
+        //First searches for a Username what matches with the username provided
+        const customer = await Usernames_Model.findOne({
+        where: {
+            Username: req.body.Username,
+        },
+        });
+        
+        console.log('Customer:', customer)
+        //If the customer exists
+        if (customer) {
+        const Customer_Orders = await Orders_Model.findAll({
+            where: {
+            CustomerID: customer.CustomerID
+            },
+        });
+
+        //If there is a match 
+        if (Customer_Orders) {
+            res.status(200).json({ Customer_Orders });
+        } else {
+            res.status(401).json({ message: 'No Orders' });
+        }
+        } else {
+        // Username not found
+        res.status(404).json({ message: 'Username not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+  });
+
+//Get Order Details
+router.get('/Orders/:id', async (req, res) => {
+    try {
+  
+        const OrderDetails = await Orders_Model.findOne({
+        where: {
+            OrderID: req.params.id
+        },
+        });
+
+        res.status(200).json({ OrderDetails });
+
+    } catch (err) {
+        console.log(err)
+    }
+  });
+
+//Update an Order (Customer)
+router.put('/Orders/:id', async (req, res) => {
+    try {
+  
+        const order = await Orders_Model.findOne({
+        where: {
+            OrderID: req.params.id
+        },
+        });
+        
+        if (order) {
+        Orders_Model.update(
+            {
+            CityID: req.body.CityID,
+            StateID: req.body.StateID,
+            ZipCode: req.body.ZipCode,
+            Address: req.body.Address
+        },{
+            where: {
+            OrderID: order.OrderID
+            },
+        });
+
+        res.status(200).json({ message: 'Order Updated' });
+
+    }} catch (err) {
+        console.log(err)
+    }
+  });
+
+//Add an Order
+router.post('/Orders', async (req, res) => {
+    try {
+
+        const customer = await Usernames_Model.findOne({
+            where: {
+                Username: req.body.Username,
+            },
+        });
+
+        //Adds a new Order
+        Orders_Model.create(
+            {
+            CustomerID: customer.CustomerID,
+            StatusID: req.body.StatusID,
+            CityID: req.body.CityID,
+            StateID: req.body.StateID,
+            ZipCode: req.body.ZipCode,
+            Address: req.body.Address,
+            Total: req.body.Total,
+            DateOrdered: req.body.DateOrdered,
+            DateScheduled: req.body.DateScheduled
+            })
+
+        res.status(200).json({ message: 'Order Added' });
+    } catch(err) {
+        console.log(err)
+    }
+});
+
+//Get All Custom Orders a customer has
+router.get('/CustomOrders', async (req, res) => {
+  
+    try {
+        //First searches for a Username what matches with the username provided
+        const customer = await Usernames_Model.findOne({
+        where: {
+            Username: req.body.Username,
+        },
+        });
+        
+        console.log('Customer:', customer)
+        //If the customer exists
+        if (customer) {
+        const Customer_Orders = await Custom_Orders_Model.findAll({
+            where: {
+            CustomerID: customer.CustomerID
+            },
+        });
+
+        //If there is a match 
+        if (Customer_Orders) {
+            res.status(200).json({ Customer_Orders });
+        } else {
+            res.status(401).json({ message: 'No Custom Orders' });
+        }
+        } else {
+        // Username not found
+        res.status(404).json({ message: 'Username not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+  });
+
+//Get Order Details
+router.get('/CustomOrders/:id', async (req, res) => {
+    try {
+  
+        const OrderDetails = await Custom_Orders_Model.findOne({
+        where: {
+            CustomOrderID: req.params.id
+        },
+        });
+
+        res.status(200).json({ OrderDetails });
+
+    } catch (err) {
+        console.log(err)
+    }
+  });
+
+//Update an Order (Customer)
+router.put('/CustomOrders/:id', async (req, res) => {
+    try {
+  
+        const customorder = await Orders_Model.findOne({
+        where: {
+            CustomOrderID: req.params.id
+        },
+        });
+        
+        if (customorder) {
+        Orders_Model.update(
+            {
+            CityID: req.body.CityID,
+            StateID: req.body.StateID,
+            ZipCode: req.body.ZipCode,
+            Address: req.body.Address
+        },{
+            where: {
+            CustomOrderID: order.CustomOrderID
+            },
+        });
+
+        res.status(200).json({ message: 'Custom Order Updated' });
+
+    }} catch (err) {
+        console.log(err)
+    }
+  });
+
+//Add a Custom Order
+router.post('/CustomOrders', async (req, res) => {
+    try {
+
+        const customer = await Usernames_Model.findOne({
+            where: {
+                Username: req.body.Username,
+            },
+        });
+
+        //Adds a new Custom Order
+        Custom_Orders_Model.create(
+            {
+            CustomerID: customer.CustomerID,
+            StatusID: req.body.StatusID,
+            ChatID: req.body.ChatID,
+            CityID: req.body.CityID,
+            StateID: req.body.StateID,
+            ZipCode: req.body.ZipCode,
+            Address: req.body.Address,
+            Total: req.body.Total,
+            DateOrdered: req.body.DateOrdered,
+            DateScheduled: req.body.DateScheduled
+            })
+
+        res.status(200).json({ message: 'Custom Order Added' });
+    } catch(err) {
+        console.log(err)
+    }
+});
+
+//Add Feedback
+router.post('/Feedback', async (req, res) => {
+    try {
+
+        const customer = await Usernames_Model.findOne({
+            where: {
+                Username: req.body.Username,
+            },
+        });
+
+        //Adds Feedback
+        Feedback_Model.create(
+            {
+            CustomerID: customer.CustomerID,
+            StatusID: req.body.StatusID,
+            Feedback: req.body.Feedback,
+            Rating: req.body.Rating
+            })
+
+        res.status(200).json({ message: 'Feedback Added' });
+    } catch(err) {
+        console.log(err)
+    }
+});
 
 module.exports = router;

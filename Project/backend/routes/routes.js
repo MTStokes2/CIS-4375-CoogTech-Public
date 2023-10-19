@@ -14,6 +14,11 @@ router.get('/test', (req, res) =>
     })
     .catch(err => console.log(err)));
 
+router.get('/', (req, res) => {
+    res.send('<h1>Hello world</h1>');
+    });
+
+
 //SignUp
 router.post('/SignUp', async (req, res) => {
 
@@ -21,7 +26,6 @@ router.post('/SignUp', async (req, res) => {
         //Adds Customer's information to Customers Table
         Customers_Model.create(
             {
-            CustomerID: req.body.CustomerID,
             CityID: req.body.CityID,
             StateID: req.body.StateID,
             ZipCode: req.body.ZipCode,
