@@ -76,32 +76,31 @@ export default {
 }
 
 .username-input {
-  text-align: center; /* Center justify the username input section */
-  margin-bottom: 20px; /* Add some margin for spacing */
+  text-align: center; 
 }
 
 .message-container {
   max-height: 300px;
   overflow-y: auto;
   margin-bottom: 20px;
-  padding-right: 20px; /* Add padding to the right to make space for the scrollbar */
+  padding-right: 20px; 
 }
 
-/* Style the scrollbar for webkit-based browsers (Chrome, Safari) */
+
 .message-container::-webkit-scrollbar {
-  width: 12px; /* Width of the scrollbar */
+  width: 12px; 
 }
 
 /* Handle portion of the scrollbar */
 .message-container::-webkit-scrollbar-thumb {
-  background-color: #888; /* Color of the scrollbar handle */
-  border-radius: 6px; /* Radius of the scrollbar handle */
+  background-color: #888; 
+  border-radius: 6px; 
 }
 
-/* Track portion of the scrollbar */
+
 .message-container::-webkit-scrollbar-track {
-  background-color: #f1f1f1; /* Color of the scrollbar track */
-  border-radius: 6px; /* Radius of the scrollbar track */
+  background-color: #f1f1f1; 
+  border-radius: 6px;
 }
 
 .message {
@@ -139,7 +138,7 @@ export default {
 }
 
 .action-button {
-  background-color: rgb(4, 69, 4); /* Use the custom text color */
+  background-color: rgb(4, 69, 4); 
   color: #ffffff;
   border: none;
   padding: 12px 24px;
