@@ -34,25 +34,25 @@ router.post('/SignUp', async (req, res) => {
             CustomerAddress: req.body.CustomerAddress,
             CustomerPhone: req.body.CustomerPhone,
             CustomerEmail: req.body.CustomerEmail
-            })
+            }).then(
+                customer => {
+                    //Adds Customer's Username to Usernames Table
+                    Usernames_Model.create(
+                        {
+                        CustomerID: customer.CustomerID,
+                        Username: req.body.Username
+                    })
+                    
+                    //Adds Customer's Password to Passwords Table
+                    Passwords_Model.create(
+                        {
+                        CustomerID: customer.CustomerID,
+                        Password: req.body.Password
+                    })
+                }
+            )
         
-        //Adds Customer's Username to Usernames Table
-        Usernames_Model.create(
-            {
-            UsernameID: req.body.UsernameID,
-            CustomerID: req.body.CustomerID,
-            AdminID: req.body.AdminID,
-            Username: req.body.Username
-            })
         
-        //Adds Customer's Password to Passwords Table
-        Passwords_Model.create(
-            {
-            PasswordID: req.body.PasswordID,
-            CustomerID: req.body.CustomerID,
-            AdminID: req.body.AdminID,
-            Password: req.body.Password
-            })
         
         //Sends 200 when and a message that the Customer was Signed Up
         res.status(200).json({ message: 'SignUp successful' });
@@ -73,7 +73,6 @@ router.post('/Login', async (req, res) => {
         },
         });
         
-        console.log('Customer:', customer)
         //If the customer exists (they have a username that matches)
         if (customer) {
         //checks to see if the password matches with the provided password and the CustomerID matches with the Username table's
