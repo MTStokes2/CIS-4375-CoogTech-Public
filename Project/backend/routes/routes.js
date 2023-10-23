@@ -148,76 +148,22 @@ router.get('/Customer/Chat/History/:CustomOrderID', async (req, res) => {
     }
   });
 
-  // Chat history for a specific ChatID
-router.get('/Admin/Chat/History/:CustomOrderID', async (req, res) => {
-    const { CustomOrderID } = req.params;
-  
+  // Chat history 
+  router.get('/chat-history', async (req, res) => {
+    console.log('Received a request for chat history');
     try {
-      // Check if the chat exists based on CustomOrderID
-      const chat = await Chat_Model.findOne({
-        where: {
-          CustomOrderID: CustomOrderID
-        }
-      });
+      // Query the database for chat messages (assuming there are separate tables for customer and admin messages)
+      const customerMessages = await Customer_Chat_Model.findAll();
+      const adminMessages = await Admin_Chat_Model.findAll();
   
-      if (chat) {
-        // If chat exists, get all customer's messages using ChatID
-        const chatHistory = await Admin_Chat_Model.findAll({
-          where: {
-            ChatID: chat.ChatID
-          }
-          // Include other necessary attributes or associations here
-        });
+      // Combine and sort messages based on timestamps
+      const allMessages = [...customerMessages, ...adminMessages].sort((a, b) => a.createdAt - b.createdAt);
   
-        res.json(chatHistory);
-      } else {
-        res.status(404).json({ error: 'Chat not found for the given CustomOrderID' });
-      }
+      res.status(200).json(allMessages);
     } catch (error) {
       console.error('Error fetching chat history:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
-
-
-router.get('/Combined/Chat/History/:CustomOrderID', async (req, res) => {
-    const { CustomOrderID } = req.params;
-
-    try {
-        // Check if the chat exists based on CustomOrderID
-        const chat = await Chat_Model.findOne({
-            where: {
-                CustomOrderID: CustomOrderID
-            }
-        });
-
-        if (chat) {
-            // If chat exists, get both customer and admin messages using ChatID
-            const customerChatHistory = await Customer_Chat_Model.findAll({
-                where: {
-                    ChatID: chat.ChatID
-                }
-                // Include other necessary attributes or associations here
-            });
-
-            const adminChatHistory = await Admin_Chat_Model.findAll({
-                where: {
-                    ChatID: chat.ChatID
-                }
-                // Include other necessary attributes or associations here
-            });
-
-            res.json({
-                customerChatHistory,
-                adminChatHistory
-            });
-        } else {
-            res.status(404).json({ error: 'Chat not found for the given CustomOrderID' });
-        }
-    } catch (error) {
-        console.error('Error fetching chat history:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
 
 module.exports = router;
