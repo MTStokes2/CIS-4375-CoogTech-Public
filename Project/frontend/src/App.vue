@@ -7,7 +7,7 @@
             <h1 class="mr-80 bold text-3xl text-green-200">{{ orgName }}</h1>
           </div>
           <div class="flex space-x-4">
-            <a href="#about-us" class="text-green-200 hover:text-green-200">
+            <a href="/#about-us" class="text-green-200 hover:text-green-200">
               <span style="position: relative; top: 6px" class="material-icons">search</span>
               About Us
             </a>
