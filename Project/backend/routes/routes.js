@@ -3,7 +3,7 @@ const router = express.Router();
 const config = require('../src/config/config')
 
 const testModel = require('../models/models')
-let {Usernames_Model, Passwords_Model, Customers_Model, Chat_Model, Customer_Chat_Model, Admin_Chat_Model} = require('../models/modelAssociations')
+let {Usernames_Model, Passwords_Model, Customers_Model, Admins_Model, Chat_Model, Customer_Chat_Model, Admin_Chat_Model} = require('../models/modelAssociations')
 
 //Test Route to find all, sends an OK to browser if anything returns and logs what was returned in the console
 router.get('/test', (req, res) =>
@@ -152,9 +152,28 @@ router.get('/Customer/Chat/History/:CustomOrderID', async (req, res) => {
   router.get('/chat-history', async (req, res) => {
     console.log('Received a request for chat history');
     try {
-      // Query the database for chat messages (assuming there are separate tables for customer and admin messages)
-      const customerMessages = await Customer_Chat_Model.findAll();
-      const adminMessages = await Admin_Chat_Model.findAll();
+
+      const customerMessages = await Customer_Chat_Model.findAll({ 
+        include: {
+          model: Customers_Model,
+        include: {
+          model: Usernames_Model,
+          attributes: [
+            'Username'
+          ]
+          }}
+      });
+
+      const adminMessages = await Admin_Chat_Model.findAll({ 
+        include: {
+          model: Admins_Model,
+        include: {
+          model: Usernames_Model,
+          attributes: [
+            'Username'
+          ]
+          }}
+      });
   
       // Combine and sort messages based on timestamps
       const allMessages = [...customerMessages, ...adminMessages].sort((a, b) => a.createdAt - b.createdAt);

@@ -37,22 +37,9 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
 const apiURL = import.meta.env.VITE_ROOT_API;
 
-export default {
-  name: 'App',
-  data() {
-    return {
-      orgName: 'CRAFT SHACK',
-    };
-  },
-  created() {
-    axios.get(`${apiURL}/org`).then((res) => {
-      this.orgName = res.data.name;
-    });
-  },
-};
+
 </script>
 <style scoped>
 #landing-page {
