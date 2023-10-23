@@ -8,6 +8,7 @@
         </div>
         <div class="message-content">{{ message.message }}</div>
       </div>
+      <div ref="lastMessage"></div>
     </div>
     <div class="input-container">
       <input v-model="messageInput" placeholder="Type your message..." class="text-input" />
@@ -43,7 +44,7 @@ export default {
       // Receive messages from the server
       socket.on('chat message', (message) => {
       // Check if the received message is not empty
-      if (message.message.trim() !== '') {
+      if (message !== '') {
         this.messages.push(message);
       }
     });
@@ -52,37 +53,43 @@ export default {
       this.fetchChatHistory();
       this.scrollToBottom();
   },
-    async fetchChatHistory() {
-    try {
-      const response = await fetch('http://localhost:8080/chat-history');
-      const data = await response.json();
+  async fetchChatHistory() {
+  try {
+    const response = await fetch('http://localhost:8080/chat-history');
+    const data = await response.json();
+    console.log('Received chat history data:', data);
 
-      console.log('Received chat history data:', data);
+    // Format the data received from the API to match the message structure
+    this.messages = data.map((message) => {
+      let role = 'admin';
+      let username = ''; // Initialize username variable
 
-      // Format the data received from the API to match the message structure
-      this.messages = data.map((message) => {
-        let role = 'customer'; // Default role is customer
-
-        if (message.CustomerMessages) {
-          // If there are customer messages, set the role to customer
-          role = 'customer';
-        } else if (message.AdminMessages) {
-          // If there are admin messages, set the role to admin
-          role = 'admin';
+      if (message.CustomerMessages) {
+        // If there are customer messages, set the role to customer and extract customer username
+        role = 'customer';
+        if (message.CUSTOMER && message.CUSTOMER.USERNAME && message.CUSTOMER.USERNAME.Username) {
+          username = message.CUSTOMER.USERNAME.Username;
         }
+      } else if (message.AdminMessages) {
+        // If there are admin messages, set the role to admin and extract admin username
+        role = 'admin';
+        if (message.ADMIN && message.ADMIN.USERNAME && message.ADMIN.USERNAME.Username) {
+          username = message.ADMIN.USERNAME.Username;
+        }
+      }
 
-        return {
-          username: role.charAt(0).toUpperCase() + role.slice(1), // Set the username based on the role (customer or admin)
-          role: role, // Set the role based on the message type (customer or admin)
-          message: message.CustomerMessages || message.AdminMessages, // Extract the message content from the API response
-          createdAt: message.createdAt, // Extract the message timestamp from the API response
-        };
-      });
-      this.scrollToBottom();
-    } catch (error) {
-      console.error('Error fetching chat history:', error);
-      // Handle errors
-    }
+      return {
+        username: username || role.charAt(0).toUpperCase() + role.slice(1), // Use extracted username if available, otherwise set based on role
+        role: role, // Set the role based on the message type (customer or admin)
+        message: message.CustomerMessages || message.AdminMessages, // Extract the message content from the API response
+        createdAt: message.createdAt, // Extract the message timestamp from the API response
+      };
+    });
+    this.scrollToBottom();
+  } catch (error) {
+    console.error('Error fetching chat history:', error);
+    // Handle errors
+  }
 },
     sendMessage() {
       // Check if the message input is not empty
@@ -135,7 +142,7 @@ export default {
 }
 
 .message-container {
-  max-height: 400px;
+  max-height: 300px;
   overflow-y: auto;
   margin-top: 10px;
 }
@@ -175,20 +182,53 @@ export default {
   word-wrap: break-word;
 }
 
+.input-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
 .text-input {
   flex: 1;
-  padding: 8px;
+  padding: 10px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  margin-right: 10px;
 }
+
 .send-button {
   background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 8px 16px;
+  padding: 10px 20px;
+  font-size: 16px;
   cursor: pointer;
-  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+}
+
+.send-button:hover {
+  background-color: #45a049;
+}
+.text-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.send-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
