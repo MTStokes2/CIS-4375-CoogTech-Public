@@ -1,155 +1,120 @@
 <template>
-  <div class="chat-container">
-    <div v-if="!username" class="username-input">
-      <input v-model="usernameInput" placeholder="Enter your username" class="text-input" />
-      <button @click="setUsername" class="action-button">Set Username</button>
-    </div>
-    <div v-else class="chat-room">
-      <div ref="messageContainer" class="message-container">
-        <div v-for="(message, index) in messages" :key="index" class="message">
-          <span class="message-username">{{ message.username }}</span>: {{ message.text }}
-        </div>
-      </div>
-      <div class="input-container">
-        <input v-model="messageInput" placeholder="Type your message" class="text-input" />
-        <button @click="sendMessage" class="action-button">Send</button>
+  <div>
+    <div id="chat" ref="messageContainer" class="message-container">
+      <div v-for="(message, index) in messages" :key="index" class="message">
+        {{ message.username }}: {{ message.text }}
       </div>
     </div>
+    <input v-model="usernameInput" placeholder="Enter your username..." class="text-input" />
+    <input v-model="customOrderID" placeholder="Enter custom order ID..." class="text-input" />
+    <input v-model="messageInput" placeholder="Type your message..." class="text-input" />
+    <button @click="setUsername" class="action-button">Set Username</button>
+    <button @click="sendMessage" class="action-button">Send</button>
   </div>
 </template>
 
 <script>
 import { io } from 'socket.io-client';
+import axios from 'axios';
 
 export default {
   data() {
     return {
-      usernameInput: '',
-      messageInput: '',
-      username: '',
-      messages: [],
       socket: null,
+      messages: [],
+      usernameInput: '',
+      customOrderID: '',
+      messageInput: '',
     };
   },
   mounted() {
     this.socket = io('http://localhost:8080');
-
     this.socket.on('message', (message) => {
       this.messages.push(message);
-      this.$nextTick(() => {
-        this.scrollToBottom();
-      });
+      this.scrollChatToBottom();
     });
   },
   methods: {
-    setUsername() {
-      if (this.usernameInput.trim() === '') return;
-      this.username = this.usernameInput;
+    async setUsername() {
+      if (this.usernameInput.trim() !== '' && this.customOrderID.trim() !== '') {
+        this.socket.emit('join', this.usernameInput, 'customer', this.customOrderID);
+
+        try {
+          const response = await axios.get(`http://localhost:8080/Chat/History/${this.customOrderID}`);
+          this.messages = response.data.map(chat => ({
+            username: chat.CustomerID,
+            text: chat.CustomerMessages,
+          }));
+          
+          this.scrollChatToBottom();
+        } catch (error) {
+          console.error('Error fetching chat history:', error);
+        }
+      } else {
+        alert('Please enter username and custom order ID.');
+      }
     },
     sendMessage() {
-      if (!this.username || this.messageInput.trim() === '') return;
+      if (this.usernameInput && this.customOrderID && this.messageInput) {
+        const newMessage = {
+          username: this.usernameInput,
+          text: this.messageInput,
+        };
 
-      const message = {
-        username: this.username,
-        text: this.messageInput,
-      };
+        // Emit the new message to the server
+        this.socket.emit('message', {
+          Username: this.usernameInput,
+          CustomOrderID: this.customOrderID,
+          message: this.messageInput,
+        });
 
-      this.socket.emit('message', message);
-      this.messageInput = '';
+        // Add a new copy of the message to the chat history
+        this.messages.push({ ...newMessage }); // Create a copy of the object
+
+        // Clear the message input field
+        this.messageInput = null;
+
+        // Scroll to the bottom to show the new message
+        this.scrollChatToBottom();
+      } else {
+        alert('Please enter username, custom order ID, and message.');
+      }
     },
-    scrollToBottom() {
-      const container = this.$refs.messageContainer;
-      container.scrollTop = container.scrollHeight;
+    scrollChatToBottom() {
+      this.$nextTick(() => {
+        const container = this.$refs.messageContainer;
+        container.scrollTop = container.scrollHeight;
+      });
     },
   },
-};
+  };
 </script>
 
 <style scoped>
-.chat-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.username-input {
-  text-align: center; 
-}
-
 .message-container {
-  max-height: 300px;
-  overflow-y: auto;
+  height: 300px;
+  overflow-y: scroll;
+  border: 1px solid #ccc;
+  padding: 10px;
   margin-bottom: 20px;
-  padding-right: 20px; 
-}
-
-
-.message-container::-webkit-scrollbar {
-  width: 12px; 
-}
-
-/* Handle portion of the scrollbar */
-.message-container::-webkit-scrollbar-thumb {
-  background-color: #888; 
-  border-radius: 6px; 
-}
-
-
-.message-container::-webkit-scrollbar-track {
-  background-color: #f1f1f1; 
-  border-radius: 6px;
 }
 
 .message {
   margin-bottom: 10px;
-  padding: 10px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1px solid #ccc;
-  word-wrap: break-word;
-}
-
-.message-username {
-  font-weight: bold;
-  color: rgb(4, 69, 4);
-}
-
-.input-container {
-  display: flex;
-  align-items: center;
-  background-color: #ffffff;
-  border-radius: 8px;
-  padding: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1px solid #ccc;
 }
 
 .text-input {
-  flex: 1;
+  width: 200px;
   padding: 8px;
-  margin-right: 8px;
-  border: none;
-  outline: none;
-  font-size: 14px;
+  margin-right: 10px;
 }
 
 .action-button {
-  background-color: rgb(4, 69, 4); 
-  color: #ffffff;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
   border: none;
-  padding: 12px 24px;
-  font-size: 14px;
-  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.action-button:hover {
-  background-color: #005700;
+  margin-right: 10px;
 }
 </style>
-

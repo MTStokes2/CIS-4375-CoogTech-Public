@@ -6,6 +6,7 @@ let {Products_Model} = require('../models/modelAssociations')
 let {Orders_Model} = require('../models/modelAssociations')
 let {Custom_Orders_Model} = require('../models/modelAssociations')
 let {Feedback_Model} = require('../models/modelAssociations')
+let {Usernames_Model} = require('../models/modelAssociations')
 
 //GET all Products
 router.get('/Products', (req, res) =>
@@ -317,7 +318,6 @@ router.post('/CustomOrders', async (req, res) => {
             {
             CustomerID: customer.CustomerID,
             StatusID: req.body.StatusID,
-            ChatID: req.body.ChatID,
             CityID: req.body.CityID,
             StateID: req.body.StateID,
             ZipCode: req.body.ZipCode,

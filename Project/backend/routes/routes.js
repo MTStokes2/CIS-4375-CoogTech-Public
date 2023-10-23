@@ -3,7 +3,7 @@ const router = express.Router();
 const config = require('../src/config/config')
 
 const testModel = require('../models/models')
-let {Usernames_Model, Passwords_Model, Customers_Model} = require('../models/modelAssociations')
+let {Usernames_Model, Passwords_Model, Customers_Model, Chat_Model, Customer_Chat_Model} = require('../models/modelAssociations')
 
 //Test Route to find all, sends an OK to browser if anything returns and logs what was returned in the console
 router.get('/test', (req, res) =>
@@ -116,6 +116,37 @@ router.get('/Usernames', (req, res) =>
         res.json(usernames);
     })
     .catch(err => console.log(err)));
+
+// Chat history for a specific ChatID
+router.get('/Chat/History/:CustomOrderID', async (req, res) => {
+    const { CustomOrderID } = req.params;
+  
+    try {
+      // Check if the chat exists based on CustomOrderID
+      const chat = await Chat_Model.findOne({
+        where: {
+          CustomOrderID: CustomOrderID
+        }
+      });
+  
+      if (chat) {
+        // If chat exists, get all customer's messages using ChatID
+        const chatHistory = await Customer_Chat_Model.findAll({
+          where: {
+            ChatID: chat.ChatID
+          }
+          // Include other necessary attributes or associations here
+        });
+  
+        res.json(chatHistory);
+      } else {
+        res.status(404).json({ error: 'Chat not found for the given CustomOrderID' });
+      }
+    } catch (error) {
+      console.error('Error fetching chat history:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
 
 module.exports = router;

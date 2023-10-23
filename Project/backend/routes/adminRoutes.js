@@ -5,6 +5,9 @@ const config = require('../src/config/config')
 let {Admins_Model} = require('../models/modelAssociations')
 let {Products_Model} = require('../models/modelAssociations')
 let {Customers_Model} = require('../models/modelAssociations')
+let {Status_Model} = require('../models/modelAssociations')
+let {State_Model} = require('../models/modelAssociations')
+let {City_Model} = require('../models/modelAssociations')
 
 //GET all Admins
 router.get('/', (req, res) =>
@@ -410,5 +413,52 @@ router.delete('/Feedback/:id', async (req, res) => {
         console.log(err)
     }
   });
+
+
+//Add Status
+router.post('/Status', async (req, res) => {
+    try {
+        //Adds a new Status
+        Status_Model.create(
+            {
+            Status: req.body.Status
+            })
+        //Sends 200 when and a message that the Status was added
+        res.status(200).json({ message: 'Status Added' });
+    } catch(err) {
+        console.log(err)
+    }
+});
+
+//Add City
+router.post('/City', async (req, res) => {
+    try {
+        //Adds a new Status
+        City_Model.create(
+            {
+            City: req.body.City,
+            StateID: req.body.StateID
+            })
+        //Sends 200 when and a message that the City was added
+        res.status(200).json({ message: 'City Added' });
+    } catch(err) {
+        console.log(err)
+    }
+});
+
+//Add State
+router.post('/State', async (req, res) => {
+    try {
+        //Adds a new Status
+        State_Model.create(
+            {
+            State: req.body.State,
+            })
+        //Sends 200 when and a message that the State was added
+        res.status(200).json({ message: 'State Added' });
+    } catch(err) {
+        console.log(err)
+    }
+});
 
 module.exports = router;
