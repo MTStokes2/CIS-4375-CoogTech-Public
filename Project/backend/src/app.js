@@ -43,82 +43,150 @@ database.authenticate()
 
 
 
-// Socket.io Chat
 io.on('connection', (socket) => {
   console.log('User connected');
 
-  socket.on('message', async ({ Username, CustomOrderID, message }) => {
+  // Listen for room joining with role information, CustomOrderID, and username
+  socket.on('join room', (data) => {
+    console.log('Join room event received:', data);
+    try {
+    const { CustomOrderID, role, username } = data;
 
-    if (message.trim() === '') {
-      // Ignore empty messages
-      return;
+    // Perform a lookup in the Usernames table to get CustomerID or AdminID based on the provided username
+    let userIDField;
+    if (role === 'customer') {
+      userIDField = 'CustomerID';
+    } else if (role === 'admin') {
+      userIDField = 'AdminID';
     }
 
-    const t = await database.transaction(); // Start a transaction
-    let existingChat;
-    let newChat;
+    Usernames_Model.findOne({ where: { Username: username } })
+      .then((user) => {
+        if (!user) {
+          // Handle the case when the user is not found based on the provided username
+          socket.emit('chat message', { text: 'Invalid username.' });
+          return;
+        }
 
-    try {
-      // Find existing chat entry for the CustomOrderID
-      existingChat = await Chat_Model.findOne({
-        where: {
-          CustomOrderID: CustomOrderID
-        },
-        transaction: t
+        const userID = user[userIDField];
+
+        // Search for an existing chat room with the given CustomOrderID
+        
+        Chat_Model.findOne({ where: { CustomOrderID } })
+          .then((chat) => {
+            let chatID;
+
+            if (chat) {
+              // If a chat room with the CustomOrderID exists, use its ChatID
+              chatID = chat.ChatID;
+            } else {
+              // If not, create a new chat room and use its generated ChatID
+              return Chat_Model.create({ CustomOrderID })
+                .then((newChat) => newChat.ChatID);
+            }
+
+            // Join the specified room with the retrieved or newly created ChatID
+            socket.join(chatID);
+
+            // Emit a welcome message based on the user's role
+            socket.emit('chat message', { text: `Welcome! Username: ${username} CustomerOrderID: ${CustomOrderID} Role: ${role} CustomerID: ${userID} ChatID: ${chatID}.` });
+            
+          })
+          .catch((error) => {
+            console.error('Error searching for chat room:', error);
+          });
+      })
+      .catch((error) => {
+        console.error('Error searching for user:', error);
       });
-
-      // If chat does not exist, create a new chat entry
-      if (!existingChat) {
-        newChat = await Chat_Model.create({
-          CustomOrderID: CustomOrderID
-        }, {
-          transaction: t
-        });
-      }
-
-      // Use existing chat or newly created chat based on the presence of existingChat variable
-      const chatToUse = existingChat || newChat;
-
-      // Find customerID based on username
-      const customer = await Usernames_Model.findOne({
-        where: {
-          Username: Username
-        },
-        transaction: t
-      });
-
-      // Check if it's a customer or an admin and save the message accordingly
-      if (customer) {
-        // Create customer chat message
-        await Customer_Chat_Model.create({
-          ChatID: chatToUse.ChatID,
-          CustomerID: customer.CustomerID,
-          CustomerMessages: message,
-        }, {
-          transaction: t
-        });
-      } else {
-        console.error('Error finding Customer:', error);
-        await t.rollback(); // Rollback the transaction in case of error
-      }
-
-      // Commit the transaction
-      await t.commit();
-
-      // Broadcast the message to all connected clients
-      
     } catch (error) {
-      // Handle the error appropriately
-      console.error('Error finding/creating chat:', error);
-      await t.rollback(); // Rollback the transaction in case of error
+      console.error('Error handling join room event:', error);
     }
   });
 
-  // Handle disconnection
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
+  // Listen for new messages in the room
+  socket.on('chat message', (data) => {
+    console.log('chat message event received:', data);
+    const { customOrderID, role, username, message } = data;
+
+    let userIDField;
+    if (role === 'customer') {
+      userIDField = 'CustomerID';
+    } else if (role === 'admin') {
+      userIDField = 'AdminID';
+    }
+
+    Usernames_Model.findOne({ where: { Username: username } })
+      .then((user) => {
+        if (!user) {
+          socket.emit('chat message', { text: 'Invalid username.' });
+          return;
+        }
+
+        const userID = user[userIDField];
+
+        Chat_Model.findOne({ where: { CustomOrderID: customOrderID } })
+          .then((chat) => {
+            let chatID;
+
+            if (chat) {
+              chatID = chat.ChatID;
+            } else {
+              return Chat_Model.create({ CustomOrderID: customOrderID })
+                .then((newChat) => newChat.ChatID);
+            }
+
+            if (role === 'customer') {
+              Customer_Chat_Model.create({
+                ChatID: chatID,
+                CustomerID: userID,
+                CustomerMessages: message,
+              })
+                .then(() => {
+                  io.to(chatID).emit('chat message', {
+                    message,
+                    role,
+                    userID,
+                    chatID,
+                    username,
+                    createdAt: new Date(),
+                  });
+                })
+                .catch((error) => {
+                  console.error('Error saving customer message:', error);
+                });
+            } else if (role === 'admin') {
+              Admin_Chat_Model.create({
+                ChatID: chatID,
+                AdminID: userID,
+                AdminMessages: message,
+              })
+                .then(() => {
+                  io.to(chatID).emit('chat message', {
+                    message,
+                    role,
+                    userID,
+                    chatID,
+                    username,
+                    createdAt: new Date(),
+                  });
+                })
+                .catch((error) => {
+                  console.error('Error saving admin message:', error);
+                });
+            }
+          })
+          .catch((error) => {
+            console.error('Error searching for chat room:', error);
+          });
+      })
+      .catch((error) => {
+        console.error('Error searching for user:', error);
+      });
   });
 });
+
+
 
 
 //imports the routes and sets up the middle ware for the routes on /test

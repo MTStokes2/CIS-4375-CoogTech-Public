@@ -42,9 +42,14 @@ const router = createRouter({
       component: () => import('../views/signupPage.vue')
     },
     {
-      path: '/Chat',
-      name: 'Chat',
-      component: () => import('../components/chat.vue')
+      path: '/CustomerChat',
+      name: 'CustomerChat',
+      component: () => import('../components/CustomerChat.vue')
+    },
+    {
+      path: '/AdminChat',
+      name: 'AdminChat',
+      component: () => import('../components/AdminChat.vue')
     }
   ]
 });

@@ -6,7 +6,8 @@ let {Products_Model} = require('../models/modelAssociations')
 let {Orders_Model} = require('../models/modelAssociations')
 let {Custom_Orders_Model} = require('../models/modelAssociations')
 let {Feedback_Model} = require('../models/modelAssociations')
-let {Usernames_Model} = require('../models/modelAssociations')
+let {Usernames_Model} = require('../models/modelAssociations');
+const { Customer_Chat_Model } = require("../models/models");
 
 //GET all Products
 router.get('/Products', (req, res) =>
@@ -357,5 +358,28 @@ router.post('/Feedback', async (req, res) => {
         console.log(err)
     }
 });
+
+// Handle customer messages
+router.post('/customer/message', async (req, res) => {
+  
+    try {
+      // Save customer message to CustomerChat table
+      const customerMessage = await Customer_Chat_Model.create({
+        ChatID: req.body.ChatID,
+        CustomerID: req.body.CustomerID,
+        CustomerMessages: req.body.CustomerMessage,
+      });
+
+        const room = `chat_${ChatID}`;
+        io.to(room).emit('customerMessage', { CustomerID, message });
+  
+      // Send success response
+      res.status(201).json({ message: 'Customer message saved and broadcasted successfully' });
+    } catch (error) {
+      // Handle errors
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
 
 module.exports = router;
