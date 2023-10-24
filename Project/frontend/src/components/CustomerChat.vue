@@ -55,7 +55,7 @@ export default {
   },
   async fetchChatHistory() {
   try {
-    const response = await fetch('http://localhost:8080/chat-history');
+    const response = await fetch(`http://localhost:8080/chat-history/${this.customOrderID}`);
     const data = await response.json();
     console.log('Received chat history data:', data);
 

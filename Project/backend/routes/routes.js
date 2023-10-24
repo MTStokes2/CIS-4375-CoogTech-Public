@@ -149,9 +149,18 @@ router.get('/Customer/Chat/History/:CustomOrderID', async (req, res) => {
   });
 
   // Chat history 
-  router.get('/chat-history', async (req, res) => {
+  //Set up a param that takes the username and bind it to that username table or take the customer id
+  //Needs to get all of the chats from the same chatID
+  router.get('/chat-history/:customOrderID', async (req, res) => {
     console.log('Received a request for chat history');
     try {
+
+      const chat = await Chat_Model.findAll({
+        where: {
+          CustomOrderID: req.params.customOrderID
+        }
+      })
+
 
       const customerMessages = await Customer_Chat_Model.findAll({ 
         include: {
