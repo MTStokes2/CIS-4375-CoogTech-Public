@@ -80,7 +80,7 @@ Admins_Model.hasOne(Passwords_Model, {foreignKey: 'AdminID'})
 Passwords_Model.belongsTo(Admins_Model, {foreignKey: 'AdminID'})
 
 Admins_Model.hasMany(Admin_Chat_Model, {foreignKey: 'AdminID'})
-Admin_Chat_Model.belongsTo(Customers_Model, {foreignKey: 'AdminID'})
+Admin_Chat_Model.belongsTo(Admins_Model, {foreignKey: 'AdminID'})
 
 //---------------------------------------------------//
 //            Custom Orders Relationship             //
@@ -95,9 +95,6 @@ Custom_Products_Order_Model.belongsTo(Custom_Orders_Model, {foreignKey: 'CustomO
 
 Custom_Products_Model.hasMany(Custom_Products_Order_Model, {foreignKey: 'CustomProductID'})
 Custom_Products_Order_Model.belongsTo(Custom_Products_Model, {foreignKey: 'CustomProductID'})
-
-Custom_Products_Model.hasOne(Chat_Model, {foreignKey: 'ChatID'})
-Chat_Model.belongsTo(Custom_Products_Model, {foreignKey: 'ChatID'})
 
 //---------------------------------------------------//
 //            Orders Relationship                    //
@@ -117,11 +114,7 @@ Order_Products_Model.belongsTo(Products_Model, {foreignKey: 'ProductID'})
 //            Chat Relationship                      //
 //---------------------------------------------------//
 
-Chat_Model.hasMany(Admin_Chat_Model, {foreignKey: 'AdminChatID'})
-Admin_Chat_Model.belongsTo(Chat_Model, {foreignKey: 'AdminChatID'})
 
-Chat_Model.hasMany(Customer_Chat_Model, {foreignKey: 'CustomerChatID'})
-Customer_Chat_Model.belongsTo(Chat_Model, {foreignKey: 'CustomerChatID'})
 
 //---------------------------------------------------//
 //            Status Relationship                    //

@@ -215,72 +215,6 @@ const Status_Model = database.define('STATUS', {
 );
 
 //---------------------------------------------------//
-//           Customer Chat Model                     //
-//---------------------------------------------------//
-const Customer_Chat_Model = database.define('CUSTOMER_CHAT', {
-    CustomerChatID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    CustomerID: {
-        type: Sequelize.INTEGER
-    },
-    CustomerMessages: {
-        type: Sequelize.STRING
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
-    }
-);
-
-//---------------------------------------------------//
-//              Admin Chat Model                     //
-//---------------------------------------------------//
-const Admin_Chat_Model = database.define('ADMIN_CHAT', {
-    AdminChatID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    AdminID: {
-        type: Sequelize.INTEGER
-    },
-    AdminMessages: {
-        type: Sequelize.STRING
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
-    }
-);
-
-//---------------------------------------------------//
-//                Chat Model                         //
-//---------------------------------------------------//
-const Chat_Model = database.define('CHAT', {
-    ChatID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    CustomerChatID: {
-        type: Sequelize.INTEGER
-    },
-    AdminChatID: {
-        type: Sequelize.INTEGER
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
-    }
-);
-
-//---------------------------------------------------//
 //                Orders Model                       //
 //---------------------------------------------------//
 const Orders_Model = database.define('ORDERS', {
@@ -571,7 +505,95 @@ const Reports_Model = database.define('REPORTS', {
     }
 );
 
+//---------------------------------------------------//
+//                Chat Model                         //
+//---------------------------------------------------//
+const Chat_Model = database.define('CHAT', {
+    ChatID: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    CustomOrderID: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: Custom_Orders_Model,
+            key: 'CustomOrderID'
+        }
 
+    }},
+     {
+        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
+        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+    }
+);
+
+//---------------------------------------------------//
+//           Customer Chat Model                     //
+//---------------------------------------------------//
+const Customer_Chat_Model = database.define('CUSTOMER_CHAT', {
+    CustomerChatID: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    ChatID: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: Chat_Model,
+            key: 'ChatID'
+        },
+    },
+    CustomerID: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: Customers_Model,
+            key: 'CustomerID'
+        }
+    },
+    CustomerMessages: {
+        type: Sequelize.STRING
+    }},
+     {
+        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
+        createdAt: true, //Removes the createdAt field from the query since we don't have it in our tables
+        updatedAt: true //Removes the updatedAt field from the query since we don't have it in our tables
+    }
+);
+
+//---------------------------------------------------//
+//              Admin Chat Model                     //
+//---------------------------------------------------//
+const Admin_Chat_Model = database.define('ADMIN_CHAT', {
+    AdminChatID: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    ChatID: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: Chat_Model,
+            key: 'ChatID'
+        },
+    },
+    AdminID: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: Admins_Model,
+            key: 'AdminID'
+        }
+    },
+    AdminMessages: {
+        type: Sequelize.STRING
+    }},
+     {
+        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
+        createdAt: true, //Removes the createdAt field from the query since we don't have it in our tables
+        updatedAt: true //Removes the updatedAt field from the query since we don't have it in our tables
+    }
+);
 
 
 //There is probably a better and cleaner way to do this....

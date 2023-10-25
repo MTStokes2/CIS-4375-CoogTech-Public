@@ -5,6 +5,11 @@ const config = require('../src/config/config')
 let {Admins_Model} = require('../models/modelAssociations')
 let {Products_Model} = require('../models/modelAssociations')
 let {Customers_Model} = require('../models/modelAssociations')
+let {Status_Model} = require('../models/modelAssociations')
+let {State_Model} = require('../models/modelAssociations')
+let {City_Model} = require('../models/modelAssociations')
+let {Usernames_Model} = require('../models/modelAssociations')
+let {Passwords_Model} = require('../models/modelAssociations')
 
 //GET all Admins
 router.get('/', (req, res) =>
@@ -410,5 +415,90 @@ router.delete('/Feedback/:id', async (req, res) => {
         console.log(err)
     }
   });
+
+
+//Add Status
+router.post('/Status', async (req, res) => {
+    try {
+        //Adds a new Status
+        Status_Model.create(
+            {
+            Status: req.body.Status
+            })
+        //Sends 200 when and a message that the Status was added
+        res.status(200).json({ message: 'Status Added' });
+    } catch(err) {
+        console.log(err)
+    }
+});
+
+//Add City
+router.post('/City', async (req, res) => {
+    try {
+        //Adds a new Status
+        City_Model.create(
+            {
+            City: req.body.City,
+            StateID: req.body.StateID
+            })
+        //Sends 200 when and a message that the City was added
+        res.status(200).json({ message: 'City Added' });
+    } catch(err) {
+        console.log(err)
+    }
+});
+
+//Add State
+router.post('/State', async (req, res) => {
+    try {
+        //Adds a new Status
+        State_Model.create(
+            {
+            State: req.body.State,
+            })
+        //Sends 200 when and a message that the State was added
+        res.status(200).json({ message: 'State Added' });
+    } catch(err) {
+        console.log(err)
+    }
+});
+
+//SignUp
+router.post('/AdminSignUp', async (req, res) => {
+
+    try {
+        //Adds Admin's information to Customers Table
+        Admins_Model.create(
+            {
+            AdminLastName: req.body.AdminLastName,
+            AdminFirstName: req.body.AdminFirstName,
+            AdminAddress: req.body.AdminAddress,
+            AdminPhone: req.body.AdminPhone,
+            AdminEmail: req.body.AdminEmail
+            }).then(
+                admin => {
+                    //Adds Customer's Username to Usernames Table
+                    Usernames_Model.create(
+                        {
+                        AdminID: admin.AdminID,
+                        Username: req.body.Username
+                    })
+                    
+                    //Adds Customer's Password to Passwords Table
+                    Passwords_Model.create(
+                        {
+                        AdminID: admin.AdminID,
+                        Password: req.body.Password
+                    })
+                }
+            )
+        
+        //Sends 200 when and a message that the Customer was Signed Up
+        res.status(200).json({ message: 'SignUp successful' });
+    } catch(err) {
+        console.log(err)
+    }
+});
+
 
 module.exports = router;
