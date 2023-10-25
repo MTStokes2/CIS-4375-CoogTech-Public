@@ -3,10 +3,12 @@
     <div id="chat" ref="messageContainer" class="message-container">
       <div v-for="(message, index) in messages" :key="index" class="message"
         :class="{ 'customer-message': message.role === 'customer', 'admin-message': message.role === 'admin' }">
-        <div class="message-header">
+        <div class="message-header"
+          :style="{ backgroundColor: message.role === 'customer' ? '#4caf50' : '#2196F3' }">
           <span class="username"
-            :class="{ 'admin-username': message.role === 'admin', 'customer-username': message.role === 'customer' }">{{
-              message.username }}</span>
+            :class="{ 'admin-username': message.role === 'admin', 'customer-username': message.role === 'customer' }">
+            {{ message.username }}
+          </span>
           <span class="timestamp">{{ formatTimestamp(message.createdAt) }}</span>
         </div>
         <div class="message-content">{{ message.message }}</div>
@@ -170,26 +172,17 @@ export default {
 .message-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .username {
   font-weight: bold;
-}
-
-.admin-username {
-  color: blue;
-  /* Set color for admin username */
-}
-
-.customer-username {
-  color: green;
-  /* Set color for customer username */
+  padding: 5px 10px;
 }
 
 .timestamp {
-  color: #888888;
   font-size: 0.8em;
+  margin-right: 10px;
 }
 
 .message-content {
@@ -267,4 +260,19 @@ input[type="file"] {
   scrollbar-width: thin; /* Width of the scrollbar */
   scrollbar-color: #888 #f1f1f1; /* Thumb and track color */
 }
+
+.message-header {
+  background-color: rgba(76, 175, 80, 0.2); /* Faded green for customer messages */
+  color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-message .message-header {
+  background-color: rgba(33, 150, 243, 0.2); /* Faded blue for admin messages */
+}
+
 </style>

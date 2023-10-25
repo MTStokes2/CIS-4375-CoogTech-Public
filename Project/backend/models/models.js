@@ -553,7 +553,7 @@ const Customer_Chat_Model = database.define('CUSTOMER_CHAT', {
         }
     },
     CustomerMessages: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
@@ -586,7 +586,7 @@ const Admin_Chat_Model = database.define('ADMIN_CHAT', {
         }
     },
     AdminMessages: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
