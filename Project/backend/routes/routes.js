@@ -14,11 +14,6 @@ router.get('/test', (req, res) =>
     })
     .catch(err => console.log(err)));
 
-router.get('/', (req, res) => {
-    res.send('<h1>Hello world</h1>');
-    });
-
-
 //SignUp
 router.post('/SignUp', async (req, res) => {
 
@@ -117,7 +112,7 @@ router.get('/Usernames', (req, res) =>
     })
     .catch(err => console.log(err)));
 
-// Chat history for a specific ChatID
+/* // Chat history for a specific ChatID
 router.get('/Customer/Chat/History/:CustomOrderID', async (req, res) => {
     const { CustomOrderID } = req.params;
   
@@ -146,23 +141,29 @@ router.get('/Customer/Chat/History/:CustomOrderID', async (req, res) => {
       console.error('Error fetching chat history:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
-  });
+  }); */
 
   // Chat history 
-  //Set up a param that takes the username and bind it to that username table or take the customer id
-  //Needs to get all of the chats from the same chatID
   router.get('/chat-history/:customOrderID', async (req, res) => {
     console.log('Received a request for chat history');
     try {
 
-      const chat = await Chat_Model.findAll({
+      const chat = await Chat_Model.findOne({
         where: {
           CustomOrderID: req.params.customOrderID
         }
-      })
-
-
-      const customerMessages = await Customer_Chat_Model.findAll({ 
+      });
+      
+      if (!chat) {
+        return res.status(404).json({ error: 'Chat history not found for the provided CustomOrderID' });
+      }
+      
+      const { ChatID } = chat.dataValues;
+      
+      const customerMessages = await Customer_Chat_Model.findAll({
+        where: {
+          ChatID: ChatID
+        },
         include: {
           model: Customers_Model,
         include: {
@@ -173,18 +174,24 @@ router.get('/Customer/Chat/History/:CustomOrderID', async (req, res) => {
           }}
       });
 
-      const adminMessages = await Admin_Chat_Model.findAll({ 
-        include: {
-          model: Admins_Model,
-        include: {
-          model: Usernames_Model,
-          attributes: [
-            'Username'
-          ]
-          }}
+      const adminMessages = await Admin_Chat_Model.findAll({
+        where: {
+          ChatID: ChatID
+        },
+        include: [
+          {
+            model: Admins_Model,
+            include: [
+              {
+                model: Usernames_Model,
+                attributes: ['Username']
+              }
+            ]
+          }
+        ]
       });
-  
-      // Combine and sort messages based on timestamps
+
+      // Deconstruct, combine and sort messages based on timestamps
       const allMessages = [...customerMessages, ...adminMessages].sort((a, b) => a.createdAt - b.createdAt);
   
       res.status(200).json(allMessages);
