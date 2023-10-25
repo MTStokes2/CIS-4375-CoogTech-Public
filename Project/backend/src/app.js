@@ -137,6 +137,7 @@ io.on('connection', (socket) => {
             }
 
             if (role === 'customer') {
+              console.log(message)
               Customer_Chat_Model.create({
                 ChatID: chatID,
                 CustomerID: userID,
