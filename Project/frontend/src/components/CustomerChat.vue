@@ -156,6 +156,7 @@ export default {
   max-height: 300px;
   overflow-y: auto;
   margin-top: 10px;
+  padding-right: 10px;
 }
 
 .message {
@@ -163,7 +164,7 @@ export default {
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .message-header {
@@ -266,6 +267,4 @@ input[type="file"] {
   scrollbar-width: thin; /* Width of the scrollbar */
   scrollbar-color: #888 #f1f1f1; /* Thumb and track color */
 }
-
-
 </style>
