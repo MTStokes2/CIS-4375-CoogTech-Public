@@ -7,13 +7,15 @@ const http = require("http")
 const socketIo = require("socket.io")
 let {Chat_Model,Customers_Model, Admin_Chat_Model, Customer_Chat_Model, Usernames_Model} = require('../models/modelAssociations');
 const { Admins_Model } = require("../models/models");
-const Sequelize = require('sequelize')
+
+const cookieParser = require('cookie-parser')
 
 
 const app = express()
 app.use(cors());
 app.use(morgan('combined')) //logs connections
 app.use(bodyParser.json())
+app.use(cookieParser())
 
 const ChatServer = http.createServer(app);
 const io = socketIo(ChatServer, {
