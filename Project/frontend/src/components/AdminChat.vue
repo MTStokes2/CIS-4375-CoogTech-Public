@@ -3,8 +3,7 @@
     <div id="chat" ref="messageContainer" class="message-container">
       <div v-for="(message, index) in messages" :key="index" class="message"
         :class="{ 'customer-message': message.role === 'customer', 'admin-message': message.role === 'admin' }">
-        <div class="message-header"
-          :style="{ backgroundColor: message.role === 'customer' ? '#4caf50' : '#2196F3' }">
+        <div class="message-header" :style="{ backgroundColor: message.role === 'customer' ? '#4caf50' : '#2196F3' }">
           <span class="username"
             :class="{ 'admin-username': message.role === 'admin', 'customer-username': message.role === 'customer' }">
             {{ message.username }}
@@ -18,9 +17,9 @@
     <div class="input-container">
       <input v-model="messageInput" placeholder="Type your message..." class="text-input"
         @keydown.enter.prevent="sendMessage" />
-        <div class="button-wrap">
-        <label class="button" for="upload">Upload File</label>
-        <input id="upload" type="file">
+      <div class="button-wrap">
+        <label class="button" for="file-upload">Upload File</label>
+        <input id="file-upload" type="file" @change="handleFileUpload" style="display: none">
       </div>
       <button @click="sendMessage" class="send-button">Send</button>
     </div>
@@ -35,7 +34,7 @@ export default {
     return {
       messages: [],
       messageInput: '',
-      role: 'admin', // Set the user's role (customer or admin)
+      role: 'role', // Set the user's role (customer or admin)
       username: 'Admin', // Set the user's username
       customOrderID: '4', // Set the custom order ID
     };
@@ -132,6 +131,24 @@ export default {
     formatTimestamp(timestamp) {
       const date = new Date(timestamp);
       return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    },
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+          const imageData = reader.result; // Base64 encoded image data
+          
+          // Emit the image data to the server via Socket.IO
+          const socket = io('http://localhost:8080');
+          socket.emit('image upload', { image: imageData });
+        };
+
+        // Read the file as Data URL
+        reader.readAsDataURL(file);
+      }
     },
     scrollToBottom() {
       this.$nextTick(() => {

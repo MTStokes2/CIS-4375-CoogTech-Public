@@ -5,11 +5,13 @@ const cors = require("cors");
 const config = require('./config/config')
 const http = require("http")
 const socketIo = require("socket.io")
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const multer = require("multer")
+
 let {Chat_Model,Customers_Model, Admin_Chat_Model, Customer_Chat_Model, Usernames_Model} = require('../models/modelAssociations');
 const { Admins_Model } = require("../models/models");
 
 const cookieParser = require('cookie-parser')
-
 
 const app = express()
 app.use(cors());
@@ -46,8 +48,6 @@ database.authenticate()
 
 
 io.on('connection', (socket) => {
-  console.log('User connected');
-
   // Listen for room joining with role information, CustomOrderID, and username
   socket.on('join room', (data) => {
     console.log('Join room event received:', data);
@@ -186,6 +186,50 @@ io.on('connection', (socket) => {
       .catch((error) => {
         console.error('Error searching for user:', error);
       });
+  });
+
+  socket.on('image upload', async (data) => {
+    try {
+      const { image } = data;
+
+      const s3 = new S3Client({
+        credentials: {
+          accessKeyID: process.env.ACCESS_KEY,
+          secretAccessKey: process.env.SECRET_ACCESS_KEY
+        },
+        region: process.env.BUCKET_REGION
+      })
+
+      // Generate a unique filename for the image
+      const imageFileName = `${Date.now()}_${Math.floor(Math.random() * 1000)}.png`;
+
+      //Convert from base64 to buffer
+      const buffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+
+      // Upload the image to S3 bucket using PutObjectCommand
+      const params = {
+        Bucket: process.env.BUCKET_NAME,
+        Key: imageFileName,
+        Body: buffer,
+        ContentType: 'image/png',
+      };
+
+      const command = new PutObjectCommand(params);
+
+      // Use S3Client to upload the image
+      const uploadResult = await s3.send(command);
+
+      if (uploadResult.$metadata.httpStatusCode === 200) {
+        const imageUrl = `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/${imageFileName}`;
+
+        // Emit the image URL to all clients in the chat room
+        io.to(chatID).emit('image message', { imageUrl });
+      } else {
+        console.error('Error uploading image to S3:', uploadResult);
+      }
+    } catch (error) {
+      console.error('Error handling image upload:', error);
+    }
   });
 });
 
