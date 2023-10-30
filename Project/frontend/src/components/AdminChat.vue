@@ -1,26 +1,50 @@
 <template>
   <div class="chat-container">
+    <!-- Message container loop -->
     <div id="chat" ref="messageContainer" class="message-container">
       <div v-for="(message, index) in messages" :key="index" class="message"
         :class="{ 'customer-message': message.role === 'customer', 'admin-message': message.role === 'admin' }">
-        <div class="message-header" :style="{ backgroundColor: message.role === 'customer' ? '#4caf50' : '#2196F3' }">
-          <span class="username"
-            :class="{ 'admin-username': message.role === 'admin', 'customer-username': message.role === 'customer' }">
-            {{ message.username }}
-          </span>
-          <span class="timestamp">{{ formatTimestamp(message.createdAt) }}</span>
-        </div>
-        <div class="message-content">{{ message.message }}</div>
+
+        <!-- Render image message -->
+        <template v-if="message.imageUrl">
+          <div class="message-header" :style="{ backgroundColor: message.role === 'customer' ? '#4caf50' : '#2196F3' }">
+            <span class="username"
+              :class="{ 'admin-username': message.role === 'admin', 'customer-username': message.role === 'customer' }">
+              {{ message.username }}
+            </span>
+            <span class="timestamp">{{ formatTimestamp(message.createdAt) }}</span>
+          </div>
+          <div class="message-content">
+            <!-- Display image if imageUrl exists -->
+            <img :src="message.imageUrl" alt="Image" class="chat-image" />
+          </div>
+        </template>
+
+        <!-- Render text message -->
+        <template v-else>
+          <div class="message-header" :style="{ backgroundColor: message.role === 'customer' ? '#4caf50' : '#2196F3' }">
+            <span class="username"
+              :class="{ 'admin-username': message.role === 'admin', 'customer-username': message.role === 'customer' }">
+              {{ message.username }}
+            </span>
+            <span class="timestamp">{{ formatTimestamp(message.createdAt) }}</span>
+          </div>
+          <div class="message-content">{{ message.message }}</div>
+        </template>
       </div>
       <div ref="lastMessage"></div>
     </div>
+    
+    <!-- Input container for sending messages -->
     <div class="input-container">
       <input v-model="messageInput" placeholder="Type your message..." class="text-input"
         @keydown.enter.prevent="sendMessage" />
+      <!-- File upload button -->
       <div class="button-wrap">
         <label class="button" for="file-upload">Upload File</label>
         <input id="file-upload" type="file" @change="handleFileUpload" style="display: none">
       </div>
+      <!-- Send button -->
       <button @click="sendMessage" class="send-button">Send</button>
     </div>
   </div>
@@ -34,7 +58,7 @@ export default {
     return {
       messages: [],
       messageInput: '',
-      role: 'role', // Set the user's role (customer or admin)
+      role: 'admin', // Set the user's role (customer or admin)
       username: 'Admin', // Set the user's username
       customOrderID: '4', // Set the custom order ID
     };
@@ -61,48 +85,67 @@ export default {
         }
       });
 
+      // Receive image messages from the server
+      socket.on('image message', (message) => {
+        this.messages.push({
+          role: message.role,
+          username: message.username,
+          imageUrl: message.imageUrl, // Store the image URL
+          createdAt: message.createdAt,
+        });
+      });
+
       // Fetch chat history after connecting to the socket
       this.fetchChatHistory();
       this.scrollToBottom();
     },
     async fetchChatHistory() {
-      try {
-        const response = await fetch(`http://localhost:8080/chat-history/${this.customOrderID}`);
-        const data = await response.json();
-        console.log('Received chat history data:', data);
+  try {
+    const response = await fetch(`http://localhost:8080/chat-history/${this.customOrderID}`);
+    const data = await response.json();
+    console.log('Received chat history data:', data);
 
-        // Format the data received from the API to match the message structure
-        this.messages = data.map((message) => {
-          let role = 'customer'; // Default role is customer
-          let username = ''; // Initialize username variable
+    // Format the data received from the API to match the message structure
+    this.messages = data.map((message) => {
+      let role = 'customer'; // Default role is customer
+      let username = ''; // Initialize username variable
+      let imageUrl = null; // Initialize imageUrl variable for images
 
-          if (message.CustomerMessages) {
-            // If there are customer messages, set the role to customer and extract customer username
-            role = 'customer';
-            if (message.CUSTOMER && message.CUSTOMER.USERNAME && message.CUSTOMER.USERNAME.Username) {
-              username = message.CUSTOMER.USERNAME.Username;
-            }
-          } else if (message.AdminMessages) {
-            // If there are admin messages, set the role to admin and extract admin username
-            role = 'admin';
-            if (message.ADMIN && message.ADMIN.USERNAME && message.ADMIN.USERNAME.Username) {
-              username = message.ADMIN.USERNAME.Username;
-            }
-          }
-
-          return {
-            username: username || role.charAt(0).toUpperCase() + role.slice(1), // Use extracted username if available, otherwise set based on role
-            role: role, // Set the role based on the message type (customer or admin)
-            message: message.CustomerMessages || message.AdminMessages, // Extract the message content from the API response
-            createdAt: message.createdAt, // Extract the message timestamp from the API response
-          };
-        });
-        this.scrollToBottom();
-      } catch (error) {
-        console.error('Error fetching chat history:', error);
-        // Handle errors
+      if (message.CustomerMessages) {
+        // If there are customer messages, set the role to customer and extract customer username
+        role = 'customer';
+        if (message.CUSTOMER && message.CUSTOMER.USERNAME && message.CUSTOMER.USERNAME.Username) {
+          username = message.CUSTOMER.USERNAME.Username;
+        }
+      } else if (message.AdminMessages) {
+        // If there are admin messages, set the role to admin and extract admin username
+        role = 'admin';
+        if (message.ADMIN && message.ADMIN.USERNAME && message.ADMIN.USERNAME.Username) {
+          username = message.ADMIN.USERNAME.Username;
+        }
       }
-    },
+
+      // Check if the message is a URL ending with an image extension
+      const messageText = message.CustomerMessages || message.AdminMessages;
+      const imageUrlRegex = /^https:\/\/.*SignedHeaders=host&x-id=GetObject.*$/i;
+      if (imageUrlRegex.test(messageText)) {
+        imageUrl = messageText;
+      }
+
+      return {
+        username: username || role.charAt(0).toUpperCase() + role.slice(1), // Use extracted username if available, otherwise set based on role
+        role: role, // Set the role based on the message type (customer or admin)
+        message: messageText, // Extract the message content from the API response
+        createdAt: message.createdAt, // Extract the message timestamp from the API response
+        imageUrl: imageUrl, // Set the imageUrl property for images
+      };
+    });
+    this.scrollToBottom();
+  } catch (error) {
+    console.error('Error fetching chat history:', error);
+    // Handle errors
+  }
+},
     sendMessage() {
       // Check if the message input is not empty
       if (this.messageInput.trim() !== '') {
@@ -143,7 +186,7 @@ export default {
           
           // Emit the image data to the server via Socket.IO
           const socket = io('http://localhost:8080');
-          socket.emit('image upload', { image: imageData });
+          socket.emit('image upload', { image: imageData, customOrderID: this.customOrderID, username: this.username, role: this.role });
         };
 
         // Read the file as Data URL
@@ -290,6 +333,11 @@ input[type="file"] {
 
 .admin-message .message-header {
   background-color: rgba(33, 150, 243, 0.2); /* Faded blue for admin messages */
+}
+
+.chat-image {
+  max-width: 100%;
+  height: auto;
 }
 
 </style>
