@@ -5,13 +5,18 @@ const cors = require("cors");
 const config = require('./config/config')
 const http = require("http")
 const socketIo = require("socket.io")
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { fromEnv } = require("@aws-sdk/credential-providers")
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner")
 const multer = require("multer")
+const dotenv = require("dotenv")
 
 let {Chat_Model,Customers_Model, Admin_Chat_Model, Customer_Chat_Model, Usernames_Model} = require('../models/modelAssociations');
 const { Admins_Model } = require("../models/models");
 
 const cookieParser = require('cookie-parser')
+
+dotenv.config()
 
 const app = express()
 app.use(cors());
@@ -26,7 +31,6 @@ const io = socketIo(ChatServer, {
     methods: ["GET", "POST"]
   }
 });
-
 
 //Database
 const database = config.database
@@ -46,24 +50,41 @@ database.authenticate()
 .catch(err => console.log('Error: ', err))
 
 
+const getOrCreateChatRoom = async (customOrderID) => {
+  let chatID;
+  try {
+    const chat = await Chat_Model.findOne({ where: { CustomOrderID: customOrderID } });
+    if (chat) {
+      chatID = chat.ChatID;
+    } else {
+      const newChat = await Chat_Model.create({ CustomOrderID: customOrderID });
+      chatID = newChat.ChatID;
+    }
+  } catch (error) {
+    console.error('Error getting or creating chat room:', error);
+    throw error;
+  }
+  return chatID;
+};
+
 
 io.on('connection', (socket) => {
   // Listen for room joining with role information, CustomOrderID, and username
-  socket.on('join room', (data) => {
+  socket.on('join room', async (data) => {
     console.log('Join room event received:', data);
     try {
-    const { CustomOrderID, role, username } = data;
+      const { CustomOrderID, role, username } = data;
 
-    // Perform a lookup in the Usernames table to get CustomerID or AdminID based on the provided username
-    let userIDField;
-    if (role === 'customer') {
-      userIDField = 'CustomerID';
-    } else if (role === 'admin') {
-      userIDField = 'AdminID';
-    }
+      // Perform a lookup in the Usernames table to get CustomerID or AdminID based on the provided username
+      let userIDField;
+      if (role === 'customer') {
+        userIDField = 'CustomerID';
+      } else if (role === 'admin') {
+        userIDField = 'AdminID';
+      }
 
-    Usernames_Model.findOne({ where: { Username: username } })
-      .then((user) => {
+      try {
+        const user = await Usernames_Model.findOne({ where: { Username: username } });
         if (!user) {
           // Handle the case when the user is not found based on the provided username
           socket.emit('chat message', { text: 'Invalid username.' });
@@ -72,74 +93,47 @@ io.on('connection', (socket) => {
 
         const userID = user[userIDField];
 
-        // Search for an existing chat room with the given CustomOrderID
-        
-        Chat_Model.findOne({ where: { CustomOrderID } })
-          .then((chat) => {
-            let chatID;
+        // Retrieve or create chat room and get chatID
+        const chatID = await getOrCreateChatRoom(CustomOrderID);
 
-            if (chat) {
-              // If a chat room with the CustomOrderID exists, use its ChatID
-              chatID = chat.ChatID;
-            } else {
-              // If not, create a new chat room and use its generated ChatID
-              return Chat_Model.create({ CustomOrderID })
-                .then((newChat) => newChat.ChatID);
-            }
+        // Join the specified room with the retrieved or newly created ChatID
+        socket.join(chatID);
 
-            // Join the specified room with the retrieved or newly created ChatID
-            socket.join(chatID);
-
-            // Emit a welcome message based on the user's role
-            socket.emit('chat message', { text: `Welcome! Username: ${username} CustomerOrderID: ${CustomOrderID} Role: ${role} CustomerID: ${userID} ChatID: ${chatID}.` });
-            
-          })
-          .catch((error) => {
-            console.error('Error searching for chat room:', error);
-          });
-      })
-      .catch((error) => {
+        // Emit a welcome message based on the user's role
+        socket.emit('chat message', { text: `Welcome! Username: ${username} CustomerOrderID: ${CustomOrderID} Role: ${role} CustomerID: ${userID} ChatID: ${chatID}.` });
+      } catch (error) {
         console.error('Error searching for user:', error);
-      });
+      }
     } catch (error) {
       console.error('Error handling join room event:', error);
     }
   });
 
-  // Listen for new messages in the room
-  socket.on('chat message', (data) => {
-    console.log('chat message event received:', data);
-    const { customOrderID, role, username, message } = data;
-
-    let userIDField;
-    if (role === 'customer') {
-      userIDField = 'CustomerID';
-    } else if (role === 'admin') {
-      userIDField = 'AdminID';
-    }
-
-    Usernames_Model.findOne({ where: { Username: username } })
-      .then((user) => {
-        if (!user) {
-          socket.emit('chat message', { text: 'Invalid username.' });
-          return;
-        }
-
-        const userID = user[userIDField];
-
-        Chat_Model.findOne({ where: { CustomOrderID: customOrderID } })
-          .then((chat) => {
-            let chatID;
-
-            if (chat) {
-              chatID = chat.ChatID;
-            } else {
-              return Chat_Model.create({ CustomOrderID: customOrderID })
-                .then((newChat) => newChat.ChatID);
+    // Listen for new messages in the room
+    socket.on('chat message', async (data) => {
+      try {
+        const { customOrderID, role, username, message } = data;
+        
+        // Retrieve or create chat room and get chatID
+        const chatID = await getOrCreateChatRoom(customOrderID);
+  
+        Usernames_Model.findOne({ where: { Username: username } })
+          .then((user) => {
+            if (!user) {
+              socket.emit('chat message', { text: 'Invalid username.' });
+              return;
+            }
+            
+            let userIDField;
+            if (role === 'customer') {
+              userIDField = 'CustomerID';
+            } else if (role === 'admin') {
+              userIDField = 'AdminID';
             }
 
+            const userID = user[userIDField];
+  
             if (role === 'customer') {
-              console.log(message)
               Customer_Chat_Model.create({
                 ChatID: chatID,
                 CustomerID: userID,
@@ -180,58 +174,102 @@ io.on('connection', (socket) => {
             }
           })
           .catch((error) => {
-            console.error('Error searching for chat room:', error);
+            console.error('Error searching for user:', error);
           });
-      })
-      .catch((error) => {
-        console.error('Error searching for user:', error);
-      });
-  });
-
-  socket.on('image upload', async (data) => {
-    try {
-      const { image } = data;
-
-      const s3 = new S3Client({
-        credentials: {
-          accessKeyID: process.env.ACCESS_KEY,
-          secretAccessKey: process.env.SECRET_ACCESS_KEY
-        },
-        region: process.env.BUCKET_REGION
-      })
-
-      // Generate a unique filename for the image
-      const imageFileName = `${Date.now()}_${Math.floor(Math.random() * 1000)}.png`;
-
-      //Convert from base64 to buffer
-      const buffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ''), 'base64');
-
-      // Upload the image to S3 bucket using PutObjectCommand
-      const params = {
-        Bucket: process.env.BUCKET_NAME,
-        Key: imageFileName,
-        Body: buffer,
-        ContentType: 'image/png',
-      };
-
-      const command = new PutObjectCommand(params);
-
-      // Use S3Client to upload the image
-      const uploadResult = await s3.send(command);
-
-      if (uploadResult.$metadata.httpStatusCode === 200) {
-        const imageUrl = `https://${process.env.BUCKET_NAME}.s3.amazonaws.com/${imageFileName}`;
-
-        // Emit the image URL to all clients in the chat room
-        io.to(chatID).emit('image message', { imageUrl });
-      } else {
-        console.error('Error uploading image to S3:', uploadResult);
+      } catch (error) {
+        console.error('Error handling chat message event:', error);
       }
-    } catch (error) {
-      console.error('Error handling image upload:', error);
-    }
+    });
+
+    socket.on('image upload', async (data) => {
+      try {
+        const { image, customOrderID, username, role } = data;
+    
+        const s3 = new S3Client({
+          region: process.env.BUCKET_REGION,
+          credentials: fromEnv(),
+        });
+    
+        // Generate a unique filename for the image
+        const imageFileName = `${Date.now()}_${Math.floor(Math.random() * 1000)}.png`;
+    
+        // Convert from base64 to buffer
+        const buffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+    
+        // Upload the image to S3 bucket using PutObjectCommand
+        const params = {
+          Bucket: process.env.BUCKET_NAME,
+          Key: imageFileName,
+          Body: buffer,
+          ContentType: 'image/png',
+        };
+    
+        const command = new PutObjectCommand(params);
+    
+        // Use S3Client to upload the image
+        const uploadResult = await s3.send(command);
+    
+        if (uploadResult.$metadata.httpStatusCode === 200) {
+
+          const getUrl = new GetObjectCommand(params);
+
+          const imageUrl = await getSignedUrl( s3, getUrl)
+          
+          console.log(imageUrl)
+          // Retrieve or create chat room and get chatID
+          const chatID = await getOrCreateChatRoom(customOrderID);
+    
+          Usernames_Model.findOne({ where: { Username: username } })
+          .then((user) => {
+            if (!user) {
+              socket.emit('chat message', { text: 'Invalid username.' });
+              return;
+            }
+            
+            let userIDField;
+            if (role === 'customer') {
+              userIDField = 'CustomerID';
+            } else if (role === 'admin') {
+              userIDField = 'AdminID';
+            }
+
+            const userID = user[userIDField];
+  
+            if (role === 'customer') {
+              Customer_Chat_Model.create({
+                ChatID: chatID,
+                CustomerID: userID,
+                CustomerMessages: imageUrl,
+              })
+                .then(() => {
+                  io.to(chatID).emit('image message', { imageUrl });
+                })
+                .catch((error) => {
+                  console.error('Error saving customer message:', error);
+                });
+            } else if (role === 'admin') {
+              Admin_Chat_Model.create({
+                ChatID: chatID,
+                AdminID: userID,
+                AdminMessages: imageUrl,
+              })
+                .then(() => {
+                  io.to(chatID).emit('image message', { imageUrl });
+                })
+                .catch((error) => {
+                  console.error('Error saving admin message:', error);
+                });
+            }
+          })
+        
+        } else {
+          console.error('Error uploading image to S3:', uploadResult);
+        }
+      } catch (error) {
+        console.error('Error handling image upload:', error);
+      }
+    })
   });
-});
 
 
 
