@@ -1,6 +1,6 @@
 const express = require("express");
+const Sequelize = require('sequelize')
 const router = express.Router();
-const config = require('../src/config/config')
 
 let {Admins_Model} = require('../models/modelAssociations')
 let {Products_Model} = require('../models/modelAssociations')
@@ -20,14 +20,46 @@ router.get('/', (req, res) =>
     })
     .catch(err => console.log(err)));
 
-//GET all Customers
-router.get('/Customers', (req, res) =>
-    Customers_Model.findAll()
+// //GET all Customers
+// router.get('/Customers', (req, res) =>
+//     Customers_Model.findAll()
+//     .then(customers => {
+//         console.log(customers)
+//         res.json(customers);
+//     })
+//     .catch(err => console.log(err)));
+
+// GET all Customers with State and City names
+router.get('/Customers', (req, res) => {
+    Customers_Model.findAll({
+        include: [
+            {
+                model: State_Model,
+                attributes: ['State'],
+                where: {
+                    StateID: Sequelize.col('CUSTOMERS.StateID')
+                },
+                required: false // Use 'false' if you want a LEFT JOIN, 'true' for INNER JOIN
+            },
+            {
+                model: City_Model,
+                attributes: ['City'],
+                where: {
+                    CityID: Sequelize.col('CUSTOMERS.CityID')
+                },
+                required: false // Use 'false' if you want a LEFT JOIN, 'true' for INNER JOIN
+            }
+        ]
+    })
     .then(customers => {
-        console.log(customers)
+        console.log(customers);
         res.json(customers);
     })
-    .catch(err => console.log(err)));
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    });
+});
 
 
 //Get Product Details

@@ -66,6 +66,10 @@ Passwords_Model.belongsTo(Customers_Model, {foreignKey: 'CustomerID'})
 Customers_Model.hasMany(Customer_Chat_Model, {foreignKey: 'CustomerID'})
 Customer_Chat_Model.belongsTo(Customers_Model, {foreignKey: 'CustomerID'})
 
+Customers_Model.belongsTo(State_Model, { foreignKey: 'StateID', targetKey: 'StateID' });
+Customers_Model.belongsTo(City_Model, { foreignKey: 'CityID', targetKey: 'CityID' });
+
+
 //---------------------------------------------------//
 //            Admins Relationship                    //
 //---------------------------------------------------//

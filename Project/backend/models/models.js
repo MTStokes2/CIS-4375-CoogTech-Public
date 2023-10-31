@@ -84,10 +84,18 @@ const Customers_Model = database.define('CUSTOMERS', {
         autoIncrement: true
     },
     CityID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: City_Model,
+            key: 'CityID'
+        }
     },
     StateID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: State_Model,
+            key: 'StateID'
+        }
     },
     ZipCode: {
         type: Sequelize.STRING
