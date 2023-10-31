@@ -7,9 +7,9 @@
         <div class="tab" @click="activeTab = 'chats'">
           <i class="icon">💬</i> Chats
         </div>
-        <div class="tab" @click="activeTab = 'customers'">
+        <router-link to="/customers" class="tab">
           <i class="icon">👥</i> Customers
-        </div>
+        </router-link>
         <div class="tab" @click="activeTab = 'orderManagement'">
           <i class="icon">🛒</i> Order Management
         </div>
@@ -33,7 +33,6 @@
           </div>
         </div>
         <div v-if="activeTab === 'chats'">Chats Content...</div>
-        <div v-if="activeTab === 'customers'">Customers Content...</div>
         <div v-if="activeTab === 'orderManagement'">Order Management Content...</div>
         <div v-if="activeTab === 'inventory'">Inventory Content...</div>
         <div v-if="activeTab === 'reports'">Reports Content...</div>
@@ -42,6 +41,10 @@
   </template>
   
   <script>
+  import { defineComponent } from 'vue';
+  import { RouterLink } from 'vue-router';
+  import axios from 'axios';
+
   export default {
     data() {
       return {

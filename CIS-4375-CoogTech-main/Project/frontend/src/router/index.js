@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Catalog from '../views/Catalog.vue';
 import ProductDetail from '../views/ProductDetail.vue';
 import Cart from '../views/Cart.vue';
-import AdminDashboard from '../views/AdminDashboard.vue'; // Import the AdminDashboard view
+import AdminDashboard from '../views/AdminDashboard.vue';
+import CustomerList from '../views/CustomerList.vue';
 
 
 const router = createRouter({
@@ -54,11 +55,15 @@ const router = createRouter({
       component: () => import('../components/AdminChat.vue')
     },
     {
-      path: '/admin',
-      name: 'AdminDashboard',
-      component: AdminDashboard
-    }
-    
+      path: '/admin-dashboard',        // Define the path
+      name: 'AdminDashboard',          // Name the route
+      component: () => import('../views/AdminDashboard.vue')       // Use the imported AdminDashboard view
+    },
+    {
+      path: '/customers',
+      name: 'CustomerList',
+      component: () => import('../views/CustomerList.vue')
+    }    
   ]
 });
 

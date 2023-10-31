@@ -1,98 +1,98 @@
 <template>
-    <div class="login-form">
+  <div class="login-form">
 <!-- v-model binds the input fields value to the data() located in export default -->
-    <form @submit.prevent="login" class="b p-5 rounded shadow-ms center">
-        <h2 class="text-3xl text-green-900 font-bold mb-6">Login</h2>
-        <div class="mb-4">
-            <label class="block text-green-900 text-sm font-bold mb-2" for="username">Username</label>
-            <input class=" py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500" type="text"
-                id="username" v-model="username" required placeholder="Enter your username" />  
-        </div>
+  <form @submit.prevent="login" class="b p-5 rounded shadow-ms center">
+      <h2 class="text-3xl text-green-900 font-bold mb-6">Login</h2>
+      <div class="mb-4">
+          <label class="block text-green-900 text-sm font-bold mb-2" for="username">Username</label>
+          <input class=" py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500" type="text"
+              id="username" v-model="username" required placeholder="Enter your username" />  
+      </div>
 
-        <div class="mb-6">
-            <label class="block text-green-900 text-sm font-bold mb-2" for="password">Password</label>
-            <input class="py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
-                type="password" id="password" v-model="password" required placeholder="Enter your password" />
-        </div>
+      <div class="mb-6">
+          <label class="block text-green-900 text-sm font-bold mb-2" for="password">Password</label>
+          <input class="py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
+              type="password" id="password" v-model="password" required placeholder="Enter your password" />
+      </div>
 
-        <div v-if="error" class="text-red-600 font-bold mb-4">
-            {{ error }}
-        </div>
+      <div v-if="error" class="text-red-600 font-bold mb-4">
+          {{ error }}
+      </div>
 
-        <div class="flex items-center justify-between">
-            <button type="submit" class="custom-button">Login</button>
-        </div>
-    </form>
-    <p class="mt-4 text-green-900 text-sm">
-        Don't have an account? <router-link to="/signup" class="text-green-700 font-bold">Sign up</router-link>
-    </p>
-    </div>
+      <div class="flex items-center justify-between">
+          <button type="submit" class="custom-button">Login</button>
+      </div>
+  </form>
+  <p class="mt-4 text-green-900 text-sm">
+      Don't have an account? <router-link to="/signup" class="text-green-700 font-bold">Sign up</router-link>
+  </p>
+  </div>
 </template>
 <script>
 import axios from 'axios';
 
 export default {
-  data() {
-    return {
-      username: '',
-      password: '',
-      error: ''
-    };
-  },
-  methods: {
-    login() {
-      // Ensure that the username and password are not blank
-      if (!this.username || !this.password) {
-        this.error = 'Username and password are required';
-        return;
-      }
-
-      // Make a POST request to the /Login endpoint on the backend server (My env file sets the backend to 8080 if there isnt one it defaults to 3000)
-      axios.post('http://localhost:8080/Login', {
-        Username: this.username,
-        Password: this.password
-      })
-      .then(response => {
-        console.log('Login successful');
-        this.$router.push('/catalog');
-      })
-      .catch(error => {
-        console.error('Login failed:', error);
-        if (error.response) {
-          // The request was made and the server responded with an error status code
-          if (error.response.status === 404) {
-            this.error = 'Username not found';
-          } else if (error.response.status === 401) {
-            this.error = 'Incorrect password';
-          } else {
-            this.error = 'Internal Server Error';
-          }
-        } else if (error.request) {
-          // The request was made but no response was received
-          this.error = 'No response from server';
-        } else {
-          // Something happened in setting up the request that triggered an error
-          this.error = 'Error setting up the request';
-        }
-      });
+data() {
+  return {
+    username: '',
+    password: '',
+    error: ''
+  };
+},
+methods: {
+  login() {
+    // Ensure that the username and password are not blank
+    if (!this.username || !this.password) {
+      this.error = 'Username and password are required';
+      return;
     }
+
+    // Make a POST request to the /Login endpoint on the backend server (My env file sets the backend to 8080 if there isnt one it defaults to 3000)
+    axios.post('http://localhost:8080/Login', {
+      Username: this.username,
+      Password: this.password
+    })
+    .then(response => {
+      console.log('Login successful');
+      this.$router.push('/catalog');
+    })
+    .catch(error => {
+      console.error('Login failed:', error);
+      if (error.response) {
+        // The request was made and the server responded with an error status code
+        if (error.response.status === 404) {
+          this.error = 'Username not found';
+        } else if (error.response.status === 401) {
+          this.error = 'Incorrect password';
+        } else {
+          this.error = 'Internal Server Error';
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        this.error = 'No response from server';
+      } else {
+        // Something happened in setting up the request that triggered an error
+        this.error = 'Error setting up the request';
+      }
+    });
   }
+}
 };
 </script>
-  
+
 <style>
 .custom-button {
-    background-color: #F5F5DC;
-    color: rgb(189, 12, 12);
-    padding: 10px 20px;
-    text-decoration: none;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
+  background-color: #F5F5DC;
+  color: rgb(189, 12, 12);
+  padding: 10px 20px;
+  text-decoration: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .custom-button:hover {
-    background-color: #F5F5DC;
+  background-color: #F5F5DC;
 }
 </style>
