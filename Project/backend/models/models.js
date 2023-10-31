@@ -84,10 +84,18 @@ const Customers_Model = database.define('CUSTOMERS', {
         autoIncrement: true
     },
     CityID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: City_Model,
+            key: 'CityID'
+        }
     },
     StateID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: State_Model,
+            key: 'StateID'
+        }
     },
     ZipCode: {
         type: Sequelize.STRING
@@ -553,7 +561,7 @@ const Customer_Chat_Model = database.define('CUSTOMER_CHAT', {
         }
     },
     CustomerMessages: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(500)
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
@@ -586,7 +594,7 @@ const Admin_Chat_Model = database.define('ADMIN_CHAT', {
         }
     },
     AdminMessages: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(500)
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
