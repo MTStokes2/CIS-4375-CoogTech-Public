@@ -11,6 +11,7 @@ let {City_Model} = require('../models/modelAssociations')
 let {Usernames_Model} = require('../models/modelAssociations')
 let {Passwords_Model} = require('../models/modelAssociations')
 let {Feedback_Model} = require('../models/modelAssociations')
+let {Custom_Orders_Model} = require('../models/modelAssociations')
 
 //GET all Admins
 router.get('/', (req, res) =>
@@ -315,14 +316,12 @@ router.put('/CustomOrders/:id', async (req, res) => {
         Custom_Orders_Model.update(
             {
             StatusID: req.body.StatusID,
-            ChatID: req.body.ChatID,
             CityID: req.body.CityID,
             StateID: req.body.StateID,
             ZipCode: req.body.ZipCode,
             Address: req.body.Address,
             Total: req.body.Total,
             DateOrdered: req.body.DateOrdered,
-            DateDelivered: req.body.DateDelivered,
             DateScheduled: req.body.DateScheduled
         },{
             where: {

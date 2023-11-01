@@ -118,6 +118,11 @@ Order_Products_Model.belongsTo(Products_Model, {foreignKey: 'ProductID'})
 //            Chat Relationship                      //
 //---------------------------------------------------//
 
+Chat_Model.hasOne(Custom_Orders_Model, {foreignKey: 'CustomOrderID'})
+
+Custom_Orders_Model.belongsToMany(Admin_Chat_Model, {through: Chat_Model, foreignKey: 'ChatID'})
+
+Custom_Orders_Model.belongsToMany(Customer_Chat_Model, {through: Chat_Model, foreignKey: 'ChatID'})
 
 
 //---------------------------------------------------//
@@ -130,12 +135,7 @@ Custom_Orders_Model.belongsTo(State_Model, {foreignKey: 'StatusID'})
 Status_Model.hasMany(Orders_Model, {foreignKey: 'StatusID'})
 Orders_Model.belongsTo(Status_Model, {foreignKey: 'StatusID'})
 
-//---------------------------------------------------//
-//            Combo Orders Relationship              //
-//---------------------------------------------------//
 
-//jj123
-//password123
 
 //There is probably a better and cleaner way to do this....
 module.exports = {
