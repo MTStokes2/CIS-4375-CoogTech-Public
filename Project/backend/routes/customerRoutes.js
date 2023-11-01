@@ -7,6 +7,7 @@ let {Orders_Model} = require('../models/modelAssociations')
 let {Custom_Orders_Model} = require('../models/modelAssociations')
 let {Feedback_Model} = require('../models/modelAssociations')
 let {Usernames_Model} = require('../models/modelAssociations');
+let {Customers_Model} = require('../models/modelAssociations');
 const { Customer_Chat_Model } = require("../models/models");
 
 //GET all Products
@@ -59,10 +60,10 @@ router.put('/ChangeUsername', async (req, res) => {
   
         const customer = await Customers_Model.findOne({
         where: {
-            CustomerID: req.body.CustomerID,
+            CustomerEmail: req.body.CustomerEmail,
         },
         });
-        
+
         if (customer) {
         Usernames_Model.update(
             {
