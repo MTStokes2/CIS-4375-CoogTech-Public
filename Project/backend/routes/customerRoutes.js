@@ -361,7 +361,6 @@ router.post('/Feedback', async (req, res) => {
         Feedback_Model.create(
             {
             CustomerID: customer.CustomerID,
-            StatusID: req.body.StatusID,
             Feedback: req.body.Feedback,
             Rating: req.body.Rating
             })

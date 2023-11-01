@@ -10,6 +10,7 @@ let {State_Model} = require('../models/modelAssociations')
 let {City_Model} = require('../models/modelAssociations')
 let {Usernames_Model} = require('../models/modelAssociations')
 let {Passwords_Model} = require('../models/modelAssociations')
+let {Feedback_Model} = require('../models/modelAssociations')
 
 //GET all Admins
 router.get('/', (req, res) =>
@@ -392,7 +393,6 @@ router.put('/CustomOrders/:id', async (req, res) => {
 router.get('/Feedback', (req, res) =>
     Feedback_Model.findAll()
     .then(Feedback => {
-        console.log(Feedback)
         res.json(Feedback);
     })
     .catch(err => console.log(err)));
