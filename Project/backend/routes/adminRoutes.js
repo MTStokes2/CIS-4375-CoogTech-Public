@@ -1,5 +1,10 @@
 const express = require("express");
 const Sequelize = require('sequelize')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const secret_key = process.env.JWT_SECRET
+
+
 const router = express.Router();
 
 let {Admins_Model} = require('../models/modelAssociations')
@@ -427,42 +432,42 @@ router.post('/State', async (req, res) => {
     }
 });
 
-//SignUp
 router.post('/AdminSignUp', async (req, res) => {
 
     try {
+  
+      const hashedPassword = await bcrypt.hash(req.body.Password, 10)
 
-        Admins_Model.create(
-            {
-            AdminLastName: req.body.AdminLastName,
-            AdminFirstName: req.body.AdminFirstName,
-            AdminAddress: req.body.AdminAddress,
-            AdminPhone: req.body.AdminPhone,
-            AdminEmail: req.body.AdminEmail
-            }).then(
-                admin => {
-
-                    Usernames_Model.create(
-                        {
-                        AdminID: admin.AdminID,
-                        Username: req.body.Username
-                    })
-                    
-
-                    Passwords_Model.create(
-                        {
-                        AdminID: admin.AdminID,
-                        Password: req.body.Password
-                    })
-                }
-            )
-        
-
-        res.status(200).json({ message: 'SignUp successful' });
-    } catch(err) {
-        console.log(err)
+      const admin = await Admins_Model.create(
+        {
+        AdminLastName: req.body.AdminLastName,
+        AdminFirstName: req.body.AdminFirstName,
+        AdminAddress: req.body.AdminAddress,
+        AdminPhone: req.body.AdminPhone,
+        AdminEmail: req.body.AdminEmail
+        });
+  
+      // Create username for the customer
+      const usernames = await Usernames_Model.create({
+        AdminID: admin.AdminID,
+        Username: req.body.Username
+      });
+  
+      // Create password for the customer (hashed)
+      await Passwords_Model.create({
+        AdminID: admin.AdminID,
+        Password: hashedPassword
+      });
+  
+      // Generate JWT token for the newly registered user
+      const token = jwt.sign({ userId: admin.AdminID, username: usernames.Username }, secret_key, { expiresIn: '1h' });
+  
+      // Send response with token and success message
+      res.status(201).json({ message: 'SignUp successful', token: token });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Internal Server Error' });
     }
-});
-
+  });
 
 module.exports = router;

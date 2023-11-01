@@ -69,53 +69,69 @@ router.post('/Login', async (req, res) => {
       
       // Check if the username exists in either customers or admins table
       const customer = await Usernames_Model.findOne({
-          where: {
-              Username: Username,
-          },
-          include: [
-              {
-                  model: Customers_Model,
-                  required: false, // Use false for LEFT JOIN
-              },
-              {
-                  model: Admins_Model,
-                  required: false, // Use false for LEFT JOIN
-              },
-          ],
-      });
-
-      if (customer) {
-          // Determine user type and ID
-          let userType, userId;
-          if (customer.CUSTOMER) {
-              userType = 'customer';
-              userId = customer.CUSTOMER.CustomerID;
-          } else if (customer.ADMIN) {
-              userType = 'admin';
-              userId = customer.ADMIN.AdminID;
-          } else {
-              // Handle case where the username exists but is not associated with a customer or admin
-              return res.status(401).json({ message: 'Invalid user' });
-          }
-
-          // Verify password
-          const matchedPassword = await Passwords_Model.findOne({
-              where: {
-                  CustomerID: userId,
-              },
-          });
-
-          if (matchedPassword && (await bcrypt.compare(Password, matchedPassword.Password))) {
-              // Password matches, generate JWT token
-              const token = createToken({ userId, username: Username, userType });
-
-              res.status(200).json({ message: 'Login successful', token: token });
-          } else {
-              res.status(401).json({ message: 'Incorrect password' });
-          }
-      } else {
-          res.status(404).json({ message: 'Username not found' });
-      }
+        where: {
+            Username: Username,
+        },
+        include: [
+            {
+                model: Customers_Model,
+                required: false, // Use false for LEFT JOIN
+            },
+            {
+                model: Admins_Model,
+                required: false, // Use false for LEFT JOIN
+            },
+        ],
+    });
+    
+    if (customer) {
+        // Determine user type and ID
+        let userType, userId;
+        if (customer.CUSTOMER) {
+            userType = 'customer';
+            userId = customer.CUSTOMER.CustomerID;
+        } else if (customer.ADMIN) {
+            userType = 'admin';
+            userId = customer.ADMIN.AdminID;
+        } else {
+            // Handle case where the username exists but is not associated with a customer or admin
+            return res.status(401).json({ message: 'Invalid user' });
+        }
+    
+        // Verify password
+        let matchedPassword;
+    
+        if (userType === 'customer') {
+            matchedPassword = await Passwords_Model.findOne({
+                where: {
+                    CustomerID: userId,
+                },
+            });
+        } else if (userType === 'admin') {
+            // Lookup password in Admins_Model table based on AdminID
+            matchedPassword = await Passwords_Model.findOne({
+                where: {
+                    AdminID: userId,
+                },
+            });
+        }
+    
+        if (matchedPassword && (await bcrypt.compare(Password, matchedPassword.Password))) {
+            // Password matches, generate JWT token
+            const token = createToken({ userId, username: Username, userType });
+    
+            res.cookie('access-token', token, {
+                httpOnly: true,
+                maxAge: 3600000, // 1 Hour (Milliseconds)
+            });
+    
+            res.status(200).json({ message: 'Login successful', token: token, role: userType });
+        } else {
+            res.status(401).json({ message: 'Incorrect password' });
+        }
+    } else {
+        res.status(404).json({ message: 'Username not found' });
+    }
   } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error' });
