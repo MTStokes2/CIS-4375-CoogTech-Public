@@ -23,36 +23,39 @@ router.get('/Products', (req, res) =>
 //Update a Customer's Information
 router.put('/AccountInfo', async (req, res) => {
     try {
-  
         const customer = await Customers_Model.findOne({
-        where: {
-            CustomerID: req.body.CustomerID,
-        },
-        });
-        
-        if (customer) {
-        Customers_Model.update(
-            {
-            CityID: req.body.CityID,
-            StateID: req.body.StateID,
-            ZipCode: req.body.ZipCode,
-            CustomerLastName: req.body.CustomerLastName,
-            CustomerFirstName: req.body.CustomerFirstName,
-            CustomerAddress: req.body.CustomerAddress,
-            CustomerPhone: req.body.CustomerPhone,
-            CustomerEmail: req.body.CustomerEmail
-        },{
             where: {
-            CustomerID: customer.CustomerID
+                CustomerID: req.body.CustomerID,
             },
         });
 
-        res.status(200).json({ message: 'Information Updated' });
+        if (customer) {
+            // Extract only the fields that are present in req.body
+            const updatedFields = {};
+            const tableFields = ['CityID', 'StateID', 'ZipCode', 'CustomerLastName', 'CustomerFirstName', 'CustomerAddress', 'CustomerPhone', 'CustomerEmail'];
 
-    }} catch (err) {
-        console.log(err)
+            tableFields.forEach(field => {
+                if (req.body[field] !== undefined) {
+                    updatedFields[field] = req.body[field];
+                }
+            });
+
+            // Update only the fields present in updateFields object
+            await Customers_Model.update(updatedFields, {
+                where: {
+                    CustomerID: customer.CustomerID,
+                },
+            });
+
+            res.status(200).json({ message: 'Information Updated' });
+        } else {
+            res.status(404).json({ message: 'Customer not found' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-  });
+});
 
 //Update a Customer's Username
 router.put('/ChangeUsername', async (req, res) => {
