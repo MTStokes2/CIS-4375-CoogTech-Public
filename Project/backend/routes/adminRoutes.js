@@ -280,7 +280,6 @@ router.put('/Orders/:id', async (req, res) => {
 router.get('/CustomOrders', (req, res) =>
     Custom_Orders_Model.findAll()
     .then(CustomOrders => {
-        console.log(CustomOrders)
         res.json(CustomOrders);
     })
     .catch(err => console.log(err)));
