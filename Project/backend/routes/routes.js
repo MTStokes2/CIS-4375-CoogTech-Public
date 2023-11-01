@@ -65,27 +65,49 @@ router.post('/SignUp', async (req, res) => {
 //Login
 router.post('/Login', async (req, res) => {
   try {
+      const { Username, Password } = req.body;
+      
+      // Check if the username exists in either customers or admins table
       const customer = await Usernames_Model.findOne({
           where: {
-              Username: req.body.Username,
+              Username: Username,
           },
+          include: [
+              {
+                  model: Customers_Model,
+                  required: false, // Use false for LEFT JOIN
+              },
+              {
+                  model: Admins_Model,
+                  required: false, // Use false for LEFT JOIN
+              },
+          ],
       });
 
       if (customer) {
+          // Determine user type and ID
+          let userType, userId;
+          if (customer.CUSTOMER) {
+              userType = 'customer';
+              userId = customer.CUSTOMER.CustomerID;
+          } else if (customer.ADMIN) {
+              userType = 'admin';
+              userId = customer.ADMIN.AdminID;
+          } else {
+              // Handle case where the username exists but is not associated with a customer or admin
+              return res.status(401).json({ message: 'Invalid user' });
+          }
+
+          // Verify password
           const matchedPassword = await Passwords_Model.findOne({
               where: {
-                  CustomerID: customer.CustomerID,
+                  CustomerID: userId,
               },
           });
 
-          if (matchedPassword && await bcrypt.compare(req.body.Password, matchedPassword.Password)) {
+          if (matchedPassword && (await bcrypt.compare(Password, matchedPassword.Password))) {
               // Password matches, generate JWT token
-              const token = createToken(customer)
-
-              res.cookie('access-token', token, {
-                httpOnly: true,
-                maxAge: 3600000 // 1 Hour (Miliseconds)
-              })
+              const token = createToken({ userId, username: Username, userType });
 
               res.status(200).json({ message: 'Login successful', token: token });
           } else {
