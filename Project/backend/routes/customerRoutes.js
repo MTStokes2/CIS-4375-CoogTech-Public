@@ -270,7 +270,7 @@ router.get('/CustomOrders', async (req, res) => {
     }
   });
 
-//Get Order Details
+//Get Custom Order Details
 router.get('/CustomOrders/:id', async (req, res) => {
     try {
   
@@ -291,14 +291,14 @@ router.get('/CustomOrders/:id', async (req, res) => {
 router.put('/CustomOrders/:id', async (req, res) => {
     try {
   
-        const customorder = await Orders_Model.findOne({
+        const customorder = await Custom_Orders_Model.findOne({
         where: {
             CustomOrderID: req.params.id
         },
         });
         
         if (customorder) {
-        Orders_Model.update(
+        Custom_Orders_Model.update(
             {
             CityID: req.body.CityID,
             StateID: req.body.StateID,
@@ -306,7 +306,7 @@ router.put('/CustomOrders/:id', async (req, res) => {
             Address: req.body.Address
         },{
             where: {
-            CustomOrderID: order.CustomOrderID
+            CustomOrderID: customorder.CustomOrderID
             },
         });
 
