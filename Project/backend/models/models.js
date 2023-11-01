@@ -120,7 +120,7 @@ const Customers_Model = database.define('CUSTOMERS', {
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        createdAt: true, //Removes the createdAt field from the query since we don't have it in our tables
         updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
@@ -185,7 +185,7 @@ const Usernames_Model = database.define('USERNAMES', {
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
         createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+        updatedAt: true //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
 
@@ -218,7 +218,7 @@ const Passwords_Model = database.define('PASSWORDS', {
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
         createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+        updatedAt: true //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
 
@@ -287,9 +287,6 @@ const Orders_Model = database.define('ORDERS', {
     Total: {
         type: Sequelize.FLOAT
     },
-    DateOrdered: {
-        type: Sequelize.DATE
-    },
     DateDelivered: {
         type: Sequelize.DATE
     },
@@ -298,7 +295,7 @@ const Orders_Model = database.define('ORDERS', {
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        createdAt: 'DateOrdered', //Removes the createdAt field from the query since we don't have it in our tables
         updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
@@ -349,9 +346,6 @@ const Custom_Orders_Model = database.define('CUSTOM_ORDERS', {
     Total: {
         type: Sequelize.FLOAT
     },
-    DateOrdered: {
-        type: Sequelize.DATE
-    },
     DateDelivered: {
         type: Sequelize.DATE
     },
@@ -360,8 +354,8 @@ const Custom_Orders_Model = database.define('CUSTOM_ORDERS', {
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+        createdAt: 'DateOrdered', //Removes the createdAt field from the query since we don't have it in our tables
+        updatedAt: true //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
 
@@ -456,7 +450,7 @@ const Feedback_Model = database.define('FEEDBACK', {
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        createdAt: true, //Removes the createdAt field from the query since we don't have it in our tables
         updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
@@ -539,7 +533,7 @@ const Customer_Chat_Model = database.define('CUSTOMER_CHAT', {
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
         createdAt: true, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: true //Removes the updatedAt field from the query since we don't have it in our tables
+        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
 
@@ -572,7 +566,7 @@ const Admin_Chat_Model = database.define('ADMIN_CHAT', {
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
         createdAt: true, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: true //Removes the updatedAt field from the query since we don't have it in our tables
+        updatedAt: false//Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
 
