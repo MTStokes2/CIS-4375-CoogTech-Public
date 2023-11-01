@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const config = require('../src/config/config')
+const bcrypt = require('bcrypt')
 
 let {Products_Model} = require('../models/modelAssociations')
 let {Orders_Model} = require('../models/modelAssociations')
 let {Custom_Orders_Model} = require('../models/modelAssociations')
 let {Feedback_Model} = require('../models/modelAssociations')
 let {Usernames_Model} = require('../models/modelAssociations');
+let {Passwords_Model} = require('../models/modelAssociations');
 let {Customers_Model} = require('../models/modelAssociations');
 const { Customer_Chat_Model } = require("../models/models");
 
@@ -84,32 +85,41 @@ router.put('/ChangeUsername', async (req, res) => {
     }
   });
 
-//Update a Customer's Password
+// Update a Customer's Password
 router.put('/ChangePassword', async (req, res) => {
     try {
-  
+
+        // Hash the new password before updating
+        const hashedPassword = await bcrypt.hash(req.body.Password, 10);
+
         const customer = await Customers_Model.findOne({
-        where: {
-            CustomerID: req.body.CustomerID,
-        },
-        });
-        
-        if (customer) {
-        Passwords_Model.update(
-            {
-            Password: req.body.Password
-        },{
             where: {
-            CustomerID: customer.CustomerID
+                CustomerEmail: req.body.CustomerEmail,
             },
         });
 
-        res.status(200).json({ message: 'Password Changed' });
+        if (customer) {
+            // Update the password with the hashed value
+            await Passwords_Model.update(
+                {
+                    Password: hashedPassword,
+                },
+                {
+                    where: {
+                        CustomerID: customer.CustomerID,
+                    },
+                }
+            );
 
-    }} catch (err) {
-        console.log(err)
+            res.status(200).json({ message: 'Password Changed' });
+        } else {
+            res.status(404).json({ message: 'Customer not found' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-  });
+});
 
 
 //Get All Orders a customer has

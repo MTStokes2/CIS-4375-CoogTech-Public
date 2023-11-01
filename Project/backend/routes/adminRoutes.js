@@ -20,15 +20,6 @@ router.get('/', (req, res) =>
     })
     .catch(err => console.log(err)));
 
-// //GET all Customers
-// router.get('/Customers', (req, res) =>
-//     Customers_Model.findAll()
-//     .then(customers => {
-//         console.log(customers)
-//         res.json(customers);
-//     })
-//     .catch(err => console.log(err)));
-
 // GET all Customers with State and City names
 router.get('/Customers', (req, res) => {
     Customers_Model.findAll({
