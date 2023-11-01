@@ -132,8 +132,7 @@ router.get('/Orders', async (req, res) => {
             Username: req.body.Username,
         },
         });
-        
-        console.log('Customer:', customer)
+
         //If the customer exists
         if (customer) {
         const Customer_Orders = await Orders_Model.findAll({
@@ -143,7 +142,7 @@ router.get('/Orders', async (req, res) => {
         });
 
         //If there is a match 
-        if (Customer_Orders) {
+        if (Customer_Orders && Customer_Orders.length > 0) {
             res.status(200).json({ Customer_Orders });
         } else {
             res.status(401).json({ message: 'No Orders' });
