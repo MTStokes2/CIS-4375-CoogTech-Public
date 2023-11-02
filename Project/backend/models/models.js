@@ -62,7 +62,10 @@ const City_Model = database.define('CITY', {
     },
     StateID: {
         type: Sequelize.INTEGER,
-        
+        references: {
+            model: State_Model,
+            key: 'StateID'
+        }
     },
     City: {
         type: Sequelize.STRING
@@ -163,10 +166,18 @@ const Usernames_Model = database.define('USERNAMES', {
         autoIncrement: true
     },
     CustomerID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: Customers_Model,
+            key: 'CustomerID'
+        }
     },
     AdminID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: Admins_Model,
+            key: 'AdminID'
+        }
     },
     Username: {
         type: Sequelize.STRING
@@ -188,10 +199,18 @@ const Passwords_Model = database.define('PASSWORDS', {
         autoIncrement: true
     },
     CustomerID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: Customers_Model,
+            key: 'CustomerID'
+        }
     },
     AdminID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: Admins_Model,
+            key: 'AdminID'
+        }
     },
     Password: {
         type: Sequelize.STRING
@@ -232,16 +251,32 @@ const Orders_Model = database.define('ORDERS', {
         autoIncrement: true
     },
     CustomerID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: Customers_Model,
+            key: 'CustomerID'
+        }
     },
     StatusID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: Status_Model,
+            key: 'StatusID'
+        }
     },
     CityID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: City_Model,
+            key: 'CityID'
+        }
     },
     StateID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: State_Model,
+            key: 'StateID'
+        }
     },
     ZipCode: {
         type: Sequelize.STRING
@@ -252,9 +287,6 @@ const Orders_Model = database.define('ORDERS', {
     Total: {
         type: Sequelize.FLOAT
     },
-    DateOrdered: {
-        type: Sequelize.DATE
-    },
     DateDelivered: {
         type: Sequelize.DATE
     },
@@ -263,7 +295,7 @@ const Orders_Model = database.define('ORDERS', {
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        createdAt: 'DateOrdered', //Removes the createdAt field from the query since we don't have it in our tables
         updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
@@ -278,19 +310,32 @@ const Custom_Orders_Model = database.define('CUSTOM_ORDERS', {
         autoIncrement: true
     },
     CustomerID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: Customers_Model,
+            key: 'CustomerID'
+        }
     },
     StatusID: {
-        type: Sequelize.INTEGER
-    },
-    ChatID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: Status_Model,
+            key: 'StatusID'
+        }
     },
     CityID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: City_Model,
+            key: 'CityID'
+        }
     },
     StateID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: State_Model,
+            key: 'StateID'
+        }
     },
     ZipCode: {
         type: Sequelize.STRING
@@ -301,9 +346,6 @@ const Custom_Orders_Model = database.define('CUSTOM_ORDERS', {
     Total: {
         type: Sequelize.FLOAT
     },
-    DateOrdered: {
-        type: Sequelize.DATE
-    },
     DateDelivered: {
         type: Sequelize.DATE
     },
@@ -312,41 +354,7 @@ const Custom_Orders_Model = database.define('CUSTOM_ORDERS', {
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
-    }
-);
-
-//---------------------------------------------------//
-//              Combo Orders Model                   //
-//---------------------------------------------------//
-const Combo_Orders_Model = database.define('COMBO_ORDERS', {
-    ComboOrderID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    OrderID: {
-        type: Sequelize.INTEGER
-    },
-    CustomOrderID: {
-        type: Sequelize.INTEGER
-    },
-    CombinedTotal: {
-        type: Sequelize.FLOAT
-    },
-    DateOrdered: {
-        type: Sequelize.DATE
-    },
-    DateDelivered: {
-        type: Sequelize.DATE
-    },
-    DateScheduled: {
-        type: Sequelize.DATE
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        createdAt: 'DateOrdered', //Removes the createdAt field from the query since we don't have it in our tables
         updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
@@ -398,66 +406,18 @@ const Order_Products_Model = database.define('ORDER_PRODUCTS', {
         autoIncrement: true
     },
     OrderID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: Orders_Model,
+            key: 'OrderID'
+        }
     },
     ProductID: {
-        type: Sequelize.INTEGER
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
-    }
-);
-
-//---------------------------------------------------//
-//             Custom Products Model                 //
-//---------------------------------------------------//
-const Custom_Products_Model = database.define('CUSTOM_PRODUCTS', {
-    CustomProductID: {
         type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    ChatID: {
-        type: Sequelize.INTEGER
-    },
-    CustomProductName: {
-        type: Sequelize.STRING
-    },
-    CustomProductType: {
-        type: Sequelize.STRING
-    },
-    CustomProductPrice: {
-        type: Sequelize.FLOAT
-    },
-    CustomProductStock: {
-        type: Sequelize.INTEGER
-    },
-    DesignImage: {
-        type: Sequelize.STRING
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
-    }
-);
-
-//---------------------------------------------------//
-//         Custom Product Orders Model               //
-//---------------------------------------------------//
-const Custom_Products_Order_Model = database.define('CUSTOM_PRODUCT_ORDERS', {
-    CustomProductOrderID: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    CustomOrderID: {
-        type: Sequelize.INTEGER
-    },
-    CustomProductID: {
-        type: Sequelize.INTEGER
+        references: {
+            model: Products_Model,
+            key: 'ProductID'
+        }
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
@@ -476,7 +436,11 @@ const Feedback_Model = database.define('FEEDBACK', {
         autoIncrement: true
     },
     CustomerID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: Customers_Model,
+            key: 'CustomerID'
+        }
     },
     Feedback: {
         type: Sequelize.STRING
@@ -486,7 +450,7 @@ const Feedback_Model = database.define('FEEDBACK', {
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        createdAt: true, //Removes the createdAt field from the query since we don't have it in our tables
         updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
@@ -501,7 +465,11 @@ const Reports_Model = database.define('REPORTS', {
         autoIncrement: true
     },
     AdminID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+            model: Admins_Model,
+            key: 'AdminID'
+        }
     },
     Scripts: {
         type: Sequelize.STRING
@@ -528,7 +496,6 @@ const Chat_Model = database.define('CHAT', {
             model: Custom_Orders_Model,
             key: 'CustomOrderID'
         }
-
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
@@ -566,7 +533,7 @@ const Customer_Chat_Model = database.define('CUSTOMER_CHAT', {
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
         createdAt: true, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: true //Removes the updatedAt field from the query since we don't have it in our tables
+        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
 
@@ -599,10 +566,77 @@ const Admin_Chat_Model = database.define('ADMIN_CHAT', {
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
         createdAt: true, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: true //Removes the updatedAt field from the query since we don't have it in our tables
+        updatedAt: false//Removes the updatedAt field from the query since we don't have it in our tables
     }
 );
 
+//---------------------------------------------------//
+//             Custom Products Model                 //
+//---------------------------------------------------//
+const Custom_Products_Model = database.define('CUSTOM_PRODUCTS', {
+    CustomProductID: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    ChatID: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: Chat_Model,
+            key: 'ChatID'
+        }
+    },
+    CustomProductName: {
+        type: Sequelize.STRING
+    },
+    CustomProductType: {
+        type: Sequelize.STRING
+    },
+    CustomProductPrice: {
+        type: Sequelize.FLOAT
+    },
+    CustomProductStock: {
+        type: Sequelize.INTEGER
+    },
+    DesignImage: {
+        type: Sequelize.STRING
+    }},
+     {
+        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
+        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+    }
+);
+
+//---------------------------------------------------//
+//         Custom Product Orders Model               //
+//---------------------------------------------------//
+const Custom_Products_Order_Model = database.define('CUSTOM_PRODUCT_ORDERS', {
+    CustomProductOrderID: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    CustomOrderID: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: Custom_Orders_Model,
+            key: 'CustomOrderID'
+        }
+    },
+    CustomProductID: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: Custom_Products_Model,
+            key: 'CustomProductID'
+        }
+    }},
+     {
+        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
+        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
+        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+    }
+);
 
 //There is probably a better and cleaner way to do this....
 module.exports = {
@@ -619,7 +653,6 @@ module.exports = {
     Chat_Model,
     Orders_Model,
     Custom_Orders_Model,
-    Combo_Orders_Model,
     Products_Model,
     Order_Products_Model,
     Custom_Products_Model,

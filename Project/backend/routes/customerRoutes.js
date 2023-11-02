@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const config = require('../src/config/config')
+const bcrypt = require('bcrypt')
 
 let {Products_Model} = require('../models/modelAssociations')
 let {Orders_Model} = require('../models/modelAssociations')
 let {Custom_Orders_Model} = require('../models/modelAssociations')
 let {Feedback_Model} = require('../models/modelAssociations')
 let {Usernames_Model} = require('../models/modelAssociations');
+let {Passwords_Model} = require('../models/modelAssociations');
+let {Customers_Model} = require('../models/modelAssociations');
 const { Customer_Chat_Model } = require("../models/models");
+const { validateToken } = require('../src/auth/JWT')
 
 //GET all Products
 router.get('/Products', (req, res) =>
@@ -22,36 +25,39 @@ router.get('/Products', (req, res) =>
 //Update a Customer's Information
 router.put('/AccountInfo', async (req, res) => {
     try {
-  
         const customer = await Customers_Model.findOne({
-        where: {
-            CustomerID: req.body.CustomerID,
-        },
-        });
-        
-        if (customer) {
-        Customers_Model.update(
-            {
-            CityID: req.body.CityID,
-            StateID: req.body.StateID,
-            ZipCode: req.body.ZipCode,
-            CustomerLastName: req.body.CustomerLastName,
-            CustomerFirstName: req.body.CustomerFirstName,
-            CustomerAddress: req.body.CustomerAddress,
-            CustomerPhone: req.body.CustomerPhone,
-            CustomerEmail: req.body.CustomerEmail
-        },{
             where: {
-            CustomerID: customer.CustomerID
+                CustomerID: req.body.CustomerID,
             },
         });
 
-        res.status(200).json({ message: 'Information Updated' });
+        if (customer) {
+            // Extract only the fields that are present in req.body
+            const updatedFields = {};
+            const tableFields = ['CityID', 'StateID', 'ZipCode', 'CustomerLastName', 'CustomerFirstName', 'CustomerAddress', 'CustomerPhone', 'CustomerEmail'];
 
-    }} catch (err) {
-        console.log(err)
+            tableFields.forEach(field => {
+                if (req.body[field] !== undefined) {
+                    updatedFields[field] = req.body[field];
+                }
+            });
+
+            // Update only the fields present in updateFields object
+            await Customers_Model.update(updatedFields, {
+                where: {
+                    CustomerID: customer.CustomerID,
+                },
+            });
+
+            res.status(200).json({ message: 'Information Updated' });
+        } else {
+            res.status(404).json({ message: 'Customer not found' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-  });
+});
 
 //Update a Customer's Username
 router.put('/ChangeUsername', async (req, res) => {
@@ -59,10 +65,10 @@ router.put('/ChangeUsername', async (req, res) => {
   
         const customer = await Customers_Model.findOne({
         where: {
-            CustomerID: req.body.CustomerID,
+            CustomerEmail: req.body.CustomerEmail,
         },
         });
-        
+
         if (customer) {
         Usernames_Model.update(
             {
@@ -80,46 +86,54 @@ router.put('/ChangeUsername', async (req, res) => {
     }
   });
 
-//Update a Customer's Password
+// Update a Customer's Password
 router.put('/ChangePassword', async (req, res) => {
     try {
-  
+
+        // Hash the new password before updating
+        const hashedPassword = await bcrypt.hash(req.body.Password, 10);
+
         const customer = await Customers_Model.findOne({
-        where: {
-            CustomerID: req.body.CustomerID,
-        },
-        });
-        
-        if (customer) {
-        Passwords_Model.update(
-            {
-            Password: req.body.Password
-        },{
             where: {
-            CustomerID: customer.CustomerID
+                CustomerEmail: req.body.CustomerEmail,
             },
         });
 
-        res.status(200).json({ message: 'Password Changed' });
+        if (customer) {
+            // Update the password with the hashed value
+            await Passwords_Model.update(
+                {
+                    Password: hashedPassword,
+                },
+                {
+                    where: {
+                        CustomerID: customer.CustomerID,
+                    },
+                }
+            );
 
-    }} catch (err) {
-        console.log(err)
+            res.status(200).json({ message: 'Password Changed' });
+        } else {
+            res.status(404).json({ message: 'Customer not found' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-  });
+});
 
 
 //Get All Orders a customer has
-router.get('/Orders', async (req, res) => {
-  
+router.get('/Orders', validateToken, async (req, res) => {
+    const { userId, username, role } = req.user
     try {
         //First searches for a Username what matches with the username provided
         const customer = await Usernames_Model.findOne({
         where: {
-            Username: req.body.Username,
+            Username: username,
         },
         });
-        
-        console.log('Customer:', customer)
+
         //If the customer exists
         if (customer) {
         const Customer_Orders = await Orders_Model.findAll({
@@ -129,7 +143,7 @@ router.get('/Orders', async (req, res) => {
         });
 
         //If there is a match 
-        if (Customer_Orders) {
+        if (Customer_Orders && Customer_Orders.length > 0) {
             res.status(200).json({ Customer_Orders });
         } else {
             res.status(401).json({ message: 'No Orders' });
@@ -222,13 +236,13 @@ router.post('/Orders', async (req, res) => {
 });
 
 //Get All Custom Orders a customer has
-router.get('/CustomOrders', async (req, res) => {
-  
+router.get('/CustomOrders', validateToken, async (req, res) => {
+    const { userId, username, role } = req.user
     try {
         //First searches for a Username what matches with the username provided
         const customer = await Usernames_Model.findOne({
         where: {
-            Username: req.body.Username,
+            Username: username,
         },
         });
         
@@ -257,7 +271,7 @@ router.get('/CustomOrders', async (req, res) => {
     }
   });
 
-//Get Order Details
+//Get Custom Order Details
 router.get('/CustomOrders/:id', async (req, res) => {
     try {
   
@@ -278,14 +292,14 @@ router.get('/CustomOrders/:id', async (req, res) => {
 router.put('/CustomOrders/:id', async (req, res) => {
     try {
   
-        const customorder = await Orders_Model.findOne({
+        const customorder = await Custom_Orders_Model.findOne({
         where: {
             CustomOrderID: req.params.id
         },
         });
         
         if (customorder) {
-        Orders_Model.update(
+        Custom_Orders_Model.update(
             {
             CityID: req.body.CityID,
             StateID: req.body.StateID,
@@ -293,7 +307,7 @@ router.put('/CustomOrders/:id', async (req, res) => {
             Address: req.body.Address
         },{
             where: {
-            CustomOrderID: order.CustomOrderID
+            CustomOrderID: customorder.CustomOrderID
             },
         });
 
@@ -348,7 +362,6 @@ router.post('/Feedback', async (req, res) => {
         Feedback_Model.create(
             {
             CustomerID: customer.CustomerID,
-            StatusID: req.body.StatusID,
             Feedback: req.body.Feedback,
             Rating: req.body.Rating
             })

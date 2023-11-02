@@ -1,5 +1,10 @@
 const express = require("express");
 const Sequelize = require('sequelize')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const secret_key = process.env.JWT_SECRET
+
+
 const router = express.Router();
 
 let {Admins_Model} = require('../models/modelAssociations')
@@ -10,24 +15,17 @@ let {State_Model} = require('../models/modelAssociations')
 let {City_Model} = require('../models/modelAssociations')
 let {Usernames_Model} = require('../models/modelAssociations')
 let {Passwords_Model} = require('../models/modelAssociations')
+let {Feedback_Model} = require('../models/modelAssociations')
+let {Custom_Orders_Model} = require('../models/modelAssociations')
+let {Orders_Model} = require('../models/modelAssociations')
 
 //GET all Admins
 router.get('/', (req, res) =>
     Admins_Model.findAll()
     .then(admins => {
-        console.log(admins)
         res.json(admins);
     })
     .catch(err => console.log(err)));
-
-// //GET all Customers
-// router.get('/Customers', (req, res) =>
-//     Customers_Model.findAll()
-//     .then(customers => {
-//         console.log(customers)
-//         res.json(customers);
-//     })
-//     .catch(err => console.log(err)));
 
 // GET all Customers with State and City names
 router.get('/Customers', (req, res) => {
@@ -84,7 +82,6 @@ router.get('/Products/:id', async (req, res) => {
 router.get('/Products', (req, res) =>
     Products_Model.findAll()
     .then(products => {
-        console.log(products)
         res.json(products);
     })
     .catch(err => console.log(err)));
@@ -121,16 +118,16 @@ router.put('/Products/:id', async (req, res) => {
         });
         
         if (product) {
-        Products_Model.update(
-            {
-            ProductName: req.body.ProductName,
-            ProductType: req.body.ProductType,
-            ProductColor: req.body.ProductColor,
-            ProductSize: req.body.ProductSize,
-            ProductPrice: req.body.ProductPrice,
-            ProductStock: req.body.ProductStock,
-            ProductImage: req.body.ProductImage
-        },{
+        const updatedFields = {};
+        const tableFields = ['ProductName', 'ProductType', 'ProductColor', 'ProductSize', 'ProductPrice', 'ProductStock', 'ProductImage'];
+
+        tableFields.forEach(field => {
+            if (req.body[field] !== undefined) {
+                updatedFields[field] = req.body[field];
+            }
+        });
+
+        Products_Model.update(updatedFields,{
             where: {
             ProductID: product.ProductID,
             ProductName: req.body.ProductName,
@@ -174,7 +171,6 @@ router.delete('/Products', async (req, res) => {
 router.get('/Orders', (req, res) =>
     Orders_Model.findAll()
     .then(Orders => {
-        console.log(Orders)
         res.json(Orders);
     })
     .catch(err => console.log(err)));
@@ -207,18 +203,16 @@ router.put('/Orders/:id', async (req, res) => {
         });
         
         if (order) {
-        Orders_Model.update(
-            {
-            StatusID: req.body.StatusID,
-            CityID: req.body.CityID,
-            StateID: req.body.StateID,
-            ZipCode: req.body.ZipCode,
-            Address: req.body.Address,
-            Total: req.body.Total,
-            DateOrdered: req.body.DateOrdered,
-            DateDelivered: req.body.DateDelivered,
-            DateScheduled: req.body.DateScheduled
-        },{
+        const updatedFields = {};
+        const tableFields = ['StatusID', 'CityID', 'StateID', 'ZipCode', 'Address', 'Total', 'DateScheduled','DateDelivered'];
+
+        tableFields.forEach(field => {
+            if (req.body[field] !== undefined) {
+                updatedFields[field] = req.body[field];
+            }
+        });
+
+        Orders_Model.update(updatedFields,{
             where: {
             OrderID: order.OrderID
             },
@@ -256,38 +250,11 @@ router.delete('/Orders/:id', async (req, res) => {
     }
   });
 
-//Update an Order (Update Status)
-router.put('/Orders/:id', async (req, res) => {
-    try {
-  
-        const order = await Orders_Model.findOne({
-        where: {
-            OrderID: req.params.id
-        },
-        });
-        
-        if (order) {
-        Orders_Model.update(
-            {
-            StatusID: req.body.StatusID
-        },{
-            where: {
-            OrderID: order.OrderID
-            },
-        });
-
-        res.status(200).json({ message: 'Order Status Updated' });
-
-    }} catch (err) {
-        console.log(err)
-    }
-  });
 
 //Get All Custom Orders
 router.get('/CustomOrders', (req, res) =>
     Custom_Orders_Model.findAll()
     .then(CustomOrders => {
-        console.log(CustomOrders)
         res.json(CustomOrders);
     })
     .catch(err => console.log(err)));
@@ -320,19 +287,16 @@ router.put('/CustomOrders/:id', async (req, res) => {
         });
         
         if (customorder) {
-        Custom_Orders_Model.update(
-            {
-            StatusID: req.body.StatusID,
-            ChatID: req.body.ChatID,
-            CityID: req.body.CityID,
-            StateID: req.body.StateID,
-            ZipCode: req.body.ZipCode,
-            Address: req.body.Address,
-            Total: req.body.Total,
-            DateOrdered: req.body.DateOrdered,
-            DateDelivered: req.body.DateDelivered,
-            DateScheduled: req.body.DateScheduled
-        },{
+        const updatedFields = {};
+        const tableFields = ['StatusID', 'CityID', 'StateID', 'ZipCode', 'Address', 'Total', 'DateScheduled','DateDelivered'];
+
+        tableFields.forEach(field => {
+            if (req.body[field] !== undefined) {
+                updatedFields[field] = req.body[field];
+            }
+        });
+
+        Custom_Orders_Model.update(updatedFields ,{
             where: {
             CustomOrderID: customorder.CustomOrderID
             },
@@ -370,38 +334,11 @@ router.delete('/CustomOrders/:id', async (req, res) => {
     }
   });
 
-//Update an Order (Update Status)
-router.put('/CustomOrders/:id', async (req, res) => {
-    try {
-  
-        const customorder = await Custom_Orders_Model.findOne({
-        where: {
-            CustomOrderID: req.params.id
-        },
-        });
-        
-        if (customorder) {
-        Custom_Orders_Model.update(
-            {
-            StatusID: req.body.StatusID
-        },{
-            where: {
-            CustomOrderID: customorder.CustomOrderID
-            },
-        });
-
-        res.status(200).json({ message: 'Custom Order Status Updated' });
-
-    }} catch (err) {
-        console.log(err)
-    }
-  });
 
 //Get All Feedback
 router.get('/Feedback', (req, res) =>
     Feedback_Model.findAll()
     .then(Feedback => {
-        console.log(Feedback)
         res.json(Feedback);
     })
     .catch(err => console.log(err)));
@@ -457,7 +394,7 @@ router.post('/Status', async (req, res) => {
             {
             Status: req.body.Status
             })
-        //Sends 200 when and a message that the Status was added
+
         res.status(200).json({ message: 'Status Added' });
     } catch(err) {
         console.log(err)
@@ -473,7 +410,7 @@ router.post('/City', async (req, res) => {
             City: req.body.City,
             StateID: req.body.StateID
             })
-        //Sends 200 when and a message that the City was added
+
         res.status(200).json({ message: 'City Added' });
     } catch(err) {
         console.log(err)
@@ -488,49 +425,49 @@ router.post('/State', async (req, res) => {
             {
             State: req.body.State,
             })
-        //Sends 200 when and a message that the State was added
+
         res.status(200).json({ message: 'State Added' });
     } catch(err) {
         console.log(err)
     }
 });
 
-//SignUp
 router.post('/AdminSignUp', async (req, res) => {
 
     try {
-        //Adds Admin's information to Customers Table
-        Admins_Model.create(
-            {
-            AdminLastName: req.body.AdminLastName,
-            AdminFirstName: req.body.AdminFirstName,
-            AdminAddress: req.body.AdminAddress,
-            AdminPhone: req.body.AdminPhone,
-            AdminEmail: req.body.AdminEmail
-            }).then(
-                admin => {
-                    //Adds Customer's Username to Usernames Table
-                    Usernames_Model.create(
-                        {
-                        AdminID: admin.AdminID,
-                        Username: req.body.Username
-                    })
-                    
-                    //Adds Customer's Password to Passwords Table
-                    Passwords_Model.create(
-                        {
-                        AdminID: admin.AdminID,
-                        Password: req.body.Password
-                    })
-                }
-            )
-        
-        //Sends 200 when and a message that the Customer was Signed Up
-        res.status(200).json({ message: 'SignUp successful' });
-    } catch(err) {
-        console.log(err)
-    }
-});
+  
+      const hashedPassword = await bcrypt.hash(req.body.Password, 10)
 
+      const admin = await Admins_Model.create(
+        {
+        AdminLastName: req.body.AdminLastName,
+        AdminFirstName: req.body.AdminFirstName,
+        AdminAddress: req.body.AdminAddress,
+        AdminPhone: req.body.AdminPhone,
+        AdminEmail: req.body.AdminEmail
+        });
+  
+      // Create username for the customer
+      const usernames = await Usernames_Model.create({
+        AdminID: admin.AdminID,
+        Username: req.body.Username
+      });
+  
+      // Create password for the customer (hashed)
+      await Passwords_Model.create({
+        AdminID: admin.AdminID,
+        Password: hashedPassword
+      });
+  
+      // Generate JWT token for the newly registered user
+      const token = jwt.sign({ userId: admin.AdminID, username: usernames.Username }, secret_key, { expiresIn: '1h' });
+  
+      // Send response with token and success message
+      res.status(201).json({ message: 'SignUp successful', token: token });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  });
 
 module.exports = router;

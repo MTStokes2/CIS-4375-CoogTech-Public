@@ -65,40 +65,90 @@ router.post('/SignUp', async (req, res) => {
 //Login
 router.post('/Login', async (req, res) => {
   try {
+      const { Username, Password } = req.body;
+      
+      // Check if the username exists in either customers or admins table
       const customer = await Usernames_Model.findOne({
-          where: {
-              Username: req.body.Username,
-          },
-      });
+        where: {
+            Username: Username,
+        },
+        include: [
+            {
+                model: Customers_Model,
+                required: false, // Use false for LEFT JOIN
+            },
+            {
+                model: Admins_Model,
+                required: false, // Use false for LEFT JOIN
+            },
+        ],
+    });
+    
+    if (customer) {
+        // Determine user type and ID
+        let userType, userId;
+        if (customer.CUSTOMER) {
+            userType = 'customer';
+            userId = customer.CUSTOMER.CustomerID;
+        } else if (customer.ADMIN) {
+            userType = 'admin';
+            userId = customer.ADMIN.AdminID;
+        } else {
+            // Handle case where the username exists but is not associated with a customer or admin
+            return res.status(401).json({ message: 'Invalid user' });
+        }
+    
+        // Verify password
+        let matchedPassword;
+    
+        if (userType === 'customer') {
+            matchedPassword = await Passwords_Model.findOne({
+                where: {
+                    CustomerID: userId,
+                },
+            });
+        } else if (userType === 'admin') {
+            // Lookup password in Admins_Model table based on AdminID
+            matchedPassword = await Passwords_Model.findOne({
+                where: {
+                    AdminID: userId,
+                },
+            });
+        }
+    
+        if (matchedPassword && (await bcrypt.compare(Password, matchedPassword.Password))) {
+            // Password matches, generate JWT token
+            const token = createToken({ userId, username: Username, userType });
+    
+            res.cookie('access-token', token, {
+              httpOnly: true,
+              sameSite: 'none',
+              secure: false,
+              maxAge: 3600000, // 1 Hour in milliseconds
+              domain: 'localhost'
+            });
 
-      if (customer) {
-          const matchedPassword = await Passwords_Model.findOne({
-              where: {
-                  CustomerID: customer.CustomerID,
-              },
-          });
-
-          if (matchedPassword && await bcrypt.compare(req.body.Password, matchedPassword.Password)) {
-              // Password matches, generate JWT token
-              const token = createToken(customer)
-
-              res.cookie('access-token', token, {
-                httpOnly: true,
-                maxAge: 3600000 // 1 Hour (Miliseconds)
-              })
-
-              res.status(200).json({ message: 'Login successful', token: token });
-          } else {
-              res.status(401).json({ message: 'Incorrect password' });
-          }
-      } else {
-          res.status(404).json({ message: 'Username not found' });
-      }
+            res.status(200).json({ message: 'Login successful', token: token, role: userType });
+        } else {
+            res.status(401).json({ message: 'Incorrect password' });
+        }
+    } else {
+        res.status(404).json({ message: 'Username not found' });
+    }
   } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+router.get('/UserInformation', validateToken, (req, res) => {
+  // Access user information from the token payload
+  const { userId, username, role } = req.user;
+
+  // Return user information in the response
+  res.json({ userId, username, role });
+});
+
 
 //Get all Passwords
 router.get('/Passwords', (req, res) =>
@@ -115,37 +165,6 @@ router.get('/Usernames', (req, res) =>
         res.json(usernames);
     })
     .catch(err => console.log(err)));
-
-/* // Chat history for a specific ChatID
-router.get('/Customer/Chat/History/:CustomOrderID', async (req, res) => {
-    const { CustomOrderID } = req.params;
-  
-    try {
-      // Check if the chat exists based on CustomOrderID
-      const chat = await Chat_Model.findOne({
-        where: {
-          CustomOrderID: CustomOrderID
-        }
-      });
-  
-      if (chat) {
-        // If chat exists, get all customer's messages using ChatID
-        const chatHistory = await Customer_Chat_Model.findAll({
-          where: {
-            ChatID: chat.ChatID
-          }
-          // Include other necessary attributes or associations here
-        });
-  
-        res.json(chatHistory);
-      } else {
-        res.status(404).json({ error: 'Chat not found for the given CustomOrderID' });
-      }
-    } catch (error) {
-      console.error('Error fetching chat history:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  }); */
 
   // Chat history 
   router.get('/chat-history/:customOrderID', async (req, res) => {

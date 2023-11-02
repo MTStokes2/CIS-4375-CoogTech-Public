@@ -1,5 +1,5 @@
 <template>
-    <v-btn @click="router.push({ name: 'Catalog' })" color="#F5F5DC" variant="elevated">
+    <v-btn @click="router.push({ name: 'Catalog' })" color="primary" variant="elevated">
         Back to catalog
     </v-btn>
 
@@ -11,7 +11,7 @@
             <p>Brand: {{ selectedProduct.brand }}</p>
             <p>Description: {{ selectedProduct.description }}</p>
             <h2>Price: ${{ selectedProduct.price }}</h2>
-            <v-btn variant="elevated" color="#F5F5DC" @click="addToCart">Add to cart</v-btn>
+            <v-btn variant="elevated" color="indigo-lighten-3" @click="addToCart">Add to cart</v-btn>
         </div>
     </div>
 </template>

@@ -90,15 +90,17 @@ Admin_Chat_Model.belongsTo(Admins_Model, {foreignKey: 'AdminID'})
 //            Custom Orders Relationship             //
 //---------------------------------------------------//
 
-Custom_Orders_Model.hasMany(Custom_Products_Order_Model, {foreignKey: 'CustomOrderID'})
-Custom_Products_Order_Model.belongsTo(Custom_Orders_Model, {foreignKey: 'CustomOrderID'})
+Custom_Orders_Model.hasMany(Custom_Products_Order_Model, {foreignKey: 'CustomOrderID', sourceKey: 'CustomOrderID'})
+Custom_Products_Order_Model.belongsTo(Custom_Orders_Model, {foreignKey: 'CustomOrderID', targetKey: 'CustomOrderID'})
+
+Custom_Orders_Model.hasOne(Chat_Model, {foreignKey: 'CustomOrderID'})
 
 //---------------------------------------------------//
 //            Custom Products Relationship           //
 //---------------------------------------------------//
 
-Custom_Products_Model.hasMany(Custom_Products_Order_Model, {foreignKey: 'CustomProductID'})
-Custom_Products_Order_Model.belongsTo(Custom_Products_Model, {foreignKey: 'CustomProductID'})
+Custom_Products_Model.hasMany(Custom_Products_Order_Model, {foreignKey: 'CustomProductID', sourceKey: 'CustomProductID'})
+Custom_Products_Order_Model.belongsTo(Custom_Products_Model, {foreignKey: 'CustomProductID', targetKey: 'CustomProductID'})
 
 //---------------------------------------------------//
 //            Orders Relationship                    //
@@ -118,7 +120,13 @@ Order_Products_Model.belongsTo(Products_Model, {foreignKey: 'ProductID'})
 //            Chat Relationship                      //
 //---------------------------------------------------//
 
+Chat_Model.hasMany(Customer_Chat_Model, {foreignKey: 'ChatID'});
 
+Chat_Model.hasMany(Admin_Chat_Model, {foreignKey: 'ChatID'});
+
+Customer_Chat_Model.belongsTo(Chat_Model, {foreignKey: 'ChatID'});
+
+Admin_Chat_Model.belongsTo(Chat_Model, {foreignKey: 'ChatID'});
 
 //---------------------------------------------------//
 //            Status Relationship                    //
@@ -130,12 +138,7 @@ Custom_Orders_Model.belongsTo(State_Model, {foreignKey: 'StatusID'})
 Status_Model.hasMany(Orders_Model, {foreignKey: 'StatusID'})
 Orders_Model.belongsTo(Status_Model, {foreignKey: 'StatusID'})
 
-//---------------------------------------------------//
-//            Combo Orders Relationship              //
-//---------------------------------------------------//
 
-//jj123
-//password123
 
 //There is probably a better and cleaner way to do this....
 module.exports = {

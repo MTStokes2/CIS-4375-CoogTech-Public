@@ -54,23 +54,53 @@
 import io from 'socket.io-client';
 
 export default {
+  props: {
+    customOrderID: {
+      type: String, // Change the type accordingly if CustomOrderID is not a string
+      required: true
+    }
+  },
   data() {
     return {
       messages: [],
       messageInput: '',
-      role: 'customer', // Set the user's role (customer or admin)
-      username: 'jj123', // Set the user's username
-      customOrderID: '4', // Set the custom order ID
+      role: '', // Set the user's role (customer or admin)
+      username: '', // Set the user's username
     };
   },
   mounted() {
     // Establish socket connection when the component is mounted
-    this.setupSocketConnection();
+    this.fetchUserInfo();
   },
   updated() {
     this.scrollToBottom();
   },
+  watch: {
+    customOrderID(newVal, oldVal) {
+      this.fetchChatHistory(); // Or any other action you want to perform
+    }
+  },
   methods: {
+    async fetchUserInfo() {
+      try {
+        const response = await fetch('http://localhost:8080/UserInformation', {
+          method: 'GET',
+          credentials: 'include', // Use 'include' to send cookies with the request
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.username = data.username;
+          this.role = data.role;
+          this.setupSocketConnection();
+          console.log('Received UserInfo:', data);
+        } else {
+          console.error('Failed to fetch user info');
+        }
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    },
     setupSocketConnection() {
       const socket = io('http://localhost:8080');
 
@@ -95,57 +125,56 @@ export default {
         });
       });
 
-      // Fetch chat history after connecting to the socket
-      this.fetchChatHistory();
       this.scrollToBottom();
     },
-    async fetchChatHistory() {
-  try {
-    const response = await fetch(`http://localhost:8080/chat-history/${this.customOrderID}`);
-    const data = await response.json();
-    console.log('Received chat history data:', data);
+  async fetchChatHistory() {
+    try {
+      const response = await fetch(`http://localhost:8080/chat-history/${this.customOrderID}`);
+      const data = await response.json();
+      console.log('Received chat history data:', data);
 
-    // Format the data received from the API to match the message structure
-    this.messages = data.map((message) => {
-      let role = 'customer'; // Default role is customer
-      let username = ''; // Initialize username variable
-      let imageUrl = null; // Initialize imageUrl variable for images
+      // Format the data received from the API to match the message structure
+      this.messages = data.map((message) => {
+        let role = 'customer'; // Default role is customer
+        let username = ''; // Initialize username variable
+        let imageUrl = null; // Initialize imageUrl variable for images
 
-      if (message.CustomerMessages) {
-        // If there are customer messages, set the role to customer and extract customer username
-        role = 'customer';
-        if (message.CUSTOMER && message.CUSTOMER.USERNAME && message.CUSTOMER.USERNAME.Username) {
-          username = message.CUSTOMER.USERNAME.Username;
+        if (message.CustomerMessages) {
+          // If there are customer messages, set the role to customer and extract customer username
+          role = 'customer';
+          if (message.CUSTOMER && message.CUSTOMER.USERNAME && message.CUSTOMER.USERNAME.Username) {
+            username = message.CUSTOMER.USERNAME.Username;
+          }
+        } else if (message.AdminMessages) {
+          // If there are admin messages, set the role to admin and extract admin username
+          role = 'admin';
+          if (message.ADMIN && message.ADMIN.USERNAME && message.ADMIN.USERNAME.Username) {
+            username = message.ADMIN.USERNAME.Username;
+          }
         }
-      } else if (message.AdminMessages) {
-        // If there are admin messages, set the role to admin and extract admin username
-        role = 'admin';
-        if (message.ADMIN && message.ADMIN.USERNAME && message.ADMIN.USERNAME.Username) {
-          username = message.ADMIN.USERNAME.Username;
+
+        // Check if the message is a URL ending with an image extension
+        const messageText = message.CustomerMessages || message.AdminMessages;
+        const imageUrlRegex = /^https:\/\/.*SignedHeaders=host&x-id=GetObject.*$/i;
+        if (imageUrlRegex.test(messageText)) {
+          imageUrl = messageText;
         }
-      }
 
-      // Check if the message is a URL ending with an image extension
-      const messageText = message.CustomerMessages || message.AdminMessages;
-      const imageUrlRegex = /^https:\/\/.*SignedHeaders=host&x-id=GetObject.*$/i;
-      if (imageUrlRegex.test(messageText)) {
-        imageUrl = messageText;
-      }
+        return {
+          username: username || role.charAt(0).toUpperCase() + role.slice(1), // Use extracted username if available, otherwise set based on role
+          role: role, // Set the role based on the message type (customer or admin)
+          message: messageText, // Extract the message content from the API response
+          createdAt: message.createdAt, // Extract the message timestamp from the API response
+          imageUrl: imageUrl, // Set the imageUrl property for images
+        };
+      });
 
-      return {
-        username: username || role.charAt(0).toUpperCase() + role.slice(1), // Use extracted username if available, otherwise set based on role
-        role: role, // Set the role based on the message type (customer or admin)
-        message: messageText, // Extract the message content from the API response
-        createdAt: message.createdAt, // Extract the message timestamp from the API response
-        imageUrl: imageUrl, // Set the imageUrl property for images
-      };
-    });
-    this.scrollToBottom();
-  } catch (error) {
-    console.error('Error fetching chat history:', error);
-    // Handle errors
-  }
-},
+      this.scrollToBottom();
+    } catch (error) {
+      console.error('Error fetching chat history:', error);
+      // Handle errors
+    }
+  },
     sendMessage() {
       // Check if the message input is not empty
       if (this.messageInput.trim() !== '') {
