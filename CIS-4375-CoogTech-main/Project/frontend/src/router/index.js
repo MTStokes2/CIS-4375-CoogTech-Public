@@ -2,9 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Catalog from '../views/Catalog.vue';
 import ProductDetail from '../views/ProductDetail.vue';
 import Cart from '../views/Cart.vue';
-import AdminDashboard from '../views/AdminDashboard.vue';
-import CustomerList from '../views/CustomerList.vue';
-
+import AdminLayout from '../views/AdminLayout.vue';
+import Admin from '../views/Admin.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,15 +54,31 @@ const router = createRouter({
       component: () => import('../components/AdminChat.vue')
     },
     {
-      path: '/admin-dashboard',        // Define the path
-      name: 'AdminDashboard',          // Name the route
-      component: () => import('../views/AdminDashboard.vue')       // Use the imported AdminDashboard view
-    },
-    {
-      path: '/customers',
-      name: 'CustomerList',
-      component: () => import('../views/CustomerList.vue')
-    }    
+      path: '/admin',
+      component: AdminLayout,
+      children: [
+        {
+          path: '',
+          component: Admin,
+          name: 'Admin'
+        },
+        {
+          path: 'orders',
+          component: () => import('../views/Orders.vue'),
+          name: 'Order Management'
+        },
+        {
+          path: 'customers',
+          component: () => import('../views/CustomerList.vue'),
+          name: 'Customers'
+        }
+      ]
+    }
+    // {
+    //   path: '/:pathMatch(.*)*',
+    //   name: 'NotFound',
+    //   component: () => import('../views/NotFound.vue')
+    // }  
   ]
 });
 

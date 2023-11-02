@@ -10,6 +10,7 @@ let {State_Model} = require('../models/modelAssociations')
 let {City_Model} = require('../models/modelAssociations')
 let {Usernames_Model} = require('../models/modelAssociations')
 let {Passwords_Model} = require('../models/modelAssociations')
+let {Orders_Model} = require('../models/modelAssociations')
 
 //GET all Admins
 router.get('/', (req, res) =>
@@ -163,13 +164,34 @@ router.delete('/Products', async (req, res) => {
   });
 
 //Get All Orders
-router.get('/Orders', (req, res) =>
-    Orders_Model.findAll()
-    .then(Orders => {
-        console.log(Orders)
-        res.json(Orders);
+// router.get('/Orders', (req, res) =>
+//     Orders_Model.findAll()
+//     .then(Orders => {
+//         console.log(Orders)
+//         res.json(Orders);
+//     })
+//     .catch(err => console.log(err)));
+
+//Get All Orders with Customer details
+
+router.get('/Orders', (req, res) => {
+    Orders_Model.findAll({
+        include: [
+            {
+                model: Customers_Model,
+                attributes: ['CustomerFirstName', 'CustomerLastName']
+            }
+        ]
     })
-    .catch(err => console.log(err)));
+    .then(ordersWithCustomerDetails => {
+        res.json(ordersWithCustomerDetails);
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).send('Error retrieving orders.');
+    });
+});
+
 
 //Get Order Details
 router.get('/Orders/:id', async (req, res) => {

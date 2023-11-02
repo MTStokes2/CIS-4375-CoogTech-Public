@@ -1,38 +1,48 @@
 <template>
-  <div class="customers-container">
-    <h1>Customers</h1>
-    <input v-model="searchQuery" placeholder="Search customers..." />
-    <table class="customers-table">
-      <thead>
-        <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Address</th>
-          <th>City</th>
-          <th>State</th>
-          <th>Zip Code</th>
-          <th>Phone</th>
-          <th>Email</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="customer in filteredCustomers" :key="customer.CustomerID">
-          <td>{{ customer.CustomerFirstName }}</td>
-          <td>{{ customer.CustomerLastName }}</td>
-          <td>{{ customer.CustomerAddress }}</td>
-          <td>{{ customer.CITY.City }}</td>
-          <td>{{ customer.STATE.State }}</td>
-          <td>{{ customer.ZipCode }}</td>
-          <td>{{ customer.CustomerPhone }}</td>
-          <td>{{ customer.CustomerEmail }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="main-container">
+    <div class="sidebar-container">
+      <Sidebar @change-tab="handleTabChange" />
+    </div>
+    <div class="customers-container">
+      <h1>Customers</h1>
+      <input v-model="searchQuery" placeholder="Search customers..." />
+      <table class="customers-table">
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip Code</th>
+            <th>Phone</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="customer in filteredCustomers" :key="customer.CustomerID">
+            <td>{{ customer.CustomerFirstName }}</td>
+            <td>{{ customer.CustomerLastName }}</td>
+            <td>{{ customer.CustomerAddress }}</td>
+            <td>{{ customer.CITY.City }}</td>
+            <td>{{ customer.STATE.State }}</td>
+            <td>{{ customer.ZipCode }}</td>
+            <td>{{ customer.CustomerPhone }}</td>
+            <td>{{ customer.CustomerEmail }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <script>
+import Sidebar from '@/components/Sidebar.vue';
+
 export default {
+  components: {
+    Sidebar
+  },
   data() {
     return {
       customers: [],
@@ -51,6 +61,11 @@ export default {
       });
     }
   },
+  methods: {
+    handleTabChange(tab) {
+      // You can define the logic for tab changes here if needed
+    }
+  },
   mounted() {
     fetch("http://localhost:8080/adminData/Customers")
       .then(response => response.json())
@@ -65,12 +80,23 @@ export default {
 </script>
 
 <style scoped>
+.main-container {
+  display: flex;
+  width: 100%;
+}
+
+.sidebar-container {
+  min-width: 250px;  
+  border-right: 1px solid #ddd;
+}
+
 .customers-container {
   font-family: Arial, sans-serif;
   padding: 20px;
   background: #f9f9f9;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  flex: 1;
 }
 
 .customers-table {
@@ -85,8 +111,8 @@ export default {
 }
 
 .customers-table thead tr {
-  background-color: #4c89af; /* Complementary green color */
-  color: #fff; /* White text color for headers */
+  background-color: #4c89af;
+  color: #fff;
 }
 
 .customers-table tbody tr {
@@ -94,16 +120,16 @@ export default {
 }
 
 .customers-table tbody tr:hover {
-  background-color: #f5f5f5; /* Light gray color for hover effect */
+  background-color: #f5f5f5;
 }
 
 h1 {
-  font-size: 24px;           /* Increase font size */
-  font-weight: bold;         /* Make the text bold */
-  margin-bottom: 20px;      /* Add space below the title */
-  text-transform: uppercase; /* Convert text to uppercase */
-  border-bottom: 2px solid #4c89af; /* Add a bottom border */
-  padding-bottom: 10px;     /* Add padding to space out the border */
-  color: #4c89af;           /* Set the text color same as table header */
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #4c89af;
+  padding-bottom: 10px;
+  color: #4c89af;
 }
 </style>
