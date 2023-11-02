@@ -59,8 +59,8 @@ export default {
         // Set the access-token cookie here (if response.data.token contains the token)
         document.cookie = `access-token=${response.data.token}; Secure; SameSite=None`;
 
-        // Redirect to the customerChat route on successful login
-        this.$router.push('/customerChat');
+        // Redirect to the route on successful login
+        this.$router.push('/catalog');
       } catch (error) {
         console.error('Login failed:', error);
         if (error.response) {
