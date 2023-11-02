@@ -10,6 +10,7 @@ let {Usernames_Model} = require('../models/modelAssociations');
 let {Passwords_Model} = require('../models/modelAssociations');
 let {Customers_Model} = require('../models/modelAssociations');
 const { Customer_Chat_Model } = require("../models/models");
+const { validateToken } = require('../src/auth/JWT')
 
 //GET all Products
 router.get('/Products', (req, res) =>
@@ -235,13 +236,13 @@ router.post('/Orders', async (req, res) => {
 });
 
 //Get All Custom Orders a customer has
-router.get('/CustomOrders', async (req, res) => {
-  
+router.get('/CustomOrders', validateToken, async (req, res) => {
+    const { userId, username, role } = req.user
     try {
         //First searches for a Username what matches with the username provided
         const customer = await Usernames_Model.findOne({
         where: {
-            Username: req.body.Username,
+            Username: username,
         },
         });
         

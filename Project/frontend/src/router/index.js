@@ -70,6 +70,11 @@ const router = createRouter({
       path: '/resetusername',
       name: 'resetusername',
       component: () => import('../views/ResetUsername.vue')
+    },
+    {
+      path: '/orderdetails/:id',
+      name: 'OrderDetails',
+      component: () => import('../views/OrderDetails.vue')
     }
   ]
 });

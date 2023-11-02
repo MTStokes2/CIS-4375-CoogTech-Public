@@ -46,12 +46,7 @@ export default {
     return {
       orgName: 'CRAFT SHACK',
     };
-  },
-  created() {
-    axios.get(`${apiURL}/org`).then((res) => {
-      this.orgName = res.data.name;
-    });
-  },
+  }
 };
 </script>
 <style scoped>
