@@ -40,26 +40,30 @@ export default {
     };
   },
   methods: {
-    login() {
-      // Ensure that the username and password are not blank
-      if (!this.username || !this.password) {
-        this.error = 'Username and password are required';
-        return;
-      }
+    async login() {
+      try {
+        if (!this.username || !this.password) {
+          this.error = 'Username and password are required';
+          return;
+        }
 
-      // Make a POST request to the /Login endpoint on the backend server (My env file sets the backend to 8080 if there isnt one it defaults to 3000)
-      axios.post('http://localhost:8080/Login', {
-        Username: this.username,
-        Password: this.password
-      })
-      .then(response => {
+        const response = await axios.post('http://localhost:8080/Login', {
+          Username: this.username,
+          Password: this.password
+        }, {
+          withCredentials: true // Include credentials (cookies) with the request
+        });
+
         console.log('Login successful');
-        this.$router.push('/catalog');
-      })
-      .catch(error => {
+
+        // Set the access-token cookie here (if response.data.token contains the token)
+        document.cookie = `access-token=${response.data.token}; Secure; SameSite=None`;
+
+        // Redirect to the customerChat route on successful login
+        this.$router.push('/customerChat');
+      } catch (error) {
         console.error('Login failed:', error);
         if (error.response) {
-          // The request was made and the server responded with an error status code
           if (error.response.status === 404) {
             this.error = 'Username not found';
           } else if (error.response.status === 401) {
@@ -68,13 +72,11 @@ export default {
             this.error = 'Internal Server Error';
           }
         } else if (error.request) {
-          // The request was made but no response was received
           this.error = 'No response from server';
         } else {
-          // Something happened in setting up the request that triggered an error
           this.error = 'Error setting up the request';
         }
-      });
+      }
     }
   }
 };

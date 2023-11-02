@@ -24,7 +24,8 @@ const createToken = (user) => {
 
 
 const validateToken = (req, res, next) => {
-    const accessToken = req.cookie['access-token']; 
+    const accessToken = req.cookies['access-token'];
+    console.log(accessToken)
 
     if (!accessToken) {
         return res.status(401).json({ error: "Access Denied (Not Authenticated)" });
@@ -33,11 +34,16 @@ const validateToken = (req, res, next) => {
     try {
         const validToken = verify(accessToken, secret_key);
         if (validToken) {
-            req.authenticated = true;
+            // Populate req.user with user information from the token payload
+            req.user = {
+                userId: validToken.userId,
+                username: validToken.username,
+                role: validToken.role
+            };
             return next();
         }
     } catch (err) {
-        return res.status(401).json({ error: "Invalid token" }); 
+        return res.status(401).json({ error: "Invalid token" });
     }
 };
 

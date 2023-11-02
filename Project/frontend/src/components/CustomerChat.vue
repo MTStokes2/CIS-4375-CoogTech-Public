@@ -65,12 +65,35 @@ export default {
   },
   mounted() {
     // Establish socket connection when the component is mounted
-    this.setupSocketConnection();
+    this.fetchUserInfo();
   },
   updated() {
     this.scrollToBottom();
   },
   methods: {
+    async fetchUserInfo() {
+      try {
+        const response = await fetch('http://localhost:8080/UserInformation', {
+          method: 'GET',
+          credentials: 'include', // Use 'include' to send cookies with the request
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.username = data.username;
+          this.role = data.role;
+          this.setupSocketConnection();
+          console.log('Received UserInfo:', data);
+        } else {
+          console.error('Failed to fetch user info');
+        }
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    },
     setupSocketConnection() {
       const socket = io('http://localhost:8080');
 
