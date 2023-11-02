@@ -124,13 +124,13 @@ router.put('/ChangePassword', async (req, res) => {
 
 
 //Get All Orders a customer has
-router.get('/Orders', async (req, res) => {
-  
+router.get('/Orders', validateToken, async (req, res) => {
+    const { userId, username, role } = req.user
     try {
         //First searches for a Username what matches with the username provided
         const customer = await Usernames_Model.findOne({
         where: {
-            Username: req.body.Username,
+            Username: username,
         },
         });
 

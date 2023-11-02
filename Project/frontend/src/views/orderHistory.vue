@@ -1,9 +1,13 @@
 <template>
     <div>
-    <button @click="goToCatalog" class="back-button">Back to Catalog</button>
-      <div class="custom-table-container">
-        <div v-if="customOrderHistory.length > 0">
+      <button @click="goToCatalog" class="back-button">Back to Catalog</button>
+      <div class="tables-container">
+      <!-- Custom Orders Table -->
+      <div v-if="customOrderHistory.length > 0" class="table-section">
+        <h1 class="table-header">Custom Orders</h1>
+        <div class="table-container">
           <table class="custom-table table">
+            <!-- Table headers -->
             <thead>
               <tr class="text-black">
                 <th>Order Number</th>
@@ -18,8 +22,9 @@
                 <th>Date Delivered</th>
               </tr>
             </thead>
+            <!-- Table body -->
             <tbody>
-                <tr v-for="order in customOrderHistory" :key="order.CustomOrderID" @click="navigateToOrderDetails(order.CustomOrderID)">
+              <tr v-for="order in customOrderHistory" :key="order.CustomOrderID" @click="navigateToCustomOrderDetails(order.CustomOrderID)">
                 <td>{{ order.CustomOrderID }}</td>
                 <td>{{ formatDate(order.DateOrdered) }}</td>
                 <td>{{ order.Address }}</td>
@@ -34,10 +39,52 @@
             </tbody>
           </table>
         </div>
-        <div v-else class="text-center text-gray-600 text-lg mt-8">
-          No orders available.
+      </div>
+  
+      <!-- Regular Orders Table -->
+      <div v-if="OrderHistory.length > 0" class="table-section">
+        <h1 class="table-header">Regular Orders</h1>
+        <div class="table-container">
+          <table class="custom-table table">
+            <!-- Table headers -->
+            <thead>
+              <tr class="text-black">
+                <th>Order Number</th>
+                <th>Order Date</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Zip Code</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>Scheduled Delivery Date</th>
+                <th>Date Delivered</th>
+              </tr>
+            </thead>
+            <!-- Table body -->
+            <tbody>
+              <tr v-for="order in OrderHistory" :key="order.OrderID" @click="navigateToOrderDetails(order.OrderID)">
+                <td>{{ order.OrderID }}</td>
+                <td>{{ formatDate(order.DateOrdered) }}</td>
+                <td>{{ order.Address }}</td>
+                <td>{{ order.CityID }}</td>
+                <td>{{ order.StateID }}</td>
+                <td>{{ order.ZipCode }}</td>
+                <td>${{ order.Total.toFixed(2) }}</td>
+                <td :class="getStatusClass(order.StatusID)">{{ getStatusClass(order.StatusID) }}</td>
+                <td>{{ formatDate(order.DateScheduled) }}</td>
+                <td>{{ formatDate(order.DateDelivered) }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
+  
+      <!-- Message for Empty Tables -->
+      <div v-if="customOrderHistory.length === 0 && OrderHistory.length === 0" class="text-center text-gray-600 text-lg mt-8">
+        No orders available.
+      </div>
+    </div>
     </div>
   </template>
 
@@ -47,6 +94,7 @@ export default {
     data() {
         return {
             customOrderHistory: [],
+            OrderHistory: [],
             username: '',
             role: ''
         };
@@ -54,6 +102,7 @@ export default {
     created() {
         this.fetchUserInfo();
         this.fetchCustomOrderHistory();
+        this.fetchOrderHistory();
     },
     methods: {
         async fetchUserInfo() {
@@ -100,6 +149,28 @@ export default {
                 console.error('Error fetching custom order history:', error);
             }
         },
+        async fetchOrderHistory() {
+            try {
+                const response = await fetch('http://localhost:8080/customerData/Orders', {
+                    method: 'GET',
+                    credentials: 'include', // Use 'include' to send cookies with the request
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access-token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    this.OrderHistory = data.Customer_Orders;
+                    console.log('Received Order History:', data);
+                } else {
+                    console.error('Failed to fetch order history');
+                }
+            } catch (error) {
+                console.error('Error fetching order history:', error);
+            }
+        },
         formatDate(date) {
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date(date).toLocaleDateString(undefined, options);
@@ -107,7 +178,7 @@ export default {
         getStatusClass(statusID) {
             return statusID === 1 ? 'Unapproved' : 'Approved';
         },
-        navigateToOrderDetails(customOrderID) {
+        navigateToCustomOrderDetails(customOrderID) {
             // Navigate to the order details page with the CustomOrderID as a route parameter
             this.$router.push({ name: 'OrderDetails', params: { id: customOrderID } });
         },
@@ -119,15 +190,35 @@ export default {
 </script>
   
 <style scoped>
-/* Add some padding to the cells and center the text */
-.custom-table-container table td,
-.custom-table-container table th {
+
+.tables-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Add gap between the tables */
+}
+
+.table-section {
+  background-color: #ffffff; /* White background color */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1); /* Subtle box shadow for embossed effect */
+}
+
+.table-header {
+  text-align: center;
+  font-size: 24px;
+  color: #333; /* Dark color for the headers */
+  margin-bottom: 10px; /* Add space between header and table */
+}
+
+.table-container table td,
+.table-container table th {
   padding: 10px;
   text-align: center;
 }
 
 /* Add a background color to alternating rows for better readability */
-.custom-table-container table tbody tr:nth-child(even) {
+.table-container table tbody tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
@@ -141,11 +232,11 @@ export default {
 }
 
 /* Hover effect on table rows */
-.custom-table-container table tbody tr:hover {
+.table-container table tbody tr:hover {
   background-color: #ddd;
 }
 
-.custom-table-container {
+.table-container {
   background-color: #ffffff; /* White background color */
   padding: 20px;
   border-radius: 10px;
