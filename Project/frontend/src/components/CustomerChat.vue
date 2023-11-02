@@ -58,8 +58,8 @@ export default {
     return {
       messages: [],
       messageInput: '',
-      role: 'customer', // Set the user's role (customer or admin)
-      username: 'jj123', // Set the user's username
+      role: '', // Set the user's role (customer or admin)
+      username: '', // Set the user's username
       customOrderID: '4', // Set the custom order ID
     };
   },
