@@ -32,7 +32,8 @@
     },
     data() {
       return {
-        orderDetails: []
+        orderDetails: [],
+        CustomOrderID: this.$route.params.id,
       };
     },
     created() {
