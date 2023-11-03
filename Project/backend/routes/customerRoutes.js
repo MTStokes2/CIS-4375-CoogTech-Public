@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt')
+const Sequelize = require('sequelize')
 
 let {Products_Model} = require('../models/modelAssociations')
 let {Orders_Model} = require('../models/modelAssociations')
@@ -9,7 +10,10 @@ let {Feedback_Model} = require('../models/modelAssociations')
 let {Usernames_Model} = require('../models/modelAssociations');
 let {Passwords_Model} = require('../models/modelAssociations');
 let {Customers_Model} = require('../models/modelAssociations');
-const { Customer_Chat_Model } = require("../models/models");
+let { Customer_Chat_Model } = require('../models/modelAssociations');
+let { Custom_Products_Order_Model } = require('../models/modelAssociations');
+let { Custom_Products_Model } = require('../models/modelAssociations');
+let { Order_Products_Model } = require('../models/modelAssociations');
 const { validateToken } = require('../src/auth/JWT')
 
 //GET all Products
@@ -174,6 +178,66 @@ router.get('/Orders/:id', async (req, res) => {
         console.log(err)
     }
   });
+
+// Add Product to Order
+router.post('/Orders/:id/products', async (req, res) => {
+    const ProductID = req.body.ProductID;
+    const orderID = req.params.id;
+
+    try {
+        // Check if the order and product exist
+        const order = await Orders_Model.findOne({ where: { OrderID: orderID } });
+        const product = await Products_Model.findOne({ where: { ProductID: ProductID } });
+
+        if (!order || !product) {
+            return res.status(404).json({ message: 'Order or product not found' });
+        }
+
+        // Create an entry in Order_Products_Model to associate the product with the order
+        await Order_Products_Model.create({
+            OrderID: orderID,
+            ProductID: ProductID
+        });
+
+        res.status(201).json({ message: 'Product added to order successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+// Get Associated Products by OrderID
+router.get('/Orders/:id/products', async (req, res) => {
+    const OrderID = req.params.id;
+
+    try {
+        // Find all products associated with the given OrderID
+        const products = await Order_Products_Model.findAll({
+            where: {
+                OrderID: OrderID
+            },
+            include: [
+                {
+                    model: Products_Model
+                }
+            ]
+        });
+        console.log('Retrieved Products:', products);
+
+        if (products.length > 0) {
+            // Extract the products from the result and send the response
+            const extractedProducts = products.map(item => item.PRODUCT.dataValues); 
+            res.status(200).json({ products: extractedProducts });
+        } else {
+            res.status(404).json({ message: 'No products found for the given OrderID' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 //Update an Order (Customer)
 router.put('/Orders/:id', async (req, res) => {

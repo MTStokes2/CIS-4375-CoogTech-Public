@@ -15,17 +15,25 @@
           <p><strong>Scheduled Delivery Date:</strong> {{ formatDate(orderDetails.DateScheduled) }}</p>
           <p><strong>Date Delivered:</strong> {{ formatDate(orderDetails.DateDelivered) }}</p>
         </div>
+        <div class="product-container">
+            <Products :OrderID="OrderID"></Products>
+        </div>
       </div>
     </div>
   </template>
   
   <script>
   import axios from 'axios';
+  import Products from '../components/OrderedProducts.vue';
   
   export default {
+    components: {
+    Products,
+    },
     data() {
       return {
-        orderDetails: []
+        orderDetails: [],
+        OrderID: this.$route.params.id,
       };
     },
     created() {
