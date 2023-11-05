@@ -1,36 +1,31 @@
 <template>
-  <div class="main-container">
-    <div class="sidebar-container">
-      <Sidebar @change-tab="handleTabChange" />
-    </div>
-    <div class="orders-container">
-      <h1>Orders</h1>
-      <table class="orders-table">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Status ID</th>
-            <th>Date Ordered</th>
-            <th>Date Scheduled</th>
-            <th>Date Delivered</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="order in orders" :key="order.OrderID">
-            <td>{{ order.OrderID }}</td>
-            <td>{{ order.StatusID }}</td>
-            <td>{{ order.DateOrdered }}</td>
-            <td>{{ order.DateScheduled }}</td>
-            <td>{{ order.DateDelivered }}</td>
-            <td>
-              <button class="details-btn" @click="openModal(order)">View Details</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <OrderModal :isOpen="isModalOpen" :order="selectedOrder" @close="isModalOpen = false" />
-    </div>
+  <div class="orders-container">
+    <h1>Orders</h1>
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Status ID</th>
+          <th>Date Ordered</th>
+          <th>Date Scheduled</th>
+          <th>Date Delivered</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="order in orders" :key="order.OrderID">
+          <td>{{ order.OrderID }}</td>
+          <td>{{ order.StatusID }}</td>
+          <td>{{ order.DateOrdered }}</td>
+          <td>{{ order.DateScheduled }}</td>
+          <td>{{ order.DateDelivered }}</td>
+          <td>
+            <button class="details-btn" @click="openModal(order)">View Details</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <OrderModal :isOpen="isModalOpen" :order="selectedOrder" @close="isModalOpen = false" />
   </div>
 </template>
 
@@ -55,9 +50,6 @@ export default {
       this.selectedOrder = order;
       this.isModalOpen = true;
     },
-    handleTabChange(tab) {
-      // You can define the logic for tab changes here if needed
-    }
   },
   mounted() {
     fetch("http://localhost:8080/adminData/Orders")
@@ -73,16 +65,6 @@ export default {
 </script>
 
 <style scoped>
-.main-container {
-  display: flex;
-  width: 100%;
-}
-
-.sidebar-container {
-  min-width: 250px;  
-  border-right: 1px solid #ddd;
-}
-
 .orders-container {
   font-family: Arial, sans-serif;
   padding: 20px;
@@ -90,6 +72,7 @@ export default {
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
   flex: 1;
+  margin-left: 20px;
 }
 
 .orders-table {
