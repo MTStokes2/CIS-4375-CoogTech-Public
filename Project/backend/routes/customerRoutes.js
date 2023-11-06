@@ -14,6 +14,9 @@ let { Customer_Chat_Model } = require('../models/modelAssociations');
 let { Custom_Products_Order_Model } = require('../models/modelAssociations');
 let { Custom_Products_Model } = require('../models/modelAssociations');
 let { Order_Products_Model } = require('../models/modelAssociations');
+let { City_Model } = require('../models/modelAssociations');
+let { State_Model } = require('../models/modelAssociations');
+let { Status_Model } = require('../models/modelAssociations');
 const { validateToken } = require('../src/auth/JWT')
 
 //GET all Products
@@ -165,19 +168,36 @@ router.get('/Orders', validateToken, async (req, res) => {
 //Get Order Details
 router.get('/Orders/:id', async (req, res) => {
     try {
-  
         const OrderDetails = await Orders_Model.findOne({
-        where: {
-            OrderID: req.params.id
-        },
+            where: {
+                OrderID: req.params.id
+            },
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+                {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                }
+            ]
         });
 
-        res.status(200).json({ OrderDetails });
-
+        if (OrderDetails) {
+            res.status(200).json({ OrderDetails });
+        } else {
+            res.status(404).json({ message: 'Order not found' });
+        }
     } catch (err) {
-        console.log(err)
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
     }
-  });
+});
 
 // Add Product to Order
 router.post('/Orders/:id/products', async (req, res) => {
@@ -366,19 +386,36 @@ router.get('/CustomOrders', validateToken, async (req, res) => {
 //Get Custom Order Details
 router.get('/CustomOrders/:id', async (req, res) => {
     try {
-  
         const OrderDetails = await Custom_Orders_Model.findOne({
-        where: {
-            CustomOrderID: req.params.id
-        },
+            where: {
+                CustomOrderID: req.params.id
+            },
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+/*                 {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                } */
+            ]
         });
 
-        res.status(200).json({ OrderDetails });
-
+        if (OrderDetails) {
+            res.status(200).json({ OrderDetails });
+        } else {
+            res.status(404).json({ message: 'Custom order not found' });
+        }
     } catch (err) {
-        console.log(err)
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
     }
-  });
+});
 
 //Update an Order (Customer)
 router.put('/CustomOrders/:id', async (req, res) => {

@@ -7,11 +7,11 @@
           <p><strong>Order Number:</strong> {{ orderDetails.CustomOrderID }}</p>
           <p><strong>Order Date:</strong> {{ formatDate(orderDetails.DateOrdered) }}</p>
           <p><strong>Address:</strong> {{ orderDetails.Address }}</p>
-          <p><strong>City:</strong> {{ orderDetails.CityID }}</p>
-          <p><strong>State:</strong> {{ orderDetails.StateID }}</p>
+          <p><strong>City:</strong> {{ orderDetails.CITY.City }}</p>
+          <p><strong>State:</strong> {{ orderDetails.STATE.State }}</p>
           <p><strong>Zip Code:</strong> {{ orderDetails.ZipCode }}</p>
           <p><strong>Total Price:</strong> ${{ orderDetails.Total }}</p>
-          <p><strong>Status:</strong> {{ getStatusText(orderDetails.StatusID) }}</p>
+          <p><strong>Status:</strong> {{ orderDetails.StatusID }}</p> <!--  Replace this with orderDetails.STATUS.StatusID when table are remade-->
           <p><strong>Scheduled Delivery Date:</strong> {{ formatDate(orderDetails.DateScheduled) }}</p>
           <p><strong>Date Delivered:</strong> {{ formatDate(orderDetails.DateDelivered) }}</p>
         </div>
