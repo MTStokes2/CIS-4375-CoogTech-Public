@@ -8,31 +8,6 @@ const config = require('../src/config/config')
 const database = config.database
 
 //---------------------------------------------------//
-//             Test Model                            //
-//---------------------------------------------------//
-const Test_Model = database.define('TEST', {
-    idTEST: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    TESTcol: {
-        type: Sequelize.CHAR
-    },
-    TESTcol1: {
-        type: Sequelize.CHAR
-    },
-    TESTcol2: {
-        type: Sequelize.CHAR
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: false, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
-    }
-);
-
-//---------------------------------------------------//
 //                State Model                        //
 //---------------------------------------------------//
 const State_Model = database.define('STATE', {
@@ -652,7 +627,6 @@ const Custom_Products_Order_Model = database.define('CUSTOM_PRODUCT_ORDERS', {
 
 //There is probably a better and cleaner way to do this....
 module.exports = {
-    Test_Model,
     Customers_Model,
     Admins_Model,
     Usernames_Model,

@@ -148,6 +148,20 @@ router.get('/Orders', validateToken, async (req, res) => {
             where: {
             CustomerID: customer.CustomerID
             },
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+                {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                } 
+            ]
         });
 
         //If there is a match 
@@ -236,7 +250,7 @@ router.post('/Orders/:id/products', async (req, res) => {
         });
 
         res.status(201).json({ message: 'Product added to order successfully' });
-        console.log(Quantity)
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
@@ -321,7 +335,6 @@ router.get('/Orders/:id/products', async (req, res) => {
             ],
             attributes: ['Quantity']
         });
-        console.log('Retrieved Products:', products);
 
         if (products.length > 0) {
             // Extract the products and Quantity from the result and send the response
@@ -415,13 +428,26 @@ router.get('/CustomOrders', validateToken, async (req, res) => {
         },
         });
         
-        console.log('Customer:', customer)
         //If the customer exists
         if (customer) {
         const Customer_Orders = await Custom_Orders_Model.findAll({
             where: {
             CustomerID: customer.CustomerID
             },
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+                {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                } 
+            ]
         });
 
         //If there is a match 
