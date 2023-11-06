@@ -11,7 +11,7 @@
               <th>Type</th>
               <th>Color</th>
               <th>Size</th>
-              <th>Price</th>
+              <th>Price Per Unit</th>
               <th>Quantity</th>
               <th>Image</th>
             </tr>
