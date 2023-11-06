@@ -19,7 +19,10 @@ const cookieParser = require('cookie-parser')
 dotenv.config()
 
 const app = express()
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
 app.use(morgan('combined')) //logs connections
 app.use(bodyParser.json())
 app.use(cookieParser())
@@ -28,7 +31,7 @@ const ChatServer = http.createServer(app);
 const io = socketIo(ChatServer, {
   cors: {
     origin: "http://localhost:5173",
-    methods: ["GET", "POST"]
+    credentials: true,
   }
 });
 
@@ -201,7 +204,7 @@ io.on('connection', (socket) => {
           Bucket: process.env.BUCKET_NAME,
           Key: imageFileName,
           Body: buffer,
-          ContentType: 'image/png/jpg/jpeg',
+          ContentType: 'image/png',
         };
     
         const command = new PutObjectCommand(params);
@@ -281,6 +284,10 @@ app.use('/customerData', require('../routes/customerRoutes'))
 app.use('/adminData', require('../routes/adminRoutes'))
 
 ChatServer.listen(config.PORT, console.log("Server started listening on port : ", config.PORT));
+
+
+
+
 
 
 //error handler
