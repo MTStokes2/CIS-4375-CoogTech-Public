@@ -62,22 +62,26 @@
                 console.error('Error fetching user info:', error);
         }
       },
-          async fetchOrderDetails() {
-              try {
-                  const response = await axios.get(`http://localhost:8080/customerData/Orders/${this.$route.params.id}`);
-                  if (response.status === 200) {
-                      this.orderDetails = response.data.OrderDetails;
-                  } else {
-                      console.error('Failed to fetch order details');
-                  }
-              } catch (error) {
-                  console.error('Error fetching order details:', error);
-              }
-          },
+        async fetchOrderDetails() {
+            try {
+                const response = await axios.get(`http://localhost:8080/customerData/Orders/${this.$route.params.id}`);
+                if (response.status === 200) {
+                    this.orderDetails = response.data.OrderDetails;
+                } else {
+                    console.error('Failed to fetch order details');
+                }
+            } catch (error) {
+                console.error('Error fetching order details:', error);
+        }
+      },
       formatDate(date) {
+        if (!date) {
+          return "Not Delivered yet";
+        }
+
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(date).toLocaleDateString(undefined, options);
-      },
+    },
       goToOrderHistory() {
       // Navigate back to the order history page
       this.$router.push('/orderhistory'); // Update this with the correct route path

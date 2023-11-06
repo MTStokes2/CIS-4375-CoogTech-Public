@@ -24,7 +24,7 @@
                 <td>{{ order.CustomOrderID }}</td>
                 <td>{{ formatDate(order.DateOrdered) }}</td>
                 <td>${{ order.Total.toFixed(2) }}</td>
-                <td :class="getStatusClass(order.StatusID)">{{ getStatusClass(order.StatusID) }}</td>
+                <td>{{ order.STATUS.Status }}</td>
                 <td>{{ formatDate(order.DateScheduled) }}</td>
                 <td>{{ formatDate(order.DateDelivered) }}</td>
               </tr>
@@ -55,7 +55,7 @@
                 <td>{{ order.OrderID }}</td>
                 <td>{{ formatDate(order.DateOrdered) }}</td>
                 <td>${{ order.Total.toFixed(2) }}</td>
-                <td :class="getStatusClass(order.StatusID)">{{ getStatusClass(order.StatusID) }}</td>
+                <td>{{ order.STATUS.Status }}</td>
                 <td>{{ formatDate(order.DateScheduled) }}</td>
                 <td>{{ formatDate(order.DateDelivered) }}</td>
               </tr>
@@ -156,11 +156,12 @@ export default {
             }
         },
         formatDate(date) {
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return new Date(date).toLocaleDateString(undefined, options);
-        },
-        getStatusClass(statusID) {
-            return statusID === 1 ? 'Unapproved' : 'Approved';
+          if (!date) {
+            return "Not Delivered yet";
+          }
+
+          const options = { year: 'numeric', month: 'long', day: 'numeric' };
+          return new Date(date).toLocaleDateString(undefined, options);
         },
         navigateToCustomOrderDetails(customOrderID) {
             // Navigate to the order details page with the CustomOrderID as a route parameter

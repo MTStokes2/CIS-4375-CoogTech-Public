@@ -248,7 +248,14 @@ router.put('/Orders/:id', async (req, res) => {
 
         tableFields.forEach(field => {
             if (req.body[field] !== undefined) {
-                updatedFields[field] = req.body[field];
+                console.log(`Original ${field} value:`, req.body[field]);
+                if (field === 'DateScheduled' || field === 'DateDelivered') {
+                    // Use Moment.js to format the date correctly
+                    updatedFields[field] = moment(req.body[field], 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+                } else {
+                    updatedFields[field] = req.body[field];
+                }
+                console.log(`Formatted ${field} value:`, updatedFields[field]);
             }
         });
 
