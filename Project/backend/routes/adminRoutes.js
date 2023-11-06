@@ -77,7 +77,6 @@ router.get('/Products/:id', async (req, res) => {
     }
   });
 
-
 //GET all Products
 router.get('/Products', (req, res) =>
     Products_Model.findAll()
@@ -113,7 +112,7 @@ router.put('/Products/:id', async (req, res) => {
   
         const product = await Products_Model.findOne({
         where: {
-            ProductName: req.body.ProductName,
+            ProductID: req.params.id,
         },
         });
         
@@ -129,8 +128,7 @@ router.put('/Products/:id', async (req, res) => {
 
         Products_Model.update(updatedFields,{
             where: {
-            ProductID: product.ProductID,
-            ProductName: req.body.ProductName,
+            ProductID: product.ProductID
             },
         });
 
@@ -470,6 +468,23 @@ router.post('/AdminSignUp', async (req, res) => {
     }
   });
 
+//Get Custom Product Details
+router.get('/CustomProducts/:id', async (req, res) => {
+    try {
+  
+        const ProductDetails = await Custom_Products_Model.findOne({
+        where: {
+            CustomProductID: req.params.id,
+        },
+        });
+
+        res.status(200).json({ ProductDetails });
+
+    } catch (err) {
+        console.log(err)
+    }
+  });
+
 // Add Custom Product to a Custom Order
 router.post('/CustomOrders/:id/products', async (req, res) => {
     const CustomProductID = req.body.CustomProductID;
@@ -497,22 +512,34 @@ router.post('/CustomOrders/:id/products', async (req, res) => {
     }
 });
 
-//Get Product Details
-router.get('/Products/:id', async (req, res) => {
+// Remove a Custom Product from a Custom Order
+router.delete('/CustomOrders/:id/products', async (req, res) => {
+    const CustomProductID = req.body.CustomProductID;
+    const CustomOrderID = req.params.id;
+
     try {
-  
-        const ProductDetails = await Products_Model.findOne({
-        where: {
-            ProductID: req.params.id,
-        },
+        // Check if the order and product exist
+        const order = await Custom_Orders_Model.findOne({ where: { CustomOrderID: CustomOrderID } });
+        const product = await Custom_Products_Model.findOne({ where: { CustomProductID: CustomProductID } });
+
+        if (!order || !product) {
+            return res.status(404).json({ message: 'Order or product not found' });
+        }
+
+       // Remove an entry in Order_Custom_Products_Model that associates the product with the order
+        await Custom_Products_Order_Model.destroy({
+            where: {
+                CustomOrderID: CustomOrderID,
+                CustomProductID: CustomProductID
+            }
         });
 
-        res.status(200).json({ ProductDetails });
-
+        res.status(201).json({ message: 'Custom Product removed from order successfully' });
     } catch (err) {
-        console.log(err)
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
     }
-  });
+});
 
 
 //GET all Custom Products
@@ -523,7 +550,8 @@ router.get('/CustomProducts', (req, res) =>
     })
     .catch(err => console.log(err)));
 
-//Add a Product
+
+//Add a Custom Product
 router.post('/CustomProducts', async (req, res) => {
     try {
         //Adds a new Product
@@ -545,13 +573,13 @@ router.post('/CustomProducts', async (req, res) => {
     }
 });
 
-//Update a Product
+//Update a Custom Product
 router.put('/CustomProducts/:id', async (req, res) => {
     try {
   
         const product = await Custom_Products_Model.findOne({
         where: {
-            CustomProductName: req.body.ProductName,
+            CustomProductID: req.params.id,
         },
         });
         
@@ -567,8 +595,7 @@ router.put('/CustomProducts/:id', async (req, res) => {
 
         Custom_Products_Model.update(updatedFields,{
             where: {
-            CustomProductID: product.CustomProductID,
-            CustomProductName: req.body.CustomProductName,
+            CustomProductID: product.CustomProductID
             },
         });
 
@@ -579,13 +606,13 @@ router.put('/CustomProducts/:id', async (req, res) => {
     }
   });
 
-//Delete a Product
-router.delete('/CustomProducts', async (req, res) => {
+//Delete a Custom Product
+router.delete('/CustomProducts/:id', async (req, res) => {
     try {
   
         const product = await Custom_Products_Model.findOne({
         where: {
-            CustomProductName: req.body.ProductName,
+            CustomProductID: req.params.id,
         },
         });
         

@@ -4,7 +4,7 @@
       <div class="order-summary">
         <h2>Order Details</h2>
         <div v-if="orderDetails">
-          <p><strong>Order Number:</strong> {{ orderDetails.CustomOrderID }}</p>
+          <p><strong>Order Number:</strong> {{ orderDetails.OrderID }}</p>
           <p><strong>Order Date:</strong> {{ formatDate(orderDetails.DateOrdered) }}</p>
           <p><strong>Address:</strong> {{ orderDetails.Address }}</p>
           <p><strong>City:</strong> {{ orderDetails.CityID }}</p>

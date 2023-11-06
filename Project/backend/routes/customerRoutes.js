@@ -206,6 +206,34 @@ router.post('/Orders/:id/products', async (req, res) => {
     }
 });
 
+// Remove a Product from an Order
+router.delete('/Orders/:id/products', async (req, res) => {
+    const ProductID = req.body.ProductID;
+    const orderID = req.params.id;
+
+    try {
+        // Check if the order and product exist
+        const order = await Orders_Model.findOne({ where: { OrderID: orderID } });
+        const product = await Products_Model.findOne({ where: { ProductID: ProductID } });
+
+        if (!order || !product) {
+            return res.status(404).json({ message: 'Order or product not found' });
+        }
+
+        // Remove an entry in Order_Products_Model that associates the product with the order
+        await Order_Products_Model.destroy({
+            where: {
+                OrderID: orderID,
+                ProductID: ProductID
+            }
+        });
+
+        res.status(201).json({ message: 'Product removed from order successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 // Get Associated Products by OrderID
 router.get('/Orders/:id/products', async (req, res) => {
