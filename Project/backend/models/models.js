@@ -592,6 +592,12 @@ const Custom_Products_Model = database.define('CUSTOM_PRODUCTS', {
     CustomProductType: {
         type: Sequelize.STRING
     },
+    CustomProductColor: {
+        type: Sequelize.STRING
+    },
+    CustomProductSize: {
+        type: Sequelize.STRING
+    },
     CustomProductPrice: {
         type: Sequelize.FLOAT
     },

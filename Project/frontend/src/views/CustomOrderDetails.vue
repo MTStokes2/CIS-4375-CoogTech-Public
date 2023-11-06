@@ -15,6 +15,9 @@
           <p><strong>Scheduled Delivery Date:</strong> {{ formatDate(orderDetails.DateScheduled) }}</p>
           <p><strong>Date Delivered:</strong> {{ formatDate(orderDetails.DateDelivered) }}</p>
         </div>
+        <div class="product-container">
+            <Products :OrderID="CustomOrderID"></Products>
+        </div>
         <div class="chat-container">
             <ChatComponent :customOrderID="orderDetails.CustomOrderID"></ChatComponent>
         </div>
@@ -25,10 +28,12 @@
   <script>
   import axios from 'axios';
   import ChatComponent from '../components/CustomerChat.vue';
+  import Products from '../components/OrderedCustomProducts.vue';
   
   export default {
     components: {
     ChatComponent,
+    Products
     },
     data() {
       return {

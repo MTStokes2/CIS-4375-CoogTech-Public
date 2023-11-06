@@ -7,7 +7,7 @@ const secret_key = process.env.JWT_SECRET
 
 const router = express.Router();
 
-let {Admins_Model} = require('../models/modelAssociations')
+let {Admins_Model, Custom_Products_Model, Custom_Products_Order_Model} = require('../models/modelAssociations')
 let {Products_Model} = require('../models/modelAssociations')
 let {Customers_Model} = require('../models/modelAssociations')
 let {Status_Model} = require('../models/modelAssociations')
@@ -467,6 +467,141 @@ router.post('/AdminSignUp', async (req, res) => {
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: 'Internal Server Error' });
+    }
+  });
+
+// Add Custom Product to a Custom Order
+router.post('/CustomOrders/:id/products', async (req, res) => {
+    const CustomProductID = req.body.CustomProductID;
+    const CustomOrderID = req.params.id;
+
+    try {
+        // Check if the order and product exist
+        const order = await Custom_Orders_Model.findOne({ where: { CustomOrderID: CustomOrderID } });
+        const product = await Custom_Products_Model.findOne({ where: { CustomProductID: CustomProductID } });
+
+        if (!order || !product) {
+            return res.status(404).json({ message: 'Order or product not found' });
+        }
+
+        // Create an entry in Order_Products_Model to associate the product with the order
+        await Custom_Products_Order_Model.create({
+            CustomOrderID: CustomOrderID,
+            CustomProductID: CustomProductID
+        });
+
+        res.status(201).json({ message: 'Product added to order successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+//Get Product Details
+router.get('/Products/:id', async (req, res) => {
+    try {
+  
+        const ProductDetails = await Products_Model.findOne({
+        where: {
+            ProductID: req.params.id,
+        },
+        });
+
+        res.status(200).json({ ProductDetails });
+
+    } catch (err) {
+        console.log(err)
+    }
+  });
+
+
+//GET all Custom Products
+router.get('/CustomProducts', (req, res) =>
+    Custom_Products_Model.findAll()
+    .then(products => {
+        res.json(products);
+    })
+    .catch(err => console.log(err)));
+
+//Add a Product
+router.post('/CustomProducts', async (req, res) => {
+    try {
+        //Adds a new Product
+        Custom_Products_Model.create(
+            {
+            ChatID: req.body.ChatID,
+            CustomProductName: req.body.CustomProductName,
+            CustomProductType: req.body.CustomProductType,
+            CustomProductColor: req.body.CustomProductColor,
+            CustomProductSize: req.body.CustomProductSize,
+            CustomProductPrice: req.body.CustomProductPrice,
+            CustomProductStock: req.body.CustomProductStock,
+            DesignImage: req.body.DesignImage
+            })
+        //Sends 200 when and a message that the Product was added
+        res.status(200).json({ message: 'Custom Product Added' });
+    } catch(err) {
+        console.log(err)
+    }
+});
+
+//Update a Product
+router.put('/CustomProducts/:id', async (req, res) => {
+    try {
+  
+        const product = await Custom_Products_Model.findOne({
+        where: {
+            CustomProductName: req.body.ProductName,
+        },
+        });
+        
+        if (product) {
+        const updatedFields = {};
+        const tableFields = ['CustomProductName', 'CustomProductType', 'CustomProductColor', 'CustomProductSize', 'CustomProductPrice', 'CustomProductStock', 'DesignImage'];
+
+        tableFields.forEach(field => {
+            if (req.body[field] !== undefined) {
+                updatedFields[field] = req.body[field];
+            }
+        });
+
+        Custom_Products_Model.update(updatedFields,{
+            where: {
+            CustomProductID: product.CustomProductID,
+            CustomProductName: req.body.CustomProductName,
+            },
+        });
+
+        res.status(200).json({ message: 'Product Updated' });
+
+    }} catch (err) {
+        console.log(err)
+    }
+  });
+
+//Delete a Product
+router.delete('/CustomProducts', async (req, res) => {
+    try {
+  
+        const product = await Custom_Products_Model.findOne({
+        where: {
+            CustomProductName: req.body.ProductName,
+        },
+        });
+        
+        if (product) {
+        Custom_Products_Model.destroy(
+            {
+            where: {
+            CustomProductID: product.CustomProductID,
+            CustomProductName: req.body.CustomProductName,
+            },
+        });
+
+        res.status(200).json({ message: 'Product Deleted' });
+
+    }} catch (err) {
+        console.log(err)
     }
   });
 

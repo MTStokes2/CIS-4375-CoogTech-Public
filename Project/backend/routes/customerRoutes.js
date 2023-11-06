@@ -412,6 +412,37 @@ router.post('/CustomOrders', async (req, res) => {
     }
 });
 
+// Get Associated Custom Products by OrderID
+router.get('/CustomOrders/:id/products', async (req, res) => {
+    const CustomOrderID = req.params.id;
+
+    try {
+        // Find all products associated with the given OrderID
+        const products = await Custom_Products_Order_Model.findAll({
+            where: {
+                CustomOrderID: CustomOrderID
+            },
+            include: [
+                {
+                    model: Custom_Products_Model
+                }
+            ]
+        });
+        console.log('Retrieved Products:', products);
+
+        if (products.length > 0) {
+            // Extract the products from the result and send the response
+            const extractedProducts = products.map(item => item.CUSTOM_PRODUCT.dataValues); 
+            res.status(200).json({ products: extractedProducts });
+        } else {
+            res.status(404).json({ message: 'No products found for the given OrderID' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 //Add Feedback
 router.post('/Feedback', async (req, res) => {
     try {
