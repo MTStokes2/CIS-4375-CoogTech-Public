@@ -627,7 +627,6 @@ const Custom_Products_Order_Model = database.define('CUSTOM_PRODUCT_ORDERS', {
 
 //There is probably a better and cleaner way to do this....
 module.exports = {
-    Test_Model,
     Customers_Model,
     Admins_Model,
     Usernames_Model,
