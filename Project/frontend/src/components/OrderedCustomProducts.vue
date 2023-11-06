@@ -12,6 +12,7 @@
               <th>Color</th>
               <th>Size</th>
               <th>Price</th>
+              <th>Quantity</th>
               <th>Image</th>
             </tr>
           </thead>
@@ -24,6 +25,7 @@
               <td>{{ product.CustomProductColor }}</td>
               <td>{{ product.CustomProductSize }}</td>
               <td>${{ product.CustomProductPrice.toFixed(2) }}</td>
+              <td>{{ product.Quantity }}</td>
               <td>{{ product.DesignImage }}</td>
             </tr>
           </tbody>

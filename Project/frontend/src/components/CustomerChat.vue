@@ -57,15 +57,20 @@ export default {
     customOrderID: {
       type: Number, 
       required: true
+    },
+    username: {
+      type: String, 
+      required: true
+    },
+    role: {
+      type: String, 
+      required: true
     }
   },
   data() {
     return {
       messages: [],
       messageInput: '',
-      role: '', // Set the user's role (customer or admin)
-      username: '', // Set the user's username
-
     };
   },
   mounted() {
