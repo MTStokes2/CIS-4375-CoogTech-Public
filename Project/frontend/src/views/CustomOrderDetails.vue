@@ -11,7 +11,7 @@
           <p><strong>State:</strong> {{ orderDetails.STATE.State }}</p>
           <p><strong>Zip Code:</strong> {{ orderDetails.ZipCode }}</p>
           <p><strong>Total Price:</strong> ${{ orderDetails.Total }}</p>
-          <p><strong>Status:</strong> {{ orderDetails.StatusID }}</p> <!--  Replace this with orderDetails.STATUS.StatusID when table are remade-->
+          <p><strong>Status:</strong> {{ orderDetails.STATUS.Status }}</p> 
           <p><strong>Scheduled Delivery Date:</strong> {{ formatDate(orderDetails.DateScheduled) }}</p>
           <p><strong>Date Delivered:</strong> {{ formatDate(orderDetails.DateDelivered) }}</p>
         </div>

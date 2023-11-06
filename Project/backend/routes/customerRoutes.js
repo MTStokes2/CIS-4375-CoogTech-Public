@@ -456,10 +456,10 @@ router.get('/CustomOrders/:id', async (req, res) => {
                     model: City_Model,
                     attributes: ['City'] // Include only the City attribute from City_Model
                 },
-                /* {
+                {
                     model: Status_Model,
                     attributes: ['Status'] // Include only the Status attribute from Status_Model
-                }  */
+                } 
             ]
         });
 
