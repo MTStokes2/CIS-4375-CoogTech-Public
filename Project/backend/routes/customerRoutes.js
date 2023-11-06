@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt')
+const Sequelize = require('sequelize')
 
 let {Products_Model} = require('../models/modelAssociations')
 let {Orders_Model} = require('../models/modelAssociations')
@@ -9,7 +10,13 @@ let {Feedback_Model} = require('../models/modelAssociations')
 let {Usernames_Model} = require('../models/modelAssociations');
 let {Passwords_Model} = require('../models/modelAssociations');
 let {Customers_Model} = require('../models/modelAssociations');
-const { Customer_Chat_Model } = require("../models/models");
+let { Customer_Chat_Model } = require('../models/modelAssociations');
+let { Custom_Products_Order_Model } = require('../models/modelAssociations');
+let { Custom_Products_Model } = require('../models/modelAssociations');
+let { Order_Products_Model } = require('../models/modelAssociations');
+let { City_Model } = require('../models/modelAssociations');
+let { State_Model } = require('../models/modelAssociations');
+let { Status_Model } = require('../models/modelAssociations');
 const { validateToken } = require('../src/auth/JWT')
 
 //GET all Products
@@ -161,19 +168,124 @@ router.get('/Orders', validateToken, async (req, res) => {
 //Get Order Details
 router.get('/Orders/:id', async (req, res) => {
     try {
-  
         const OrderDetails = await Orders_Model.findOne({
-        where: {
-            OrderID: req.params.id
-        },
+            where: {
+                OrderID: req.params.id
+            },
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+                {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                }
+            ]
         });
 
-        res.status(200).json({ OrderDetails });
-
+        if (OrderDetails) {
+            res.status(200).json({ OrderDetails });
+        } else {
+            res.status(404).json({ message: 'Order not found' });
+        }
     } catch (err) {
-        console.log(err)
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
     }
-  });
+});
+
+// Add Product to Order
+router.post('/Orders/:id/products', async (req, res) => {
+    const ProductID = req.body.ProductID;
+    const orderID = req.params.id;
+
+    try {
+        // Check if the order and product exist
+        const order = await Orders_Model.findOne({ where: { OrderID: orderID } });
+        const product = await Products_Model.findOne({ where: { ProductID: ProductID } });
+
+        if (!order || !product) {
+            return res.status(404).json({ message: 'Order or product not found' });
+        }
+
+        // Create an entry in Order_Products_Model to associate the product with the order
+        await Order_Products_Model.create({
+            OrderID: orderID,
+            ProductID: ProductID
+        });
+
+        res.status(201).json({ message: 'Product added to order successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Remove a Product from an Order
+router.delete('/Orders/:id/products', async (req, res) => {
+    const ProductID = req.body.ProductID;
+    const orderID = req.params.id;
+
+    try {
+        // Check if the order and product exist
+        const order = await Orders_Model.findOne({ where: { OrderID: orderID } });
+        const product = await Products_Model.findOne({ where: { ProductID: ProductID } });
+
+        if (!order || !product) {
+            return res.status(404).json({ message: 'Order or product not found' });
+        }
+
+        // Remove an entry in Order_Products_Model that associates the product with the order
+        await Order_Products_Model.destroy({
+            where: {
+                OrderID: orderID,
+                ProductID: ProductID
+            }
+        });
+
+        res.status(201).json({ message: 'Product removed from order successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Get Associated Products by OrderID
+router.get('/Orders/:id/products', async (req, res) => {
+    const OrderID = req.params.id;
+
+    try {
+        // Find all products associated with the given OrderID
+        const products = await Order_Products_Model.findAll({
+            where: {
+                OrderID: OrderID
+            },
+            include: [
+                {
+                    model: Products_Model
+                }
+            ]
+        });
+        console.log('Retrieved Products:', products);
+
+        if (products.length > 0) {
+            // Extract the products from the result and send the response
+            const extractedProducts = products.map(item => item.PRODUCT.dataValues); 
+            res.status(200).json({ products: extractedProducts });
+        } else {
+            res.status(404).json({ message: 'No products found for the given OrderID' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 //Update an Order (Customer)
 router.put('/Orders/:id', async (req, res) => {
@@ -274,19 +386,36 @@ router.get('/CustomOrders', validateToken, async (req, res) => {
 //Get Custom Order Details
 router.get('/CustomOrders/:id', async (req, res) => {
     try {
-  
         const OrderDetails = await Custom_Orders_Model.findOne({
-        where: {
-            CustomOrderID: req.params.id
-        },
+            where: {
+                CustomOrderID: req.params.id
+            },
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+/*                 {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                } */
+            ]
         });
 
-        res.status(200).json({ OrderDetails });
-
+        if (OrderDetails) {
+            res.status(200).json({ OrderDetails });
+        } else {
+            res.status(404).json({ message: 'Custom order not found' });
+        }
     } catch (err) {
-        console.log(err)
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
     }
-  });
+});
 
 //Update an Order (Customer)
 router.put('/CustomOrders/:id', async (req, res) => {
@@ -345,6 +474,37 @@ router.post('/CustomOrders', async (req, res) => {
         res.status(200).json({ message: 'Custom Order Added' });
     } catch(err) {
         console.log(err)
+    }
+});
+
+// Get Associated Custom Products by OrderID
+router.get('/CustomOrders/:id/products', async (req, res) => {
+    const CustomOrderID = req.params.id;
+
+    try {
+        // Find all products associated with the given OrderID
+        const products = await Custom_Products_Order_Model.findAll({
+            where: {
+                CustomOrderID: CustomOrderID
+            },
+            include: [
+                {
+                    model: Custom_Products_Model
+                }
+            ]
+        });
+        console.log('Retrieved Products:', products);
+
+        if (products.length > 0) {
+            // Extract the products from the result and send the response
+            const extractedProducts = products.map(item => item.CUSTOM_PRODUCT.dataValues); 
+            res.status(200).json({ products: extractedProducts });
+        } else {
+            res.status(404).json({ message: 'No products found for the given OrderID' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

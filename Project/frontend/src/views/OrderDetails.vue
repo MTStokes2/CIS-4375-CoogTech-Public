@@ -4,22 +4,19 @@
       <div class="order-summary">
         <h2>Order Details</h2>
         <div v-if="orderDetails">
-          <p><strong>Order Number:</strong> {{ orderDetails.CustomOrderID }}</p>
+          <p><strong>Order Number:</strong> {{ orderDetails.OrderID }}</p>
           <p><strong>Order Date:</strong> {{ formatDate(orderDetails.DateOrdered) }}</p>
           <p><strong>Address:</strong> {{ orderDetails.Address }}</p>
           <p><strong>City:</strong> {{ orderDetails.CITY.City }}</p>
           <p><strong>State:</strong> {{ orderDetails.STATE.State }}</p>
           <p><strong>Zip Code:</strong> {{ orderDetails.ZipCode }}</p>
           <p><strong>Total Price:</strong> ${{ orderDetails.Total }}</p>
-          <p><strong>Status:</strong> {{ orderDetails.StatusID }}</p> <!--  Replace this with orderDetails.STATUS.StatusID when table are remade-->
+          <p><strong>Status:</strong> {{ orderDetails.STATUS.Status }}</p>
           <p><strong>Scheduled Delivery Date:</strong> {{ formatDate(orderDetails.DateScheduled) }}</p>
           <p><strong>Date Delivered:</strong> {{ formatDate(orderDetails.DateDelivered) }}</p>
         </div>
         <div class="product-container">
-            <Products :OrderID="CustomOrderID"></Products>
-        </div>
-        <div class="chat-container">
-            <ChatComponent :customOrderID="orderDetails.CustomOrderID"></ChatComponent>
+            <Products :OrderID="OrderID"></Products>
         </div>
       </div>
     </div>
@@ -27,18 +24,16 @@
   
   <script>
   import axios from 'axios';
-  import ChatComponent from '../components/CustomerChat.vue';
-  import Products from '../components/OrderedCustomProducts.vue';
+  import Products from '../components/OrderedProducts.vue';
   
   export default {
     components: {
-    ChatComponent,
-    Products
+    Products,
     },
     data() {
       return {
         orderDetails: [],
-        CustomOrderID: this.$route.params.id,
+        OrderID: this.$route.params.id,
       };
     },
     created() {
@@ -69,7 +64,7 @@
       },
           async fetchOrderDetails() {
               try {
-                  const response = await axios.get(`http://localhost:8080/customerData/CustomOrders/${this.$route.params.id}`);
+                  const response = await axios.get(`http://localhost:8080/customerData/Orders/${this.$route.params.id}`);
                   if (response.status === 200) {
                       this.orderDetails = response.data.OrderDetails;
                   } else {
@@ -82,9 +77,6 @@
       formatDate(date) {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(date).toLocaleDateString(undefined, options);
-      },
-      getStatusText(statusID) {
-        return statusID === 1 ? 'Unapproved' : 'Approved';
       },
       goToOrderHistory() {
       // Navigate back to the order history page

@@ -2,8 +2,7 @@
   <div class="chat-container">
     <!-- Message container loop -->
     <div id="chat" ref="messageContainer" class="message-container">
-      <div v-for="(message, index) in messages" :key="index" class="message"
-        :class="{ 'customer-message': message.role === 'customer', 'admin-message': message.role === 'admin' }">
+      <div v-for="(message, index) in messages" :key="index" :class="{ 'customer-message': message.role === 'customer', 'admin-message': message.role === 'admin' }">
 
         <!-- Render image message -->
         <template v-if="message.imageUrl">
@@ -56,7 +55,7 @@ import io from 'socket.io-client';
 export default {
   props: {
     customOrderID: {
-      type: String, // Change the type accordingly if CustomOrderID is not a string
+      type: Number, 
       required: true
     }
   },
@@ -66,6 +65,7 @@ export default {
       messageInput: '',
       role: '', // Set the user's role (customer or admin)
       username: '', // Set the user's username
+
     };
   },
   mounted() {
@@ -76,9 +76,16 @@ export default {
     this.scrollToBottom();
   },
   watch: {
-    customOrderID(newVal, oldVal) {
-      this.fetchChatHistory(); // Or any other action you want to perform
-    }
+    customOrderID: {
+      immediate: true, // This ensures the watcher is fired immediately upon component creation
+      handler(newVal) {
+        // Ensure the customOrderID is defined and not null or undefined
+        if (newVal !== null && newVal !== undefined) {
+          this.fetchChatHistory();
+          this.setupSocketConnection();
+        }
+      },
+    },
   },
   methods: {
     async fetchUserInfo() {
@@ -92,7 +99,6 @@ export default {
           const data = await response.json();
           this.username = data.username;
           this.role = data.role;
-          this.setupSocketConnection();
           console.log('Received UserInfo:', data);
         } else {
           console.error('Failed to fetch user info');
@@ -253,8 +259,32 @@ export default {
 .message {
   background-color: #ffffff;
   border-radius: 10px;
+  line-height: 1.2;
+  font-size: 14px;
   padding: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
+  margin-left: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.customer-message {
+  background-color: #ffffff;
+  border-radius: 10px;
+  line-height: 1.2;
+  font-size: 14px;
+  padding: 10px;
+  margin-bottom: 30px;
+  margin-left: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-message {
+  background-color: #ffffff;
+  border-radius: 10px;
+  line-height: 1.2;
+  font-size: 14px;
+  padding: 10px;
+  margin-bottom: 30px;
+  margin-right: 200px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 

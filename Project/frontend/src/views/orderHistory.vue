@@ -12,10 +12,6 @@
               <tr class="text-black">
                 <th>Order Number</th>
                 <th>Order Date</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>State</th>
-                <th>Zip Code</th>
                 <th>Total Price</th>
                 <th>Status</th>
                 <th>Scheduled Delivery Date</th>
@@ -27,10 +23,6 @@
               <tr v-for="order in customOrderHistory" :key="order.CustomOrderID" @click="navigateToCustomOrderDetails(order.CustomOrderID)">
                 <td>{{ order.CustomOrderID }}</td>
                 <td>{{ formatDate(order.DateOrdered) }}</td>
-                <td>{{ order.Address }}</td>
-                <td>{{ order.CityID }}</td>
-                <td>{{ order.StateID }}</td>
-                <td>{{ order.ZipCode }}</td>
                 <td>${{ order.Total.toFixed(2) }}</td>
                 <td :class="getStatusClass(order.StatusID)">{{ getStatusClass(order.StatusID) }}</td>
                 <td>{{ formatDate(order.DateScheduled) }}</td>
@@ -51,10 +43,6 @@
               <tr class="text-black">
                 <th>Order Number</th>
                 <th>Order Date</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>State</th>
-                <th>Zip Code</th>
                 <th>Total Price</th>
                 <th>Status</th>
                 <th>Scheduled Delivery Date</th>
@@ -66,10 +54,6 @@
               <tr v-for="order in OrderHistory" :key="order.OrderID" @click="navigateToOrderDetails(order.OrderID)">
                 <td>{{ order.OrderID }}</td>
                 <td>{{ formatDate(order.DateOrdered) }}</td>
-                <td>{{ order.Address }}</td>
-                <td>{{ order.CityID }}</td>
-                <td>{{ order.StateID }}</td>
-                <td>{{ order.ZipCode }}</td>
                 <td>${{ order.Total.toFixed(2) }}</td>
                 <td :class="getStatusClass(order.StatusID)">{{ getStatusClass(order.StatusID) }}</td>
                 <td>{{ formatDate(order.DateScheduled) }}</td>
@@ -180,7 +164,11 @@ export default {
         },
         navigateToCustomOrderDetails(customOrderID) {
             // Navigate to the order details page with the CustomOrderID as a route parameter
-            this.$router.push({ name: 'OrderDetails', params: { id: customOrderID } });
+            this.$router.push({ name: 'CustomOrderDetails', params: { id: customOrderID } });
+        },
+        navigateToOrderDetails(OrderID) {
+            // Navigate to the order details page with the CustomOrderID as a route parameter
+            this.$router.push({ name: 'OrderDetails', params: { id: OrderID } });
         },
         goToCatalog() {
             this.$router.push('/catalog');

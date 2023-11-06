@@ -75,6 +75,21 @@ const router = createRouter({
       path: '/orderdetails/:id',
       name: 'OrderDetails',
       component: () => import('../views/OrderDetails.vue')
+    },
+    {
+      path: '/customorderdetails/:id',
+      name: 'CustomOrderDetails',
+      component: () => import('../views/CustomOrderDetails.vue')
+    },
+    {
+      path: '/OrderedProducts',
+      name: 'OrderedProducts',
+      component: () => import('../components/OrderedProducts.vue')
+    },
+    {
+      path: '/OrderedCustomProducts',
+      name: 'OrderedCustomProducts',
+      component: () => import('../components/OrderedCustomProducts.vue')
     }
   ]
 });
