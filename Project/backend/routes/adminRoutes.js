@@ -579,6 +579,7 @@ router.get('/CustomProducts/:id', async (req, res) => {
 // Add Custom Product to a Custom Order
 router.post('/CustomOrders/:id/products', async (req, res) => {
     const CustomProductID = req.body.CustomProductID;
+    const Quantity = req.body.Quantity
     const CustomOrderID = req.params.id;
 
     try {
@@ -590,10 +591,24 @@ router.post('/CustomOrders/:id/products', async (req, res) => {
             return res.status(404).json({ message: 'Order or product not found' });
         }
 
+                //get Updated Total for the Order
+                const updatedTotal = parseInt(order.Total) + (parseFloat(product.CustomProductPrice) * parseInt(Quantity))
+
+                //Update the total price for the order
+                await Custom_Orders_Model.update(
+                    {
+                        Total: updatedTotal,
+                    },{
+                        where: {
+                        CustomOrderID: order.CustomOrderID
+                        },
+                    });
+
         // Create an entry in Order_Products_Model to associate the product with the order
         await Custom_Products_Order_Model.create({
+            CustomProductID: CustomProductID,
             CustomOrderID: CustomOrderID,
-            CustomProductID: CustomProductID
+            Quantity: Quantity
         });
 
         res.status(201).json({ message: 'Product added to order successfully' });
@@ -616,6 +631,38 @@ router.delete('/CustomOrders/:id/products', async (req, res) => {
         if (!order || !product) {
             return res.status(404).json({ message: 'Order or product not found' });
         }
+
+        // Get the quantity of the product in the order
+        const orderProduct = await Custom_Products_Order_Model.findOne({
+            where: {
+                CustomOrderID: CustomOrderID,
+                CustomProductID: CustomProductID
+            }
+        });
+
+        if (!orderProduct) {
+            return res.status(404).json({ message: 'Product not found in the order' });
+        }
+
+        const productQuantity = orderProduct.Quantity;
+
+        // Calculate the reduction in total
+        const reduction = parseFloat(product.ProductPrice) * parseInt(productQuantity);
+
+        // Subtract the reduction from the order total
+        const updatedTotal = parseFloat(order.Total) - reduction;
+
+        // Update the total price for the order
+        await Custom_Orders_Model.update(
+            {
+                Total: updatedTotal,
+            },
+            {
+                where: {
+                    CustomOrderID: order.CustomOrderID
+                },
+            }
+        );
 
        // Remove an entry in Order_Custom_Products_Model that associates the product with the order
         await Custom_Products_Order_Model.destroy({

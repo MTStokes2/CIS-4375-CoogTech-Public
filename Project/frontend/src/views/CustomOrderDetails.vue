@@ -19,7 +19,7 @@
             <Products :OrderID="CustomOrderID"></Products>
         </div>
         <div class="chat-container">
-            <ChatComponent :customOrderID="orderDetails.CustomOrderID"></ChatComponent>
+            <ChatComponent :customOrderID="orderDetails.CustomOrderID" :username="this.username" :role="this.role"></ChatComponent>
         </div>
       </div>
     </div>
@@ -39,10 +39,13 @@
       return {
         orderDetails: [],
         CustomOrderID: this.$route.params.id,
+        username: '',
+        role: ''
       };
     },
     created() {
       this.fetchOrderDetails();
+      this.fetchUserInfo();
     },
     methods: {
         async fetchUserInfo() {

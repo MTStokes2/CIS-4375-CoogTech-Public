@@ -12,7 +12,7 @@
               <th>Color</th>
               <th>Size</th>
               <th>Price</th>
-              <th>Image</th>
+              <th>Quantity</th>
             </tr>
           </thead>
           <!-- Table body -->
@@ -24,7 +24,7 @@
               <td>{{ product.ProductColor }}</td>
               <td>{{ product.ProductSize }}</td>
               <td>${{ product.ProductPrice.toFixed(2) }}</td>
-              <td>{{ product.ProductImage }}</td>
+              <td>{{ product.Quantity }}</td>
             </tr>
           </tbody>
         </table>
