@@ -2,6 +2,7 @@ const express = require("express");
 const Sequelize = require('sequelize')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const moment = require('moment');
 const secret_key = process.env.JWT_SECRET
 
 
@@ -18,6 +19,7 @@ let {Passwords_Model} = require('../models/modelAssociations')
 let {Feedback_Model} = require('../models/modelAssociations')
 let {Custom_Orders_Model} = require('../models/modelAssociations')
 let {Orders_Model} = require('../models/modelAssociations')
+let {Order_Products_Model} = require('../models/modelAssociations')
 
 //GET all Admins
 router.get('/', (req, res) =>
@@ -166,29 +168,69 @@ router.delete('/Products', async (req, res) => {
   });
 
 //Get All Orders
-router.get('/Orders', (req, res) =>
-    Orders_Model.findAll()
-    .then(Orders => {
-        res.json(Orders);
-    })
-    .catch(err => console.log(err)));
+router.get('/Orders', async (req, res) => {
+    try {
+        const Orders = await Orders_Model.findAll({
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+                {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                }
+            ]
+        });
+
+        if (Orders && Orders.length > 0) {
+            res.status(200).json({ Orders });
+        } else {
+            res.status(401).json({ message: 'No Orders' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 //Get Order Details
 router.get('/Orders/:id', async (req, res) => {
     try {
-  
         const OrderDetails = await Orders_Model.findOne({
-        where: {
-            OrderID: req.params.id,
-        },
+            where: {
+                OrderID: req.params.id
+            },
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+                {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                }
+            ]
         });
 
-        res.status(200).json({ OrderDetails });
-
+        if (OrderDetails) {
+            res.status(200).json({ OrderDetails });
+        } else {
+            res.status(404).json({ message: 'Order not found' });
+        }
     } catch (err) {
-        console.log(err)
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
     }
-  });
+});
 
 //Update an Order (Admin)
 router.put('/Orders/:id', async (req, res) => {
@@ -250,62 +292,111 @@ router.delete('/Orders/:id', async (req, res) => {
 
 
 //Get All Custom Orders
-router.get('/CustomOrders', (req, res) =>
-    Custom_Orders_Model.findAll()
-    .then(CustomOrders => {
-        res.json(CustomOrders);
-    })
-    .catch(err => console.log(err)));
+router.get('/CustomOrders', async (req, res) => {
+    try {
+        const CustomOrders = await Custom_Orders_Model.findAll({
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+                {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                }
+            ]
+        });
+
+        if (CustomOrders && CustomOrders.length > 0) {
+            res.status(200).json({ CustomOrders });
+        } else {
+            res.status(401).json({ message: 'No Custom Orders' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 //Get Custom Order Details
 router.get('/CustomOrders/:id', async (req, res) => {
     try {
-  
         const OrderDetails = await Custom_Orders_Model.findOne({
-        where: {
-            CustomOrderID: req.params.id,
-        },
+            where: {
+                CustomOrderID: req.params.id
+            },
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+/*                 {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                } */
+            ]
         });
 
-        res.status(200).json({ OrderDetails });
-
+        if (OrderDetails) {
+            res.status(200).json({ OrderDetails });
+        } else {
+            res.status(404).json({ message: 'Custom order not found' });
+        }
     } catch (err) {
-        console.log(err)
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
     }
-  });
+});
 
 //Update a Custom Order (Admin)
 router.put('/CustomOrders/:id', async (req, res) => {
     try {
-  
         const customorder = await Custom_Orders_Model.findOne({
-        where: {
-            CustomOrderID: req.params.id
-        },
-        });
-        
-        if (customorder) {
-        const updatedFields = {};
-        const tableFields = ['StatusID', 'CityID', 'StateID', 'ZipCode', 'Address', 'Total', 'DateScheduled','DateDelivered'];
-
-        tableFields.forEach(field => {
-            if (req.body[field] !== undefined) {
-                updatedFields[field] = req.body[field];
-            }
-        });
-
-        Custom_Orders_Model.update(updatedFields ,{
             where: {
-            CustomOrderID: customorder.CustomOrderID
+                CustomOrderID: req.params.id
             },
         });
 
-        res.status(200).json({ message: 'Custom Order Updated' });
+        if (customorder) {
+            const updatedFields = {};
+            const tableFields = ['StatusID', 'CityID', 'StateID', 'ZipCode', 'Address', 'Total', 'DateScheduled', 'DateDelivered'];
 
-    }} catch (err) {
-        console.log(err)
+            tableFields.forEach(field => {
+                if (req.body[field] !== undefined) {
+                    console.log(`Original ${field} value:`, req.body[field]);
+                    if (field === 'DateScheduled' || field === 'DateDelivered') {
+                        // Use Moment.js to format the date correctly
+                        updatedFields[field] = moment(req.body[field], 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+                    } else {
+                        updatedFields[field] = req.body[field];
+                    }
+                    console.log(`Formatted ${field} value:`, updatedFields[field]);
+                }
+            });
+
+            await Custom_Orders_Model.update(updatedFields, {
+                where: {
+                    CustomOrderID: customorder.CustomOrderID
+                },
+            });
+
+            res.status(200).json({ message: 'Custom Order Updated' });
+        } else {
+            res.status(404).json({ message: 'Custom Order not found' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-  });
+});
 
 //Delete a Custom Order
 router.delete('/CustomOrders/:id', async (req, res) => {
@@ -631,5 +722,296 @@ router.delete('/CustomProducts/:id', async (req, res) => {
         console.log(err)
     }
   });
+
+//Get orders and custom orders between date range
+router.get('/Reports/Between-Dates/', async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        
+
+        // Validate the presence of startDate and endDate parameters
+        if (!startDate || !endDate) {
+            return res.status(400).json({ error: 'Start date and end date are required.' });
+        }
+
+        // Set time components to match the database format
+        const parsedStartDate = moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+        const parsedEndDate = moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+
+        console.log(parsedStartDate, parsedEndDate)
+        // Retrieve orders within the specified date range
+        const orders = await Orders_Model.findAll({
+            where: {
+                DateOrdered: {
+                    [Sequelize.Op.and]: {
+                        [Sequelize.Op.gte]: parsedStartDate,
+                        [Sequelize.Op.lte]: parsedEndDate,
+                    }
+                }
+            },
+            include: [
+                { model: City_Model },
+                { model: State_Model },
+                { model: Status_Model }
+            ]
+        });
+
+        // Retrieve custom orders within the specified date range
+        const customOrders = await Custom_Orders_Model.findAll({
+            where: {
+                DateOrdered: {
+                    [Sequelize.Op.and]: {
+                        [Sequelize.Op.gte]: parsedStartDate,
+                        [Sequelize.Op.lte]: parsedEndDate,
+                    }
+                }
+            },
+            include: [
+                { model: City_Model },
+                { model: State_Model },
+                //{ model: Status_Model }
+            ]
+        });
+
+        if (!orders.length && !customOrders.length) {
+            return res.status(404).json({ error: 'No orders or custom orders found within the specified date range.' });
+        }
+
+        res.status(200).json({ orders, customOrders });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// Gets the Total amount of money made during the time frame
+router.get('/Reports/Between-Dates/Total', async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        // Format the start and end dates to match the database format
+        const parsedStartDate = moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+        const parsedEndDate = moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+
+        const orders = await Orders_Model.findAll({
+            where: {
+                DateOrdered: {
+                    [Sequelize.Op.and]: {
+                        [Sequelize.Op.gte]: parsedStartDate,
+                        [Sequelize.Op.lte]: parsedEndDate,
+                    }
+                }
+            },
+        });
+
+        const customOrders = await Custom_Orders_Model.findAll({
+            where: {
+                DateOrdered: {
+                    [Sequelize.Op.and]: {
+                        [Sequelize.Op.gte]: parsedStartDate,
+                        [Sequelize.Op.lte]: parsedEndDate,
+                    }
+                }
+            },
+        });
+
+        // Calculate total amount made from orders
+        const ordersTotal = orders.reduce((total, order) => total + order.Total, 0);
+
+        // Calculate total amount made from custom orders
+        const customOrdersTotal = customOrders.reduce((total, customOrder) => total + customOrder.Total, 0);
+
+        // Calculate overall total amount made
+        const totalAmountMade = ordersTotal + customOrdersTotal;
+
+        res.json({
+            orders: orders,
+            customOrders: customOrders,
+            totalAmountMade: totalAmountMade,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+//Gets the Top Selling Products during the entered date range
+router.get('/Reports/Top-Selling-Products', async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        const parsedStartDate = moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+        const parsedEndDate = moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+
+        // Validate the presence of startDate and endDate parameters
+        if (!startDate || !endDate) {
+            return res.status(400).json({ error: 'Start date and end date are required.' });
+        }
+
+        // Retrieve top-selling products within the specified date range
+        const topSellingProducts = await Order_Products_Model.findAll({
+            where: {
+                createdAt: {
+                    [Sequelize.Op.and]: {
+                        [Sequelize.Op.gte]: parsedStartDate,
+                        [Sequelize.Op.lte]: parsedEndDate,
+                    }
+                }
+            },
+            attributes: ['ProductID', [Sequelize.fn('sum', Sequelize.col('Quantity')), 'totalQuantity']],
+            group: ['ProductID'],
+            order: [[Sequelize.literal('totalQuantity'), 'DESC']],
+            limit: 10, // Get top 10 products
+            include: [
+                {
+                    model: Products_Model,
+                    attributes: ['ProductName'],
+                },
+            ],
+        });
+
+        res.status(200).json({ topSellingProducts });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+//Gets all of the Unapproved Custom Orders
+router.get('/Reports/Unapproved-Custom-Orders', async (req, res) => {
+    try {
+        // Retrieve unapproved custom orders
+        const unapprovedCustomOrders = await Custom_Orders_Model.findAll({
+            where: {
+                StatusID: {
+                    [Sequelize.Op.not]: [2], // Assuming APPROVED_STATUS_ID is the ID for the approved status
+                },
+            },
+            include: [
+                { model: City_Model },
+                { model: State_Model },
+                { model: Status_Model },
+                { model: Customers_Model },
+            ],
+        });
+
+        res.status(200).json({ unapprovedCustomOrders });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+//Gets all of the Orders and Custom Orders that are Late for Delivery
+router.get('/Reports/Late-Deliveries', async (req, res) => {
+    try {
+        // Get the current date and time
+        const currentDate = new Date();
+
+        // Retrieve late custom orders
+        const lateCustomOrders = await Custom_Orders_Model.findAll({
+            where: {
+                DateScheduled: {
+                    [Sequelize.Op.lt]: currentDate,
+                },
+            },
+            include: [
+                { model: City_Model },
+                { model: State_Model },
+                { model: Status_Model },
+                { model: Customers_Model },
+            ],
+        });
+
+        // Retrieve late regular orders
+        const lateRegularOrders = await Orders_Model.findAll({
+            where: {
+                DateScheduled: {
+                    [Sequelize.Op.lt]: currentDate,
+                },
+            },
+            include: [
+                { model: City_Model },
+                { model: State_Model },
+                { model: Status_Model },
+                { model: Customers_Model },
+            ],
+        });
+
+        res.status(200).json({ lateCustomOrders, lateRegularOrders });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+//Gets the Total sales by each product type
+router.get('/Reports/TotalSalesByType', async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        // Validate the presence of startDate and endDate parameters
+        if (!startDate || !endDate) {
+            return res.status(400).json({ error: 'Start date and end date are required.' });
+        }
+
+        // Retrieve total sales of products by type within the specified date range
+        const totalSalesByType = await Order_Products_Model.findAll({
+            /* where: {
+                createdAt: {
+                    [Sequelize.Op.between]: [startDate, endDate],
+                },
+            }, */
+            include: [
+                {
+                    model: Products_Model,
+                    attributes: ['ProductType'], // Select the ProductType column for grouping
+                },
+            ],
+            attributes: [
+                [Sequelize.fn('sum', Sequelize.col('ProductPrice')), 'totalSales'], // Calculate total sales
+            ],
+            group: ['ProductType'], // Group by ProductType
+        });
+
+        res.status(200).json(totalSalesByType);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+//Top Paying Customer
+router.get('/Reports/TopPayingCustomers', async (req, res) => {
+    try {
+        const topPayingCustomers = await Customers_Model.findAll({
+            attributes: [
+                'CustomerID',
+                'CustomerFirstName',
+                'CustomerLastName',
+                [
+                    Sequelize.literal('COALESCE((SELECT SUM(ORDERS.Total) FROM ORDERS WHERE ORDERS.CustomerID = CUSTOMERS.CustomerID AND ORDERS.DateDelivered IS NOT NULL), 0)'),
+                    'totalOrderSpending'
+                ],
+                [
+                    Sequelize.literal('COALESCE((SELECT SUM(CUSTOM_ORDERS.Total) FROM CUSTOM_ORDERS WHERE CUSTOM_ORDERS.CustomerID = CUSTOMERS.CustomerID AND CUSTOM_ORDERS.DateDelivered IS NOT NULL), 0)'),
+                    'totalCustomOrderSpending'
+                ],
+            ],
+            order: [
+                Sequelize.literal('COALESCE(totalOrderSpending, 0) + COALESCE(totalCustomOrderSpending, 0) DESC')
+            ],
+            limit: 10
+        });
+
+        if (!topPayingCustomers || topPayingCustomers.length === 0) {
+            return res.status(404).json({ error: 'No top paying customers found.' });
+        }
+
+        res.status(200).json(topPayingCustomers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 module.exports = router;

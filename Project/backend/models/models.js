@@ -417,7 +417,10 @@ const Order_Products_Model = database.define('ORDER_PRODUCTS', {
         references: {
             model: Products_Model,
             key: 'ProductID'
-        }
+        },
+    Quantity: {
+        type: Sequelize.INTEGER
+    },
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
@@ -635,7 +638,10 @@ const Custom_Products_Order_Model = database.define('CUSTOM_PRODUCT_ORDERS', {
         references: {
             model: Custom_Products_Model,
             key: 'CustomProductID'
-        }
+        },
+    Quantity: {
+        type: Sequelize.INTEGER
+    },
     }},
      {
         freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
