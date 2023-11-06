@@ -1,19 +1,36 @@
 <template>
-    <div class="calendar">
-      <h2>Calendar</h2>
-      <!-- Your calendar structure goes here -->
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    // Any reactive data or methods related to the calendar would go here
-  };
-  </script>
-  
-  <style scoped>
-  .calendar {
-    /* Add styles here for your calendar */
+  <div class="calendar-container">
+    <FullCalendar :options='calendarOptions' />
+  </div>
+</template>
+
+<script>
+import FullCalendar from '@fullcalendar/vue3'
+import dayGridPlugin from '@fullcalendar/daygrid'
+
+export default {
+  components: {
+    FullCalendar // make the <FullCalendar> tag available
+  },
+  data: function() {
+    return {
+      calendarOptions: {
+        plugins: [dayGridPlugin],
+        initialView: 'dayGridMonth',
+        weekends: false,
+        events: [
+          { title: 'Meeting', start: new Date() }
+        ]
+      }
+    }
   }
-  </style>
-  
+}
+</script>
+
+<style>
+.calendar-container {
+  flex: 1; /* take up only necessary space */
+  padding: 30px; /* for spacing, adjust as needed */
+  /* Add more styles as needed for your specific layout */
+}
+</style>

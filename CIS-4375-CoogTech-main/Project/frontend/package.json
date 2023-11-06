@@ -12,6 +12,9 @@
     "start": "npm run build:css && npm run dev"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.9",
+    "@fullcalendar/daygrid": "^6.1.9",
+    "@fullcalendar/vue3": "^6.1.9",
     "@tailwindcss/forms": "^0.5.6",
     "autoprefixer": "^10.4.16",
     "axios": "^1.5.1",

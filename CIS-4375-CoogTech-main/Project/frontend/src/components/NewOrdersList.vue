@@ -33,6 +33,7 @@
   
   <style scoped>
   .new-orders {
+    flex: 1;
     /* Add styles here for your new orders list */
   }
   </style>
