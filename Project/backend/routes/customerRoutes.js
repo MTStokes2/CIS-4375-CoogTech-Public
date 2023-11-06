@@ -250,7 +250,7 @@ router.post('/Orders/:id/products', async (req, res) => {
         });
 
         res.status(201).json({ message: 'Product added to order successfully' });
-        console.log(Quantity)
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
@@ -335,7 +335,6 @@ router.get('/Orders/:id/products', async (req, res) => {
             ],
             attributes: ['Quantity']
         });
-        console.log('Retrieved Products:', products);
 
         if (products.length > 0) {
             // Extract the products and Quantity from the result and send the response
@@ -429,7 +428,6 @@ router.get('/CustomOrders', validateToken, async (req, res) => {
         },
         });
         
-        console.log('Customer:', customer)
         //If the customer exists
         if (customer) {
         const Customer_Orders = await Custom_Orders_Model.findAll({

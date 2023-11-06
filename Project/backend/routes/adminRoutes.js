@@ -52,7 +52,6 @@ router.get('/Customers', (req, res) => {
         ]
     })
     .then(customers => {
-        console.log(customers);
         res.json(customers);
     })
     .catch(err => {
@@ -248,14 +247,12 @@ router.put('/Orders/:id', async (req, res) => {
 
         tableFields.forEach(field => {
             if (req.body[field] !== undefined) {
-                console.log(`Original ${field} value:`, req.body[field]);
                 if (field === 'DateScheduled' || field === 'DateDelivered') {
                     // Use Moment.js to format the date correctly
                     updatedFields[field] = moment(req.body[field], 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
                 } else {
                     updatedFields[field] = req.body[field];
                 }
-                console.log(`Formatted ${field} value:`, updatedFields[field]);
             }
         });
 
@@ -378,14 +375,12 @@ router.put('/CustomOrders/:id', async (req, res) => {
 
             tableFields.forEach(field => {
                 if (req.body[field] !== undefined) {
-                    console.log(`Original ${field} value:`, req.body[field]);
                     if (field === 'DateScheduled' || field === 'DateDelivered') {
                         // Use Moment.js to format the date correctly
                         updatedFields[field] = moment(req.body[field], 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
                     } else {
                         updatedFields[field] = req.body[field];
                     }
-                    console.log(`Formatted ${field} value:`, updatedFields[field]);
                 }
             });
 
@@ -792,7 +787,6 @@ router.get('/Reports/Between-Dates/', async (req, res) => {
         const parsedStartDate = moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
         const parsedEndDate = moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
 
-        console.log(parsedStartDate, parsedEndDate)
         // Retrieve orders within the specified date range
         const orders = await Orders_Model.findAll({
             where: {
