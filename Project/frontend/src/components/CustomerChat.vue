@@ -14,9 +14,11 @@
             <span class="timestamp">{{ formatTimestamp(message.createdAt) }}</span>
           </div>
           <div class="message-content">
-            <!-- Display image if imageUrl exists -->
-            <img :src="message.imageUrl" alt="Image" class="chat-image" />
-          </div>
+          <div class="image-container">
+          <!-- Display image if imageUrl exists -->
+          <img :src="message.imageUrl" alt="Image" class="chat-image" />
+        </div>
+        </div>
         </template>
 
         <!-- Render text message -->
@@ -166,7 +168,7 @@ export default {
 
         // Check if the message is a URL ending with an image extension
         const messageText = message.CustomerMessages || message.AdminMessages;
-        const imageUrlRegex = /^https:\/\/.*SignedHeaders=host&x-id=GetObject.*$/i;
+        const imageUrlRegex = /^https:\/\/.*\.(png|jpg)$/i;
         if (imageUrlRegex.test(messageText)) {
           imageUrl = messageText;
         }
@@ -397,6 +399,12 @@ input[type="file"] {
 
 .admin-message .message-header {
   background-color: rgba(33, 150, 243, 0.2); /* Faded blue for admin messages */
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .chat-image {

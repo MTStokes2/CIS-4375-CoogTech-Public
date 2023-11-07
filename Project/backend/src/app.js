@@ -207,16 +207,12 @@ io.on('connection', (socket) => {
           ContentType: 'image/png',
         };
     
-        const command = new PutObjectCommand(params);
-    
         // Use S3Client to upload the image
-        const uploadResult = await s3.send(command);
+        const uploadResult = await s3.send(new PutObjectCommand(params));
     
         if (uploadResult.$metadata.httpStatusCode === 200) {
 
-          const getUrl = new GetObjectCommand(params);
-
-          const imageUrl = await getSignedUrl( s3, getUrl)
+          const imageUrl = `https://${process.env.BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com/${imageFileName}`;
           
           console.log(imageUrl)
           // Retrieve or create chat room and get chatID
