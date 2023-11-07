@@ -1,0 +1,13 @@
+DB_NAME = coogtech
+DB_USER = ucantseeme
+DB_PASS = 3rik4sapp
+HOST = thecraftshack.crx5imnnpquk.us-east-1.rds.amazonaws.com
+DIALECT = mysql
+PORT = 8080
+
+JWT_SECRET = d84ef9a83c2b74f25bc91c750f8a63e215f7898cebc6d4a421eb49f42e3db319a4a5
+
+BUCKET_NAME = tcs-admin
+BUCKET_REGION = us-east-2
+AWS_ACCESS_KEY_ID = AKIAZ6AL3BAVXIJSLS6L
+AWS_SECRET_ACCESS_KEY = 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
