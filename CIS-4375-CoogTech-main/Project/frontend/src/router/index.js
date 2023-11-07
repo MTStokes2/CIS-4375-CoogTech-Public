@@ -53,6 +53,46 @@ const router = createRouter({
       component: () => import('../components/AdminChat.vue')
     },
     {
+      path: '/orderhistory',
+      name: 'orderhistory',
+      component: () => import('../views/orderHistory.vue')
+    },
+    {
+      path: '/customorder',
+      name: 'customorder',
+      component: () => import('../views/CustomOrder.vue')
+    },
+    {
+      path: '/resetpassword',
+      name: 'resetpassword',
+      component: () => import('../views/ResetPassword.vue')
+    },
+    {
+      path: '/resetusername',
+      name: 'resetusername',
+      component: () => import('../views/ResetUsername.vue')
+    },
+    {
+      path: '/orderdetails/:id',
+      name: 'OrderDetails',
+      component: () => import('../views/OrderDetails.vue')
+    },
+    {
+      path: '/customorderdetails/:id',
+      name: 'CustomOrderDetails',
+      component: () => import('../views/CustomOrderDetails.vue')
+    },
+    {
+      path: '/OrderedProducts',
+      name: 'OrderedProducts',
+      component: () => import('../components/OrderedProducts.vue')
+    },
+    {
+      path: '/OrderedCustomProducts',
+      name: 'OrderedCustomProducts',
+      component: () => import('../components/OrderedCustomProducts.vue')
+    },
+    {
       path: '/AdminDashboard',
       component: AdminDashboard,
       children: [

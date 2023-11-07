@@ -1,7 +1,8 @@
 <template>
     <div class="products-list">
-        <v-text-field clearable label="Search" v-model="search" @input="filterProducts"
-            prepend-icon="$vuetify"></v-text-field>
+        <v-text-field clearable label="Search by Type" v-model="search" @input="filterProducts"
+              prepend-icon="mdi-magnify"></v-text-field>
+
         <v-row no-gutters>
             <v-col v-for="product in filteredProducts" :key="product.id" cols="12" sm="4"
                 @click="goToProductPage(product.id)">
@@ -41,8 +42,8 @@ const filteredProducts = computed(() => {
     );
 });
 
-const goToProductPage = (id) => {
-    router.push({ name: 'ProductView', params: { id } });
+const goToProductPage = (productID) => {
+    router.push({ name: 'ProductDetail', params: { id: ProductID } });
 }
 
 onMounted(async () => {

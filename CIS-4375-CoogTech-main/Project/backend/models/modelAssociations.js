@@ -133,7 +133,7 @@ Admin_Chat_Model.belongsTo(Chat_Model, {foreignKey: 'ChatID'});
 //---------------------------------------------------//
 
 Status_Model.hasMany(Custom_Orders_Model, {foreignKey: 'StatusID'})
-Custom_Orders_Model.belongsTo(State_Model, {foreignKey: 'StatusID'})
+Custom_Orders_Model.belongsTo(Status_Model, {foreignKey: 'StatusID'})
 
 Status_Model.hasMany(Orders_Model, {foreignKey: 'StatusID'})
 Orders_Model.belongsTo(Status_Model, {foreignKey: 'StatusID'})

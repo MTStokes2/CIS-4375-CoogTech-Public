@@ -4,13 +4,11 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const moment = require('moment');
 const secret_key = process.env.JWT_SECRET
-const AWS = require('aws-sdk');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); // Temporarily stores file
-const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
-const { fromEnv } = require("@aws-sdk/credential-providers")
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner")
-
+const fs = require('fs');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { fromEnv } = require("@aws-sdk/credential-providers");
 
 
 const router = express.Router();
@@ -59,7 +57,6 @@ router.get('/Customers', (req, res) => {
         ]
     })
     .then(customers => {
-        console.log(customers);
         res.json(customers);
     })
     .catch(err => {
@@ -94,76 +91,42 @@ router.get('/Products', (req, res) =>
     })
     .catch(err => console.log(err)));
 
+// POST endpoint for uploading a product
+router.post('/Products', upload.single('ProductImage'), async (req, res) => {
 
-// Configure AWS with your credentials
-const s3 = new S3Client({
-    region: process.env.BUCKET_REGION, // Make sure BUCKET_REGION is defined in your .env file
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID, // Make sure AWS_ACCESS_KEY_ID is defined in your .env file
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, // Make sure AWS_SECRET_ACCESS_KEY is defined in your .env file
-    },
-  });
-  
+    // Set up the S3 client
+    const s3 = new S3Client({
+    region: process.env.BUCKET_REGION,
+    credentials: fromEnv(),
+    });
 
-// //Add a Product
-// router.post('/Products', async (req, res) => {
-//     try {
-//         //Adds a new Product
-//         Products_Model.create(
-//             {
-//             ProductName: req.body.ProductName,
-//             ProductType: req.body.ProductType,
-//             ProductColor: req.body.ProductColor,
-//             ProductSize: req.body.ProductSize,
-//             ProductPrice: req.body.ProductPrice,
-//             ProductStock: req.body.ProductStock,
-//             ProductImage: req.body.ProductImage
-//             })
-//         //Sends 200 when and a message that the Product was added
-//         res.status(200).json({ message: 'Product Added' });
-//     } catch(err) {
-//         console.log(err)
-//     }
-// });
-router.post('/Products', async (req, res) => {
     try {
-        const { ProductName, ProductType, ProductColor, ProductSize, ProductPrice, ProductStock, ProductImage } = req.body;
+        const { ProductName, ProductType, ProductColor, ProductSize, ProductPrice, ProductStock } = req.body;
 
-        console.log('ProductImage:', ProductImage); // Log the ProductImage to debug
-
-        if (typeof ProductImage !== 'string' || !ProductImage) {
-            throw new Error('Invalid or missing image data');
+        // Check if the ProductImage is undefined
+        if (!req.file) {
+            return res.status(400).json({ message: 'No image provided' });
         }
 
-        const matches = ProductImage.match(/^data:(.+);base64,(.*)$/);
-        if (!matches) {
-            throw new Error('Invalid image data format');
-        }
+        console.log('Uploaded File:', req.file); // Log the uploaded file to debug
 
-        const contentType = matches[1];
-        const base64Data = matches[2];
-        const buffer = Buffer.from(base64Data, 'base64');
-        const imageFileName = `${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+        // Read the file from the local file system
+        const fileContent = fs.readFileSync(req.file.path);
 
-        const s3 = new S3Client({
-            region: process.env.BUCKET_REGION,
-            credentials: fromEnv(),
-        });
-
+        // Prepare the S3 upload parameters
         const params = {
             Bucket: process.env.BUCKET_NAME,
-            Key: `${imageFileName}.${contentType.split('/')[1]}`, // e.g., "imageFileName.jpg"
-            Body: buffer,
-            ContentType: contentType, // Dynamic based on the image type
+            Key: req.file.filename, // You might want to add a file extension based on the mimetype
+            Body: fileContent,
+            ContentType: req.file.mimetype,
         };
 
-        const command = new PutObjectCommand(params);
-        const uploadResult = await s3.send(command);
-
+        // Upload the file to S3
+        const uploadResult = await s3.send(new PutObjectCommand(params));
         if (uploadResult.$metadata.httpStatusCode === 200) {
             // The image was uploaded successfully
-            const getUrl = new GetObjectCommand(params);
-            const imageUrl = await getSignedUrl(s3, getUrl);
+            
+            const imageUrl = `https://${process.env.BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com/${req.file.filename}`;
 
             // Create the product with the S3 image URL instead of the base64 string
             const newProduct = await Products_Model.create({
@@ -173,19 +136,26 @@ router.post('/Products', async (req, res) => {
                 ProductSize,
                 ProductPrice,
                 ProductStock,
-                ProductImage: imageUrl, // Store the S3 URL instead of the base64 string
+                ProductImage: imageUrl,
             });
 
             res.status(200).json({ message: 'Product Added', product: newProduct });
+
+            // Delete the local file after uploading to S3
+            fs.unlinkSync(req.file.path);
+
         } else {
             throw new Error('Failed to upload image to S3');
         }
     } catch(err) {
         console.error(err);
         res.status(500).json({ message: 'Failed to add product', error: err.message });
+        // Delete the local file if there was an error
+        if (req.file) {
+            fs.unlinkSync(req.file.path);
+        }
     }
 });
-
 
 //Update a Product
 router.put('/Products/:id', async (req, res) => {
@@ -327,7 +297,12 @@ router.put('/Orders/:id', async (req, res) => {
 
         tableFields.forEach(field => {
             if (req.body[field] !== undefined) {
-                updatedFields[field] = req.body[field];
+                if (field === 'DateScheduled' || field === 'DateDelivered') {
+                    // Use Moment.js to format the date correctly
+                    updatedFields[field] = moment(req.body[field], 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+                } else {
+                    updatedFields[field] = req.body[field];
+                }
             }
         });
 
@@ -450,14 +425,12 @@ router.put('/CustomOrders/:id', async (req, res) => {
 
             tableFields.forEach(field => {
                 if (req.body[field] !== undefined) {
-                    console.log(`Original ${field} value:`, req.body[field]);
                     if (field === 'DateScheduled' || field === 'DateDelivered') {
                         // Use Moment.js to format the date correctly
                         updatedFields[field] = moment(req.body[field], 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
                     } else {
                         updatedFields[field] = req.body[field];
                     }
-                    console.log(`Formatted ${field} value:`, updatedFields[field]);
                 }
             });
 
@@ -658,6 +631,7 @@ router.get('/CustomProducts/:id', async (req, res) => {
 // Add Custom Product to a Custom Order
 router.post('/CustomOrders/:id/products', async (req, res) => {
     const CustomProductID = req.body.CustomProductID;
+    const Quantity = req.body.Quantity
     const CustomOrderID = req.params.id;
 
     try {
@@ -669,10 +643,24 @@ router.post('/CustomOrders/:id/products', async (req, res) => {
             return res.status(404).json({ message: 'Order or product not found' });
         }
 
+                //get Updated Total for the Order
+                const updatedTotal = parseInt(order.Total) + (parseFloat(product.CustomProductPrice) * parseInt(Quantity))
+
+                //Update the total price for the order
+                await Custom_Orders_Model.update(
+                    {
+                        Total: updatedTotal,
+                    },{
+                        where: {
+                        CustomOrderID: order.CustomOrderID
+                        },
+                    });
+
         // Create an entry in Order_Products_Model to associate the product with the order
         await Custom_Products_Order_Model.create({
+            CustomProductID: CustomProductID,
             CustomOrderID: CustomOrderID,
-            CustomProductID: CustomProductID
+            Quantity: Quantity
         });
 
         res.status(201).json({ message: 'Product added to order successfully' });
@@ -695,6 +683,38 @@ router.delete('/CustomOrders/:id/products', async (req, res) => {
         if (!order || !product) {
             return res.status(404).json({ message: 'Order or product not found' });
         }
+
+        // Get the quantity of the product in the order
+        const orderProduct = await Custom_Products_Order_Model.findOne({
+            where: {
+                CustomOrderID: CustomOrderID,
+                CustomProductID: CustomProductID
+            }
+        });
+
+        if (!orderProduct) {
+            return res.status(404).json({ message: 'Product not found in the order' });
+        }
+
+        const productQuantity = orderProduct.Quantity;
+
+        // Calculate the reduction in total
+        const reduction = parseFloat(product.ProductPrice) * parseInt(productQuantity);
+
+        // Subtract the reduction from the order total
+        const updatedTotal = parseFloat(order.Total) - reduction;
+
+        // Update the total price for the order
+        await Custom_Orders_Model.update(
+            {
+                Total: updatedTotal,
+            },
+            {
+                where: {
+                    CustomOrderID: order.CustomOrderID
+                },
+            }
+        );
 
        // Remove an entry in Order_Custom_Products_Model that associates the product with the order
         await Custom_Products_Order_Model.destroy({
@@ -802,6 +822,45 @@ router.delete('/CustomProducts/:id', async (req, res) => {
     }
   });
 
+//AdminDashboard 'main' Unapproved Orders Component
+router.get('/Unapproved-Orders', async (req, res) => {
+    try {
+        // Assuming that StatusID '1' means unapproved for both Custom_Orders_Model and Orders_Model
+        const unapprovedStatusId = 1; 
+
+        // Retrieve unapproved custom orders
+        const unapprovedCustomOrders = await Custom_Orders_Model.findAll({
+            where: { StatusID: unapprovedStatusId },
+            include: [
+                { model: City_Model },
+                { model: State_Model },
+                { model: Status_Model },
+                { model: Customers_Model },
+            ],
+        });
+
+        // Retrieve unapproved regular orders
+        const unapprovedRegularOrders = await Orders_Model.findAll({
+            where: { StatusID: unapprovedStatusId },
+            include: [
+                { model: City_Model },
+                { model: State_Model },
+                { model: Status_Model },
+                { model: Customers_Model },
+            ],
+        });
+
+        // Combine both orders into a single array
+        const combinedOrders = [...unapprovedCustomOrders, ...unapprovedRegularOrders];
+
+        res.status(200).json({ combinedOrders });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 //Get orders and custom orders between date range
 router.get('/Reports/Between-Dates/', async (req, res) => {
     try {
@@ -817,7 +876,6 @@ router.get('/Reports/Between-Dates/', async (req, res) => {
         const parsedStartDate = moment(startDate, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
         const parsedEndDate = moment(endDate, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
 
-        console.log(parsedStartDate, parsedEndDate)
         // Retrieve orders within the specified date range
         const orders = await Orders_Model.findAll({
             where: {

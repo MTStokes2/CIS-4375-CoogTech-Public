@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcrypt')
 const Sequelize = require('sequelize')
+const moment = require('moment');
 
 let {Products_Model} = require('../models/modelAssociations')
 let {Orders_Model} = require('../models/modelAssociations')
@@ -147,6 +148,20 @@ router.get('/Orders', validateToken, async (req, res) => {
             where: {
             CustomerID: customer.CustomerID
             },
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+                {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                } 
+            ]
         });
 
         //If there is a match 
@@ -202,6 +217,7 @@ router.get('/Orders/:id', async (req, res) => {
 // Add Product to Order
 router.post('/Orders/:id/products', async (req, res) => {
     const ProductID = req.body.ProductID;
+    const Quantity = req.body.Quantity
     const orderID = req.params.id;
 
     try {
@@ -213,13 +229,28 @@ router.post('/Orders/:id/products', async (req, res) => {
             return res.status(404).json({ message: 'Order or product not found' });
         }
 
+        //get Updated Total for the Order
+        const updatedTotal = parseInt(order.Total) + (parseFloat(product.ProductPrice) * parseInt(Quantity))
+
+        //Update the total price for the order
+        await Orders_Model.update(
+            {
+                Total: updatedTotal,
+            },{
+                where: {
+                OrderID: order.OrderID
+                },
+            });
+
         // Create an entry in Order_Products_Model to associate the product with the order
         await Order_Products_Model.create({
             OrderID: orderID,
-            ProductID: ProductID
+            ProductID: ProductID,
+            Quantity: parseInt(Quantity)
         });
 
         res.status(201).json({ message: 'Product added to order successfully' });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
@@ -239,6 +270,38 @@ router.delete('/Orders/:id/products', async (req, res) => {
         if (!order || !product) {
             return res.status(404).json({ message: 'Order or product not found' });
         }
+
+        // Get the quantity of the product in the order
+        const orderProduct = await Order_Products_Model.findOne({
+            where: {
+                OrderID: orderID,
+                ProductID: ProductID
+            }
+        });
+
+        if (!orderProduct) {
+            return res.status(404).json({ message: 'Product not found in the order' });
+        }
+
+        const productQuantity = orderProduct.Quantity;
+
+        // Calculate the reduction in total
+        const reduction = parseFloat(product.ProductPrice) * parseInt(productQuantity);
+
+        // Subtract the reduction from the order total
+        const updatedTotal = parseFloat(order.Total) - reduction;
+
+        // Update the total price for the order
+        await Orders_Model.update(
+            {
+                Total: updatedTotal,
+            },
+            {
+                where: {
+                    OrderID: order.OrderID
+                },
+            }
+        );
 
         // Remove an entry in Order_Products_Model that associates the product with the order
         await Order_Products_Model.destroy({
@@ -269,13 +332,18 @@ router.get('/Orders/:id/products', async (req, res) => {
                 {
                     model: Products_Model
                 }
-            ]
+            ],
+            attributes: ['Quantity']
         });
-        console.log('Retrieved Products:', products);
 
         if (products.length > 0) {
-            // Extract the products from the result and send the response
-            const extractedProducts = products.map(item => item.PRODUCT.dataValues); 
+            // Extract the products and Quantity from the result and send the response
+            const extractedProducts = products.map(item => {
+                return {
+                    ...item.PRODUCT.dataValues,
+                    Quantity: item.Quantity // Include the Quantity field in the response object
+                };
+            });
             res.status(200).json({ products: extractedProducts });
         } else {
             res.status(404).json({ message: 'No products found for the given OrderID' });
@@ -321,6 +389,9 @@ router.put('/Orders/:id', async (req, res) => {
 router.post('/Orders', async (req, res) => {
     try {
 
+
+        const parsedDateScheduled = moment(req.body.DateScheduled, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+
         const customer = await Usernames_Model.findOne({
             where: {
                 Username: req.body.Username,
@@ -336,9 +407,8 @@ router.post('/Orders', async (req, res) => {
             StateID: req.body.StateID,
             ZipCode: req.body.ZipCode,
             Address: req.body.Address,
-            Total: req.body.Total,
-            DateOrdered: req.body.DateOrdered,
-            DateScheduled: req.body.DateScheduled
+            Total: "0",
+            DateScheduled: parsedDateScheduled
             })
 
         res.status(200).json({ message: 'Order Added' });
@@ -358,13 +428,26 @@ router.get('/CustomOrders', validateToken, async (req, res) => {
         },
         });
         
-        console.log('Customer:', customer)
         //If the customer exists
         if (customer) {
         const Customer_Orders = await Custom_Orders_Model.findAll({
             where: {
             CustomerID: customer.CustomerID
             },
+            include: [
+                {
+                    model: State_Model,
+                    attributes: ['State'] // Include only the State attribute from State_Model
+                },
+                {
+                    model: City_Model,
+                    attributes: ['City'] // Include only the City attribute from City_Model
+                },
+                {
+                    model: Status_Model,
+                    attributes: ['Status'] // Include only the Status attribute from Status_Model
+                } 
+            ]
         });
 
         //If there is a match 
@@ -399,10 +482,10 @@ router.get('/CustomOrders/:id', async (req, res) => {
                     model: City_Model,
                     attributes: ['City'] // Include only the City attribute from City_Model
                 },
-/*                 {
+                {
                     model: Status_Model,
                     attributes: ['Status'] // Include only the Status attribute from Status_Model
-                } */
+                } 
             ]
         });
 
@@ -451,6 +534,8 @@ router.put('/CustomOrders/:id', async (req, res) => {
 router.post('/CustomOrders', async (req, res) => {
     try {
 
+        const parsedDateScheduled = moment(req.body.DateScheduled, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+
         const customer = await Usernames_Model.findOne({
             where: {
                 Username: req.body.Username,
@@ -466,9 +551,8 @@ router.post('/CustomOrders', async (req, res) => {
             StateID: req.body.StateID,
             ZipCode: req.body.ZipCode,
             Address: req.body.Address,
-            Total: req.body.Total,
-            DateOrdered: req.body.DateOrdered,
-            DateScheduled: req.body.DateScheduled
+            Total: "0",
+            DateScheduled: parsedDateScheduled
             })
 
         res.status(200).json({ message: 'Custom Order Added' });
@@ -491,13 +575,18 @@ router.get('/CustomOrders/:id/products', async (req, res) => {
                 {
                     model: Custom_Products_Model
                 }
-            ]
+            ],
+        attributes: ['Quantity']
         });
-        console.log('Retrieved Products:', products);
 
         if (products.length > 0) {
-            // Extract the products from the result and send the response
-            const extractedProducts = products.map(item => item.CUSTOM_PRODUCT.dataValues); 
+            // Extract the products and Quantity from the result and send the response
+            const extractedProducts = products.map(item => {
+                return {
+                    ...item.CUSTOM_PRODUCT.dataValues,
+                    Quantity: item.Quantity // Include the Quantity field in the response object
+                };
+            });
             res.status(200).json({ products: extractedProducts });
         } else {
             res.status(404).json({ message: 'No products found for the given OrderID' });

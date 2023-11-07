@@ -4,20 +4,9 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const secret_key = process.env.JWT_SECRET
 
-
-const testModel = require('../models/models')
 let {Usernames_Model, Passwords_Model, Customers_Model, Admins_Model, Chat_Model, Customer_Chat_Model, Admin_Chat_Model} = require('../models/modelAssociations')
 
 const { createToken, validateToken } = require('../src/auth/JWT')
-
-//Test Route to find all, sends an OK to browser if anything returns and logs what was returned in the console
-router.get('/test', (req, res) =>
-    testModel.findAll()
-    .then(tests => {
-        console.log(tests)
-        res.sendStatus(200);
-    })
-    .catch(err => console.log(err)));
 
 //SignUp
 router.post('/SignUp', async (req, res) => {
