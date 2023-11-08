@@ -1,7 +1,10 @@
 <template>
     <div class="order-form-container">
-      <h2>Order Form</h2>
       <form @submit.prevent="submitOrder" class="order-form">
+
+        <div class="form-group" v-if="userInfoReceived">
+            <button @click="loadCustomerInfo" class="load-address-button">Use My Address</button>
+        </div>
   
         <div class="form-group">
         <label for="city">City:</label>
@@ -9,7 +12,6 @@
           <option value="1">City A</option>
           <option value="2">Houston</option>
           <option value="3">City C</option>
-          <!-- Add more city options as needed -->
         </select>
       </div>
 
@@ -64,6 +66,8 @@ setup(props) {
         DateScheduled: new Date().toISOString().split('T')[0],
     });
 
+    const userInfoReceived = ref(false);
+
     const router = useRouter();
 
     onMounted(async () => {
@@ -86,12 +90,34 @@ setup(props) {
             orderInfo.value.Username = data.username;
             // Set other user information properties as needed
             console.log('Received UserInfo:', data);
+            userInfoReceived.value = true;
         } else {
             console.error('Failed to fetch user info');
         }
         } catch (error) {
         console.error('Error fetching user info:', error);
         }
+    };
+
+    const loadCustomerInfo = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/customerData/AccountInfo/', {
+          withCredentials: true // Include credentials for authentication if needed
+        });
+
+        if (response.status === 200) {
+          const data = response.data.customer;
+          orderInfo.value.CityID = data.CityID;
+          orderInfo.value.StateID = data.StateID;
+          orderInfo.value.ZipCode = data.ZipCode;
+          orderInfo.value.Address = data.CustomerAddress;
+          console.log('Received Customer:', data);
+        } else {
+          console.error('Failed to fetch user info');
+        }
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
     };
 
     const submitOrder = async () => {
@@ -129,7 +155,9 @@ setup(props) {
 
     return {
         orderInfo,
-        submitOrder
+        submitOrder,
+        loadCustomerInfo,
+        userInfoReceived
     };
 }
 };
@@ -170,18 +198,36 @@ input[type="date"] {
 }
 
 .submit-button {
-  background-color: #4caf50;
+  background-color: #ff6b81;
   color: white;
   border: none;
-  border-radius: 5px;
-  padding: 12px;
-  font-size: 16px;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
 }
 
 .submit-button:hover {
-  background-color: #45a049;
+  background-color: #e74c3c;
 }
+
+.load-address-button {
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px;
+}
+
+.load-address-button:hover {
+  background-color: #e74c3c;
+}
+
 </style>
   

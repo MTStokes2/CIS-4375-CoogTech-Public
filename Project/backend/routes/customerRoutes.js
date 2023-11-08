@@ -66,6 +66,41 @@ router.put('/AccountInfo', async (req, res) => {
     }
 });
 
+//Get Customer Info
+router.get('/AccountInfo/', validateToken, async (req, res) => {
+    const { userId, username, role } = req.user
+    try {
+        const customerId = userId
+
+        const customer = await Customers_Model.findOne({
+            where: {
+                CustomerID: customerId,
+            },
+            attributes: ['CustomerID', 'CityID', 'StateID', 'ZipCode', 'CustomerLastName', 'CustomerFirstName', 'CustomerAddress', 'CustomerPhone', 'CustomerEmail'],
+            include: [
+                {
+                    model: City_Model,
+                    attributes: ['CityID', 'City'],
+                },
+                {
+                    model: State_Model,
+                    attributes: ['StateID', 'State'],
+                },
+            ],
+        });
+
+        if (customer) {
+            res.status(200).json({ customer });
+        } else {
+            res.status(404).json({ message: 'Customer not found' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+
 //Update a Customer's Username
 router.put('/ChangeUsername', async (req, res) => {
     try {
