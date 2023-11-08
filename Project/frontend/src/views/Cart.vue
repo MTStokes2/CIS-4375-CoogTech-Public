@@ -1,27 +1,27 @@
 <template>
-    <v-btn @click="router.push({ name: 'Catalog' })" color="#F5F5DC" variant="elevated">
-        Back to catalog
-    </v-btn>
-    <div v-if="!store.cart.length" style="text-align: center">
-        <h1>Empty Cart ...</h1>
-    </div>
-    <div class="cart-items" v-else>
-        <div class="cart-item" v-for="item in store.cart" :key="item.id">
-            <div class="item-details">
-                <img :src="item.thumbnail" alt="">
-                <br>
-                <span>Brand: {{ item.brand }}</span>
-
-                <span>Category: {{ item.category }}</span>
-                <br>
-                <span>Price: ${{ item.price }}</span>
-                <button @click="removeFromCart(item.id)">Remove</button>
-            </div>
+    <div>
+        <v-btn @click="router.push({ name: 'Catalog' })" color="#F5F5DC" variant="elevated">
+            Back to catalog
+        </v-btn>
+        <div v-if="store.cart.length === 0" style="text-align: center">
+            <h1>Empty Cart...</h1>
         </div>
-        <!-- Display the total price -->
-        <div class="total-section">
-            <p class="bold">Total Price: <span>${{ totalCost }}</span></p>
-            <button class="checkout-button">Checkout</button>
+        <div class="cart-items" v-else>
+            <div class="cart-item" v-for="item in store.cart" :key="item.ProductID">
+                <div class="item-details">
+                    <img :src="item.ProductImage" alt="">
+                    <br>
+                    <span>Brand: {{ item.ProductName }}</span>
+                    <span>Category: {{ item.ProductType }}</span>
+                    <br>
+                    <span>Price: ${{ item.ProductPrice }}</span>
+                    <v-btn @click="removeFromCart(item.ProductID)">Remove</v-btn>
+                </div>
+            </div>
+            <div class="total-section">
+                <p class="bold">Total Price: <span>${{ totalCost }}</span></p>
+                <v-btn @click="checkout" class="checkout-button">Checkout</v-btn>
+            </div>
         </div>
     </div>
 </template>
@@ -29,7 +29,7 @@
 <script>
 import { defineComponent } from "vue";
 export default defineComponent({
-    name: 'CartView'
+    name: 'CartView',
 })
 </script>
   
@@ -38,22 +38,30 @@ import { productsStore } from "@/stores/products";
 import { useRouter } from "vue-router";
 import { computed } from 'vue';
 
-const router = useRouter()
+const router = useRouter();
 
-const store = productsStore()
+const store = productsStore();
 
 const totalCost = computed(() => {
     // Calculate the total cost based on the items in the cart
     return store.cart.reduce((total, item) => {
-        return total + item.price; // Calculate the total price of the items
+        return total + item.ProductPrice; // Calculate the total price of the items
     }, 0);
 });
 
 const removeFromCart = (id) => {
-    store.removeFromCart(id);
+    const itemIndex = store.cart.findIndex(item => item.ProductID === id);
+    if (itemIndex !== -1) {
+        store.cart.splice(itemIndex, 1);
+    }
 }
 
+const checkout = () => {
+    // Implement your checkout logic here
+    router.push({ name: 'Checkout' });
+}
 </script>
+  
 <style scoped>
 .item-details {
     display: flex;
@@ -98,3 +106,4 @@ const removeFromCart = (id) => {
     /* Lighter pink on hover */
 }
 </style>
+  

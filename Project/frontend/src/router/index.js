@@ -13,7 +13,7 @@ const router = createRouter({
     },
     {
       path: '/product/:id',
-      name: 'ProductView',
+      name: 'ProductDetail',
       component: ProductDetail
     },
     {

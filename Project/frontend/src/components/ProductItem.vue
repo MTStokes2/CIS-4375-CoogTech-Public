@@ -1,22 +1,22 @@
 <template>
   <v-sheet class="ma-2 pa-2">
     <v-card class="product" style="background-color: #ffb7c2;">
-      <v-img :src="props.productData.thumbnail" height="200px" cover />
+      <v-img :src="product.ProductImage" height="200px" cover />
 
       <v-card-title>
-        {{ props.productData.brand }}
+        {{ product.ProductName }}
       </v-card-title>
 
       <v-card-subtitle>
-        $ {{ props.productData.price }}
+        $ {{ product.ProductPrice }}
       </v-card-subtitle>
 
       <v-card-text>
-        {{ props.productData.description }}
+        {{ product.ProductType }}
       </v-card-text>
 
       <v-card-actions>
-        <v-btn @click="goToProductPage(props.productData.id)">
+        <v-btn @click="addToCart(product.ProductID)">
           Add to cart
         </v-btn>
       </v-card-actions>
@@ -26,23 +26,25 @@
 
 <script>
 import { defineComponent } from "vue";
+
 export default defineComponent({
   name: 'ProductItem',
-})
+});
 </script>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits } from 'vue';
+
 const props = defineProps({
-  productData: {
+  product: {
     type: Object,
     required: true,
-  }
-})
+  },
+});
 
-const emit = defineEmits(['item-clicked'])
+const emit = defineEmits(['item-clicked']);
 
-const goToProductPage = (productId) => {
-  emit('item-clicked', productId)
-}
+const addToCart = (productId) => {
+  emit('item-clicked', productId);
+};
 </script>
