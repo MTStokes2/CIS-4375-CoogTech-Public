@@ -389,6 +389,7 @@ router.post('/Orders', async (req, res) => {
 
 
         const parsedDateScheduled = moment(req.body.DateScheduled, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+        console.log('Parsed DateScheduled:', parsedDateScheduled);
 
         const customer = await Usernames_Model.findOne({
             where: {
@@ -414,6 +415,7 @@ router.post('/Orders', async (req, res) => {
         res.status(200).json({ message: 'Order Added', OrderID });
     } catch(err) {
         console.log(err)
+        res.status(401).json({ error: 'User not authenticated' });
     }
 });
 

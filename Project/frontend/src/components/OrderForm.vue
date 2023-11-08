@@ -42,6 +42,7 @@
   
 <script>
 import axios from 'axios';
+import moment from 'moment';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -60,7 +61,7 @@ setup(props) {
         StateID: 1,
         ZipCode: '',
         Address: '',
-        DateScheduled: ''
+        DateScheduled: new Date().toISOString().split('T')[0],
     });
 
     const router = useRouter();
@@ -87,6 +88,7 @@ setup(props) {
             console.log('Received UserInfo:', data);
         } else {
             console.error('Failed to fetch user info');
+            this.$router.push('Login');
         }
         } catch (error) {
         console.error('Error fetching user info:', error);
@@ -96,7 +98,18 @@ setup(props) {
     const submitOrder = async () => {
         try {
             // Create the order and obtain its ID
-            const response = await axios.post('http://localhost:8080/customerData/Orders', orderInfo.value);
+            
+            const formattedDate = moment(orderInfo.value.DateScheduled).format('MM/DD/YYYY');
+
+            const response = await axios.post('http://localhost:8080/customerData/Orders', {
+              Username: orderInfo.value.Username,
+              StatusID: orderInfo.value.StatusID,
+              CityID: orderInfo.value.CityID,
+              StateID: orderInfo.value.StateID,
+              ZipCode: orderInfo.value.ZipCode,
+              Address: orderInfo.value.Address,
+              DateScheduled: formattedDate,
+            });
             const OrderID = response.data.OrderID;
 
             // Add products to the created order
@@ -111,6 +124,7 @@ setup(props) {
             router.push({ name: 'orderhistory' });
         } catch (error) {
             console.error('Error creating order and adding products:', error);
+            router.push({ name: 'Login' });
         }
     };
 
