@@ -2,7 +2,9 @@
   <div id="landing-page" class="flex flex-col min-h-screen bg-f8ebe6">
     <header class="py-4 px-6 shadow-sm bg-fafafa">
       <div class="container mx-auto flex justify-between items-center">
+        <router-link to="/" class="text-gray-600 hover:text-gray-500">
         <h1 class="text-2xl text-gray-700 font-semibold">The Craft Shack</h1>
+        </router-link>
         
         <div class="flex space-x-4">
           <router-link to="/cart" class="text-gray-600 hover:text-gray-500">

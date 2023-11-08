@@ -18,6 +18,9 @@
         <div class="product-container">
             <Products :OrderID="CustomOrderID"></Products>
         </div>
+        <div class="notice">
+          <p>Please provide details about the custom item you wish to have, and an admin will work out the details.</p>
+        </div>
         <div class="chat-container">
             <ChatComponent :customOrderID="orderDetails.CustomOrderID" :username="this.username" :role="this.role"></ChatComponent>
         </div>
@@ -126,11 +129,6 @@
   margin-top: 20px;
 }
   
-.chat-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
 .back-button {
   margin-bottom: 20px;
   background-color: #2f2f2f;
@@ -144,6 +142,28 @@
 
 .back-button:hover {
   background-color: #1f1f1f;
+}
+
+.chat-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.notice {
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.notice p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
 }
 
   </style>
