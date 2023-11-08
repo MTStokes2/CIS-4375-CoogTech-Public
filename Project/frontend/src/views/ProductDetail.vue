@@ -13,6 +13,10 @@
                     <p>Color: {{ product.ProductColor }}</p>
                     <p>Size: {{ product.ProductSize }}</p>
                     <p>Stock: {{ product.ProductStock }}</p>
+                    <div class="quantity-input">
+                        <label for="quantity">Qty:</label>
+                        <input id="quantity" type="number" v-model="quantity" min="1" :max="product.ProductStock">
+                    </div>
                     <v-btn @click="addToCart">Add to Cart</v-btn>
                 </v-card>
             </div>
@@ -24,7 +28,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { productsStore } from '@/stores/products';
 
@@ -52,11 +56,17 @@ export default {
             }
         });
 
+         // Computed property to check if product and quantity are defined
+         const isProductValid = computed(() => {
+            return product.value !== null && quantity.value !== undefined && quantity.value > 0;
+        });
+
         const addToCart = () => {
-            if (product.value && quantity.value > 0) {
-            const productWithQuantity = { ...product.value, Quantity: quantity.value };
-            store.addToCart(productWithQuantity);
-            router.push({ name: 'CartView' });
+            if (isProductValid.value) {
+                const productWithQuantity = { ...product.value, Quantity: quantity.value };
+                store.addToCart(productWithQuantity);
+                console.log(productWithQuantity)
+                router.push({ name: 'CartView' });
             }
         };
 
@@ -66,6 +76,7 @@ export default {
 
         return {
             product,
+            quantity,
             addToCart,
             backToCatalog,
         };

@@ -1,34 +1,34 @@
 <template>
-    <div>
-      <v-btn @click="goToCatalog" color="#F5F5DC" variant="elevated">
-        Back to catalog
-      </v-btn>
-      <div class="cart-item" v-for="(item, index) in store.cart" :key="index">
-        <div class="item-details">
-          <img :src="item.ProductImage" alt="">
-          <br>
-          <span>Brand: {{ item.ProductName }}</span>
-          <span>Category: {{ item.ProductType }}</span>
-          <br>
-          <span>Price: ${{ item.ProductPrice }}</span>
-          <div class="quantity-input">
-            <label for="quantity">Qty:</label>
-            <input id="quantity" type="number" v-model="item.Quantity" min="1">
+  <div>
+    <v-btn @click="goToCatalog" color="#F5F5DC" variant="elevated">
+      Back to catalog
+    </v-btn>
+    <div class="cart-item" v-for="(cartItem, index) in cartItems" :key="cartItem.ProductID">
+      <div class="item-details">
+        <img :src="cartItem.ProductImage" alt="">
+        <br>
+        <span>Brand: {{ cartItem.ProductName }}</span>
+        <span>Category: {{ cartItem.ProductType }}</span>
+        <br>
+        <span>Price: ${{ cartItem.ProductPrice }}</span>
+        <div class="quantity-input">
+          <label for="quantity">Qty:</label>
+          <input id="quantity" type="number" v-model="defaultQuantity[index]" min="1" :max="cartItem.ProductStock">
         </div>
-        <v-btn @click="removeFromCart(item.ProductID)">Remove</v-btn>
-        </div>
+        <v-btn @click="removeFromCart (cartItem.ProductID)">Remove</v-btn>
       </div>
-  
-      <div class="total-section">
-        <p class="bold">Total Price: <span>${{ totalCost }}</span></p>
-        <v-btn @click="checkout" class="checkout-button">Checkout</v-btn>
-      </div>
-      <OrderForm :cartData="store.cart" />
     </div>
-  </template>
+
+    <div class="total-section">
+      <p class="bold">Total Price: <span>${{ totalCost }}</span></p>
+      <v-btn @click="checkout" class="checkout-button">Checkout</v-btn>
+    </div>
+    <OrderForm :cartData="cartItems" />
+  </div>
+</template>
   
   <script>
-  import { defineComponent, computed } from 'vue';
+  import { defineComponent, computed, watch, ref } from 'vue';
   import { productsStore } from "@/stores/products";
   import { useRouter } from "vue-router";
   import OrderForm from '../components/OrderForm.vue';
@@ -41,21 +41,31 @@
     setup() {
       const router = useRouter();
       const store = productsStore();
+      const cartItems = computed(() => store.cart);
   
+      const defaultQuantity = ref([]);
+
+      // Initialize defaultQuantity with quantities from cart items
+      watch(cartItems, () => {
+        defaultQuantity.value = cartItems.value.map(item => item.Quantity || 1);
+      }, { immediate: true });
+
+      // Calculate total cost based on defaultQuantity
       const totalCost = computed(() => {
-        // Calculate the total cost based on the items in the cart
-        return store.cart.reduce((total, item) => {
-          return total + item.ProductPrice * item.Quantity;
+        return store.cart.reduce((total, item, index) => {
+          return total + item.ProductPrice * defaultQuantity.value[index];
         }, 0);
       });
+
+      const updateQuantity = (index, value) => {
+        // Update defaultQuantity and recompute totalCost
+        defaultQuantity.value[index] = value;
+        // If needed, you can also update the cart with the new quantity here
+      };
   
       const removeFromCart = (productId) => {
-        // Find the index of the product in the cart
-        const index = store.cart.findIndex(item => item.ProductID === productId);
-        if (index !== -1) {
-          // Remove the product from the cart
-          store.cart.splice(index, 1);
-        }
+      // Remove the product from the cart
+      store.cart = store.cart.filter(item => item.ProductID !== productId);
       };
   
       const checkout = () => {
@@ -69,10 +79,12 @@
   
       return {
         totalCost,
+        cartItems,
+        defaultQuantity,
+        updateQuantity,
         removeFromCart,
         checkout,
         goToCatalog,
-        store // Ensure store is accessible in the template
       };
     }
   });

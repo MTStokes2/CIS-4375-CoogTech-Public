@@ -23,16 +23,17 @@ export const productsStore = defineStore('products', {
       }
     },
 
-    addToCart(product, quantity) {
+    addToCart(productWithQuantity) {
       // Check if the product is already in the cart
-      const existingProductIndex = this.cart.findIndex(item => item.ProductID === product.ProductID);
-
+      const existingProductIndex = this.cart.findIndex(item => item.ProductID === productWithQuantity.ProductID);
+    
       if (existingProductIndex !== -1) {
         // If the product is already in the cart, update its quantity
-        this.cart[existingProductIndex].Quantity += quantity;
+        this.cart[existingProductIndex].Quantity += productWithQuantity.Quantity;
       } else {
         // If the product is not in the cart, add it with the specified quantity
-        this.cart.push({ ProductID: product.ProductID, Quantity: quantity });
+        this.cart.push(productWithQuantity);
+        console.log(productWithQuantity)
       }
     },
 
