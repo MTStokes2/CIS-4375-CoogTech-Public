@@ -4,6 +4,11 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const moment = require('moment');
 const secret_key = process.env.JWT_SECRET
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // Temporarily stores file
+const fs = require('fs');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { fromEnv } = require("@aws-sdk/credential-providers");
 
 
 const router = express.Router();
@@ -86,24 +91,69 @@ router.get('/Products', (req, res) =>
     })
     .catch(err => console.log(err)));
 
-//Add a Product
-router.post('/Products', async (req, res) => {
+// POST endpoint for uploading a product
+router.post('/Products', upload.single('ProductImage'), async (req, res) => {
+
+    // Set up the S3 client
+    const s3 = new S3Client({
+    region: process.env.BUCKET_REGION,
+    credentials: fromEnv(),
+    });
+
     try {
-        //Adds a new Product
-        Products_Model.create(
-            {
-            ProductName: req.body.ProductName,
-            ProductType: req.body.ProductType,
-            ProductColor: req.body.ProductColor,
-            ProductSize: req.body.ProductSize,
-            ProductPrice: req.body.ProductPrice,
-            ProductStock: req.body.ProductStock,
-            ProductImage: req.body.ProductImage
-            })
-        //Sends 200 when and a message that the Product was added
-        res.status(200).json({ message: 'Product Added' });
+        const { ProductName, ProductType, ProductColor, ProductSize, ProductPrice, ProductStock } = req.body;
+
+        // Check if the ProductImage is undefined
+        if (!req.file) {
+            return res.status(400).json({ message: 'No image provided' });
+        }
+
+        console.log('Uploaded File:', req.file); // Log the uploaded file to debug
+
+        // Read the file from the local file system
+        const fileContent = fs.readFileSync(req.file.path);
+
+        // Prepare the S3 upload parameters
+        const params = {
+            Bucket: process.env.BUCKET_NAME,
+            Key: req.file.filename, // You might want to add a file extension based on the mimetype
+            Body: fileContent,
+            ContentType: req.file.mimetype,
+        };
+
+        // Upload the file to S3
+        const uploadResult = await s3.send(new PutObjectCommand(params));
+        if (uploadResult.$metadata.httpStatusCode === 200) {
+            // The image was uploaded successfully
+            
+            const imageUrl = `https://${process.env.BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com/${req.file.filename}`;
+
+            // Create the product with the S3 image URL instead of the base64 string
+            const newProduct = await Products_Model.create({
+                ProductName,
+                ProductType,
+                ProductColor,
+                ProductSize,
+                ProductPrice,
+                ProductStock,
+                ProductImage: imageUrl,
+            });
+
+            res.status(200).json({ message: 'Product Added', product: newProduct });
+
+            // Delete the local file after uploading to S3
+            fs.unlinkSync(req.file.path);
+
+        } else {
+            throw new Error('Failed to upload image to S3');
+        }
     } catch(err) {
-        console.log(err)
+        console.error(err);
+        res.status(500).json({ message: 'Failed to add product', error: err.message });
+        // Delete the local file if there was an error
+        if (req.file) {
+            fs.unlinkSync(req.file.path);
+        }
     }
 });
 
