@@ -71,7 +71,7 @@
                 <label class="block text-green-700 text-sm font-bold mb-2" for="username">Username</label>
                 <input v-model="userData.Username"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
-                    type="password" id="Username" placeholder="Enter your password" required />
+                    type="text" id="Username" placeholder="Enter your password" required />
             </div>
 
             <!-- Password -->
@@ -127,6 +127,7 @@ export default {
                     // Handle a successful response, e.g., show a success message or redirect
                     console.log('Signup successful', response.data);
                     // Redirect to a success page or perform other actions as needed.
+                    this.$router.push('/Login');
                 })
                 .catch(error => {
                     // Handle errors, show error messages, or redirect to an error page

@@ -106,7 +106,6 @@ router.put('/ChangePassword', async (req, res) => {
                 CustomerEmail: req.body.CustomerEmail,
             },
         });
-
         if (customer) {
             // Update the password with the hashed value
             await Passwords_Model.update(
