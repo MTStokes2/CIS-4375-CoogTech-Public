@@ -1,74 +1,45 @@
 <template>
-  <div id="landing-page">
-    <header class="py-4 px-6 shadow-md flex justify-between items-center" style="background-color: #F5F5DC;">
-      <div class="grow w-4/5">
-        <section class="justify-between items-center h-24 flex">
-          <div class="flex items-center">
-            <h1 class="mr-80 bold text-3xl text-green-200">{{ orgName }}</h1>
-          </div>
-          <div class="flex space-x-4">
-            <a href="#about-us" class="text-green-200 hover:text-green-200">
-              <span style="position: relative; top: 6px" class="material-icons">search</span>
-              About Us
-            </a>
-            <router-link to="/contact" class="text-green-200 hover:text-green-200">
-              <span style="position: relative; top: 6px" class="material-icons">phone</span>
-              Contact Us
-            </router-link>
-            <router-link to="/login" class="text-green-200 hover:text-green-200">
-              <span style="position: relative; top: 6px" class="material-icons">person</span>
-              Login
-            </router-link>
-          </div>
-        </section>
+  <div id="landing-page" class="flex flex-col min-h-screen bg-f8ebe6">
+    <header class="py-4 px-6 shadow-sm bg-fafafa">
+      <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-2xl text-gray-700 font-semibold">The Craft Shack</h1>
+        
+        <div class="flex space-x-4">
+          <a href="/#about-us" class="text-gray-600 hover:text-gray-500">
+            <span class="material-icons">search</span>
+          </a>
+          <router-link to="/contact" class="text-gray-600 hover:text-gray-500">
+            <span class="material-icons">phone</span>
+          </router-link>
+          <router-link to="/login" class="text-gray-600 hover:text-gray-500">
+            <span class="material-icons">person</span>
+          </router-link>
+        </div>
       </div>
     </header>
-    <main class="mt-20">
+    
+    <main class="flex-grow container mx-auto py-8">
       <router-view></router-view>
     </main>
-    <!-- Footer section -->
-    <footer style="background-color: #F5F5DC;">
-      <div class="text-center">
-
-        <p class="text-green-700 text-sm" style="color: rgb(4, 69, 4);">&copy; 2023 CraftShack. All rights reserved.</p>
-        <br>
+    
+    <footer class="py-4 bg-fafafa">
+      <div class="text-center text-gray-600">
+        <p class="text-sm">&copy; 2023 CraftShack. All rights reserved.</p>
       </div>
     </footer>
   </div>
 </template>
+
 <script>
-import axios from 'axios';
 const apiURL = import.meta.env.VITE_ROOT_API;
-
-export default {
-  name: 'App',
-  data() {
-    return {
-      orgName: 'CRAFT SHACK',
-    };
-  }
-};
 </script>
+
 <style scoped>
-#landing-page {
-  /* This CSS custom property allows dynamic background color */
-  --custom-background-color: #ffb7c2;
-  /* Set background color of the #landing-page container to yellow */
-  background-color: #ffb7c2;
+.bg-f8ebe6 {
+  background-color: #F8EBE6;
 }
 
-/* Set the background color of the entire body to yellow */
-body {
-  background-color: #ffb7c2;
-}
-
-/* Override text color with !important */
-.text-green-200 {
-  color: rgb(4, 69, 4) !important;
-}
-
-/* Align the links and name to their respective sides */
-.flex {
-  justify-content: space-between;
+.bg-fafafa {
+  background-color: #FAFAFA;
 }
 </style>

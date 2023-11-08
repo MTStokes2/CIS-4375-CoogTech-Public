@@ -58,12 +58,19 @@ export default {
         });
 
         console.log('Login successful');
+        const role = response.data.role;
 
         // Set the access-token cookie here (if response.data.token contains the token)
         document.cookie = `access-token=${response.data.token}; Secure; SameSite=None`;
 
-        // Redirect to the route on successful login
-        this.$router.push('/catalog');
+        // Redirect based on user role
+        if (role === 'customer') {
+          this.$router.push('/catalog');
+        } else if (role === 'admin') {
+          this.$router.push('/AdminDashboard');
+        } else {
+          console.error('Unknown role:', role);
+        }
       } catch (error) {
         console.error('Login failed:', error);
         if (error.response) {
