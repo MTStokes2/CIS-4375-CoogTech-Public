@@ -23,13 +23,22 @@ export const productsStore = defineStore('products', {
       }
     },
 
-    addToCart(product) {
-      this.cart.push(product);
+    addToCart(product, quantity) {
+      // Check if the product is already in the cart
+      const existingProductIndex = this.cart.findIndex(item => item.ProductID === product.ProductID);
+
+      if (existingProductIndex !== -1) {
+        // If the product is already in the cart, update its quantity
+        this.cart[existingProductIndex].Quantity += quantity;
+      } else {
+        // If the product is not in the cart, add it with the specified quantity
+        this.cart.push({ ProductID: product.ProductID, Quantity: quantity });
+      }
     },
 
-    removeFromCart(id) {
-      console.log('>>>>> ID', id);
-      this.cart = this.cart.filter((item) => item.id !== id);
+
+    removeFromCart(productId) {
+      this.cart = this.cart.filter(item => item.ProductID !== productId);
     },
   },
 });

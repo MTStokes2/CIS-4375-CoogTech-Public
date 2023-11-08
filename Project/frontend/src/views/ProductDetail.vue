@@ -34,6 +34,8 @@ export default {
         const router = useRouter();
         const store = productsStore();
         const product = ref(null);
+        const quantity = ref(1); // Default quantity is set to 1
+
 
         // Fetch product details when the component is mounted
         onMounted(async () => {
@@ -51,9 +53,10 @@ export default {
         });
 
         const addToCart = () => {
-            if (product.value) {
-                store.addToCart(product.value);
-                router.push({ name: 'CartView' });
+            if (product.value && quantity.value > 0) {
+            const productWithQuantity = { ...product.value, Quantity: quantity.value };
+            store.addToCart(productWithQuantity);
+            router.push({ name: 'CartView' });
             }
         };
 

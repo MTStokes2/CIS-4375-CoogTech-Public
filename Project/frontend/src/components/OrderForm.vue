@@ -37,7 +37,6 @@
   
         <button type="submit" class="submit-button">Submit Order</button>
       </form>
-      <button @click="goToCart" class="back-to-cart-button">Back to Cart</button>
   </div>
   </template>
   
@@ -109,20 +108,14 @@ setup(props) {
             }
 
             // Order and products added successfully, navigate to success page or any other route
-            router.push({ name: 'Success' });
-            this.$router.push('/orderhistory');
+            router.push({ name: 'orderhistory' });
         } catch (error) {
             console.error('Error creating order and adding products:', error);
         }
     };
 
-    const goToCart = () => {
-        router.push({ name: 'CartView' });
-    };
-
     return {
         orderInfo,
-        goToCart,
         submitOrder
     };
 }
