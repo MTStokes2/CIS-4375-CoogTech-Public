@@ -58,6 +58,7 @@ export default {
         });
 
         console.log('Login successful');
+        
         const role = response.data.role;
 
         // Set the access-token cookie here (if response.data.token contains the token)
@@ -71,6 +72,7 @@ export default {
         } else {
           console.error('Unknown role:', role);
         }
+
       } catch (error) {
         console.error('Login failed:', error);
         if (error.response) {
