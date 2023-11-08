@@ -17,7 +17,7 @@ export default {
       calendarOptions: {
         plugins: [dayGridPlugin],
         initialView: 'dayGridMonth',
-        weekends: false,
+        weekends: true,
         events: [
           { title: 'Meeting', start: new Date() }
         ]
@@ -30,7 +30,8 @@ export default {
 <style>
 .calendar-container {
   flex: 1; /* take up only necessary space */
-  padding: 30px; /* for spacing, adjust as needed */
-  /* Add more styles as needed for your specific layout */
+  padding: 10px; /* for spacing, adjust as needed */
+  min-width: 0; /* Allow the calendar to shrink with the container */
+  overflow-x: auto; /* Allow horizontal scrolling */
 }
 </style>

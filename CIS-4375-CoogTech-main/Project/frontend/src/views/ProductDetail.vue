@@ -1,60 +1,103 @@
 <template>
-    <v-btn @click="goBack" color="#F5F5DC" variant="elevated">
-        Back to catalog
-    </v-btn>
-
-    <div class="product" v-if="selectedProduct">
-        <div class="product-image">
-            <!-- Ensure the image source is correctly bound to your selectedProduct -->
-            <img :src="selectedProduct.ProductImage" alt="">
-        </div>
-        <div class="product-details">
-            <!-- Update these fields according to your selectedProduct's properties -->
-            <p>Name: {{ selectedProduct.ProductName }}</p>
-            <p>Color: {{ selectedProduct.ProductColor }}</p>
-            <h2>Price: ${{ selectedProduct.ProductPrice }}</h2>
-            <v-btn variant="elevated" color="#F5F5DC" @click="addToCart">Add to cart</v-btn>
-        </div>
-    </div>
+  <div class="product-details">
+      <h1>Product Details</h1>
+      <div class="product-column">
+          <div class="product-item" v-if="product">
+              <v-card style="background-color: #ffb7c2;">
+                  <div class="product-image" v-if="product.ProductImage">
+                      <img :src="product.ProductImage" alt="Product Image">
+                  </div>
+                  <h2>{{ product.ProductName }}</h2>
+                  <p>Price: ${{ product.ProductPrice }}</p>
+                  <p>Type: {{ product.ProductType }}</p>
+                  <p>Color: {{ product.ProductColor }}</p>
+                  <p>Size: {{ product.ProductSize }}</p>
+                  <p>Stock: {{ product.ProductStock }}</p>
+                  <v-btn @click="addToCart">Add to Cart</v-btn>
+              </v-card>
+          </div>
+          <div v-else>
+              <p>Product not found.</p>
+          </div>
+      </div>
+  </div>
 </template>
 
-<script setup>
-import { onMounted, computed } from 'vue';
-import { productsStore } from '../stores/products';
-import { useRoute, useRouter } from 'vue-router';
+<script>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { productsStore } from '@/stores/products';
 
-const store = productsStore();
-const router = useRouter();
-const route = useRoute();
+export default {
+  name: 'ProductDetail',
+  setup() {
+      const router = useRouter();
+      const store = productsStore();
+      const product = ref(null);
 
-// Fetch products when the component is mounted
-onMounted(() => {
-  store.fetchProductsFromDB();
-});
+      // Fetch product details when the component is mounted
+      onMounted(async () => {
+          try {
+              const response = await fetch(`http://localhost:8080/adminData/Products/${router.currentRoute.value.params.id}`);
+              if (response.ok) {
+                  const data = await response.json();
+                  product.value = data.ProductDetails;
+              } else {
+                  console.error('Failed to fetch product details.');
+              }
+          } catch (error) {
+              console.error('Error fetching product details:', error);
+          }
+      });
 
-const selectedProduct = computed(() => {
-  // Make sure that your product IDs are numbers in the database
-  // If they are strings, remove the Number() cast
-  return store.products.find(product => product.ProductID === Number(route.params.id));
-});
+      const addToCart = () => {
+          if (product.value) {
+              store.addToCart(product.value);
+              router.push({ name: 'CartView' });
+          }
+      };
 
-const addToCart = () => {
-  store.addToCart(selectedProduct.value);
-  router.push({ name: 'CartView' });
-};
+      const backToCatalog = () => {
+          router.push({ name: 'Catalog' });
+      };
 
-const goBack = () => {
-  router.push({ name: 'Catalog' });
+      return {
+          product,
+          addToCart,
+          backToCatalog,
+      };
+  },
 };
 </script>
 
 <style scoped>
-.product {
-    display: flex;
-    margin-top: 50px;
+.product-details {
+  text-align: center;
+  margin-top: 20px;
 }
 
-.product-image {
-    margin-right: 24px;
+.product-column {
+  display: flex;
+  justify-content: center;
+}
+
+.product-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  max-width: 300px;
+  display: inline-block;
+}
+
+.product-item h2 {
+  margin: 0;
+}
+
+.product-item p {
+  margin: 10px 0;
+}
+
+.product-item v-btn {
+  background-color: #ffb7c2;
+  color: #fff;
 }
 </style>
