@@ -123,6 +123,11 @@ const router = createRouter({
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
       component: () => import('../views/NotFound.vue')
+    } ,
+    {
+      path: '/OrderForm',
+      name: 'OrderForm',
+      component: () => import('../components/OrderForm.vue')
     }  
   ]
 });

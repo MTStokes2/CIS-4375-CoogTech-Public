@@ -1,66 +1,78 @@
 <template>
     <div>
-        <v-btn @click="router.push({ name: 'Catalog' })" color="#F5F5DC" variant="elevated">
-            Back to catalog
+        <v-btn @click="goToCatalog" color="#F5F5DC" variant="elevated">
+      Back to catalog
         </v-btn>
-        <div v-if="store.cart.length === 0" style="text-align: center">
-            <h1>Empty Cart...</h1>
+      <div class="cart-item" v-for="item in store.cart" :key="item.ProductID">
+        <div class="item-details">
+          <img :src="item.ProductImage" alt="">
+          <br>
+          <span>Brand: {{ item.ProductName }}</span>
+          <span>Category: {{ item.ProductType }}</span>
+          <br>
+          <span>Price: ${{ item.ProductPrice }}</span>
+          <v-btn @click="removeFromCart(item.ProductID)">Remove</v-btn>
         </div>
-        <div class="cart-items" v-else>
-            <div class="cart-item" v-for="item in store.cart" :key="item.ProductID">
-                <div class="item-details">
-                    <img :src="item.ProductImage" alt="">
-                    <br>
-                    <span>Brand: {{ item.ProductName }}</span>
-                    <span>Category: {{ item.ProductType }}</span>
-                    <br>
-                    <span>Price: ${{ item.ProductPrice }}</span>
-                    <v-btn @click="removeFromCart(item.ProductID)">Remove</v-btn>
-                </div>
-            </div>
-            <div class="total-section">
-                <p class="bold">Total Price: <span>${{ totalCost }}</span></p>
-                <v-btn @click="checkout" class="checkout-button">Checkout</v-btn>
-            </div>
-        </div>
+      </div>
+  
+      <div class="total-section">
+        <p class="bold">Total Price: <span>${{ totalCost }}</span></p>
+        <v-btn @click="checkout" class="checkout-button">Checkout</v-btn>
+      </div>
+      <OrderForm :cartData="store.cart" />
     </div>
-</template>
+  </template>
   
-<script>
-import { defineComponent } from "vue";
-export default defineComponent({
+  <script>
+  import { defineComponent, computed } from 'vue';
+  import { productsStore } from "@/stores/products";
+  import { useRouter } from "vue-router";
+  import OrderForm from '../components/OrderForm.vue';
+  
+  export default defineComponent({
     name: 'CartView',
-})
-</script>
+    components: {
+    OrderForm
+    },
+    setup() {
+      const router = useRouter();
+      const store = productsStore();
   
-<script setup>
-import { productsStore } from "@/stores/products";
-import { useRouter } from "vue-router";
-import { computed } from 'vue';
+      const totalCost = computed(() => {
+        // Calculate the total cost based on the items in the cart
+        return store.cart.reduce((total, item) => {
+          return total + item.ProductPrice;
+        }, 0);
+      });
+  
+      const removeFromCart = (productId) => {
+        // Find the index of the product in the cart
+        const index = store.cart.findIndex(item => item.ProductID === productId);
+        if (index !== -1) {
+          // Remove the product from the cart
+          store.cart.splice(index, 1);
+        }
+      };
+  
+      const checkout = () => {
+        // Pass the cart data as a prop to the OrderForm component
+        router.push({ name: 'OrderForm', params: { cartData: store.cart } });
+      };
+      
+      const goToCatalog = () => {
+      router.push({ name: 'Catalog' });
+     };
 
-const router = useRouter();
-
-const store = productsStore();
-
-const totalCost = computed(() => {
-    // Calculate the total cost based on the items in the cart
-    return store.cart.reduce((total, item) => {
-        return total + item.ProductPrice; // Calculate the total price of the items
-    }, 0);
-});
-
-const removeFromCart = (id) => {
-    const itemIndex = store.cart.findIndex(item => item.ProductID === id);
-    if (itemIndex !== -1) {
-        store.cart.splice(itemIndex, 1);
+      return {
+        totalCost,
+        removeFromCart,
+        checkout,
+        goToCatalog,
+        store // Ensure store is accessible in the template
+      };
     }
-}
-
-const checkout = () => {
-    // Implement your checkout logic here
-    router.push({ name: 'Checkout' });
-}
-</script>
+  });
+  </script>
   
 <style scoped>
 .item-details {

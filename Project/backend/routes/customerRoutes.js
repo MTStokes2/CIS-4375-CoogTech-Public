@@ -18,8 +18,7 @@ let { Order_Products_Model } = require('../models/modelAssociations');
 let { City_Model } = require('../models/modelAssociations');
 let { State_Model } = require('../models/modelAssociations');
 let { Status_Model } = require('../models/modelAssociations');
-const { validateToken } = require('../src/auth/JWT')
-
+const { validateToken, resetPasswordLimiter } = require('../src/auth/JWT')
 //GET all Products
 router.get('/Products', (req, res) =>
     Products_Model.findAll()
@@ -95,7 +94,7 @@ router.put('/ChangeUsername', async (req, res) => {
   });
 
 // Update a Customer's Password
-router.put('/ChangePassword', async (req, res) => {
+router.put('/ChangePassword', resetPasswordLimiter, async (req, res) => {
     try {
 
         // Hash the new password before updating
@@ -398,7 +397,7 @@ router.post('/Orders', async (req, res) => {
         });
 
         //Adds a new Order
-        Orders_Model.create(
+        const newOrder = await Orders_Model.create(
             {
             CustomerID: customer.CustomerID,
             StatusID: req.body.StatusID,
@@ -410,7 +409,9 @@ router.post('/Orders', async (req, res) => {
             DateScheduled: parsedDateScheduled
             })
 
-        res.status(200).json({ message: 'Order Added' });
+        OrderID = newOrder.OrderID
+
+        res.status(200).json({ message: 'Order Added', OrderID });
     } catch(err) {
         console.log(err)
     }
