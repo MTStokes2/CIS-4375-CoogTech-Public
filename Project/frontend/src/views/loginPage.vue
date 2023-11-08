@@ -33,7 +33,6 @@
 </template>
 <script>
 import axios from 'axios';
-import { useAuthStore } from '../stores/authStore';
 
 export default {
   data() {
@@ -59,12 +58,8 @@ export default {
         });
 
         console.log('Login successful');
-        useAuthStore().setAuthentication(true);
         
         const role = response.data.role;
-
-        // Set the access-token cookie here (if response.data.token contains the token)
-        document.cookie = `access-token=${response.data.token}; Secure; SameSite=None`;
 
         // Redirect based on user role
         if (role === 'customer') {
