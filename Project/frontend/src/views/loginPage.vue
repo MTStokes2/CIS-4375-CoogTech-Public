@@ -33,6 +33,7 @@
 </template>
 <script>
 import axios from 'axios';
+import { useAuthStore } from '../stores/authStore';
 
 export default {
   data() {
@@ -58,6 +59,7 @@ export default {
         });
 
         console.log('Login successful');
+        useAuthStore().setAuthentication(true);
         
         const role = response.data.role;
 
@@ -66,9 +68,12 @@ export default {
 
         // Redirect based on user role
         if (role === 'customer') {
-          this.$router.push('/catalog');
+          // Redirect to the previous route or the desired protected route
+          const redirectPath = this.$route.query.redirect || '/catalog';
+          this.$router.push(redirectPath);
         } else if (role === 'admin') {
-          this.$router.push('/AdminDashboard');
+          const redirectPath = this.$route.query.redirect || '/AdminDashboard';
+          this.$router.push(redirectPath);
         } else {
           console.error('Unknown role:', role);
         }

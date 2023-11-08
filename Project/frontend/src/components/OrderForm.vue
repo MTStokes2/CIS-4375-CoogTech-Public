@@ -88,7 +88,6 @@ setup(props) {
             console.log('Received UserInfo:', data);
         } else {
             console.error('Failed to fetch user info');
-            this.$router.push('Login');
         }
         } catch (error) {
         console.error('Error fetching user info:', error);

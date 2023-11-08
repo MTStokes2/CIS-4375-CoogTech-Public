@@ -5,6 +5,9 @@
         <h1 class="text-2xl text-gray-700 font-semibold">The Craft Shack</h1>
         
         <div class="flex space-x-4">
+          <router-link to="/cart" class="text-gray-600 hover:text-gray-500">
+          <span class="material-icons">shopping_cart</span>
+        </router-link>
           <a href="/#about-us" class="text-gray-600 hover:text-gray-500">
             <span class="material-icons">search</span>
           </a>
