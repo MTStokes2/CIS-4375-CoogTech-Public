@@ -20,23 +20,23 @@
         <form @submit.prevent="saveChanges">
           <div>
             <label for="firstName">First Name:</label>
-            <input type="text" id="firstName" v-model="updatedFirstName" required>
+            <input type="text" id="firstName" v-model="updatedFirstName">
           </div>
           <div>
             <label for="lastName">Last Name:</label>
-            <input type="text" id="lastName" v-model="updatedLastName" required>
+            <input type="text" id="lastName" v-model="updatedLastName">
           </div>
           <div>
             <label for="email">Email:</label>
-            <input type="text" id="email" v-model="updatedEmail" required>
+            <input type="text" id="email" v-model="updatedEmail">
           </div>
           <div>
             <label for="phone">Phone Number:</label>
-            <input type="text" id="phone" v-model="updatedPhone" required>
+            <input type="text" id="phone" v-model="updatedPhone">
           </div>
           <div>
             <label for="city">City:</label>
-            <select v-model="updatedCity" id="city" required>
+            <select v-model="updatedCity" id="city">
             <option value="1">City A</option>
             <option value="2">Houston</option>
             <option value="3">City C</option>
@@ -44,13 +44,13 @@
         </div>
           <div>
             <label for="state">State:</label>
-            <select v-model="updatedState" id="state" required>
+            <select v-model="updatedState" id="state">
             <option value="1">Texas</option>
             </select>
           </div>
           <div>
             <label for="address">Address:</label>
-            <input type="text" id="address" v-model="updatedAddress" required>
+            <input type="text" id="address" v-model="updatedAddress">
           </div>
           <button type="submit" class="save-button">Save Changes</button>
           <button @click="editMode = false" class="cancel-button">Cancel</button>
@@ -127,7 +127,9 @@ import axios from 'axios';
   });
 
   // Send a PUT request to update customer information
-  axios.put('http://localhost:8080/customerData/AccountInfo', updatedCustomerInfo)
+  axios.put('http://localhost:8080/customerData/AccountInfo', updatedCustomerInfo, {
+    withCredentials: true
+  })
     .then(response => {
       this.success = response.data.message;
       this.editMode = false;

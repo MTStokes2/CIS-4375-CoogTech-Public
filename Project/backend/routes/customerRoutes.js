@@ -30,11 +30,12 @@ router.get('/Products', (req, res) =>
 
 //Maybe use params for all of the CustomerID stuff since it should have one if they are logged in?
 //Update a Customer's Information
-router.put('/AccountInfo', async (req, res) => {
+router.put('/AccountInfo', validateToken, async (req, res) => {
+    const { userId, username, role } = req.user
     try {
         const customer = await Customers_Model.findOne({
             where: {
-                CustomerID: req.body.CustomerID,
+                CustomerID: userId,
             },
         });
 
