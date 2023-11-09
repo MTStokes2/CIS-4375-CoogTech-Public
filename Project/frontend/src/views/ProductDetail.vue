@@ -1,31 +1,33 @@
 <template>
     <div class="product-details">
-        <h1>Product Details</h1>
-        <div class="product-column">
-            <div class="product-item" v-if="product">
-                <v-card style="background-color: #ffb7c2;">
-                    <div class="product-image" v-if="product.ProductImage">
-                        <img :src="product.ProductImage" alt="Product Image">
-                    </div>
-                    <h2>{{ product.ProductName }}</h2>
-                    <p>Price: ${{ product.ProductPrice }}</p>
-                    <p>Type: {{ product.ProductType }}</p>
-                    <p>Color: {{ product.ProductColor }}</p>
-                    <p>Size: {{ product.ProductSize }}</p>
-                    <p>Stock: {{ product.ProductStock }}</p>
-                    <div class="quantity-input">
-                        <label for="quantity">Qty:</label>
-                        <input id="quantity" type="number" v-model="quantity" min="1" :max="product.ProductStock">
-                    </div>
-                    <v-btn @click="addToCart">Add to Cart</v-btn>
-                </v-card>
+      <h1>Product Details</h1>
+      <div class="product-column">
+        <div class="product-item" v-if="product">
+          <v-card class="product-card">
+            <div class="product-image" v-if="product.ProductImage">
+              <img :src="product.ProductImage" alt="Product Image" />
             </div>
-            <div v-else>
-                <p>Product not found.</p>
+            <h2 class="product-name">{{ product.ProductName }}</h2>
+            <div class="product-info">
+              <p><strong>Price:</strong> ${{ product.ProductPrice }}</p>
+              <p><strong>Type:</strong> {{ product.ProductType }}</p>
+              <p><strong>Color:</strong> {{ product.ProductColor }}</p>
+              <p><strong>Size:</strong> {{ product.ProductSize }}</p>
+              <p><strong>Stock:</strong> {{ product.ProductStock }}</p>
             </div>
+            <div class="quantity-input">
+              <label for="quantity" class="quantity-label">Qty:</label>
+              <input id="quantity" type="number" class="quantity-input-box" v-model="quantity" min="1" :max="product.ProductStock" />
+            </div>
+            <v-btn @click="addToCart" class="add-to-cart-btn">Add to Cart</v-btn>
+          </v-card>
         </div>
+        <div v-else>
+          <p class="not-found-message">Product not found.</p>
+        </div>
+      </div>
     </div>
-</template>
+  </template>
 
 <script>
 import { ref, computed, onMounted } from 'vue';
@@ -86,32 +88,68 @@ export default {
 
 <style scoped>
 .product-details {
-    text-align: center;
-    margin-top: 20px;
+  text-align: center;
+  margin-top: 20px;
 }
 
 .product-column {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .product-item {
-    border: 1px solid #ccc;
-    padding: 10px;
-    max-width: 300px;
-    display: inline-block;
+  border: 1px solid #ccc;
+  background-color: #ffb7c2;
+  padding: 10px;
+  max-width: 400px;
+  width: 100%;
 }
 
-.product-item h2 {
-    margin: 0;
+.product-card {
+  background-color: #fff;
 }
 
-.product-item p {
-    margin: 10px 0;
+.product-image img {
+  width: 100%;
+  height: auto;
 }
 
-.product-item v-btn {
-    background-color: #ffb7c2;
-    color: #fff;
+.product-name {
+  font-size: 1.5rem;
+  margin: 10px 0;
 }
+
+.product-info {
+  margin: 25px 0;
+}
+
+.quantity-input {
+  margin: 15px 0;
+}
+
+.add-to-cart-btn {
+  background-color: #ff6b81;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.not-found-message {
+  color: #ff6b81;
+  font-weight: bold;
+}
+
+.quantity-label {
+  font-weight: bold;
+  margin-right: 10px;
+  color: #333;
+}
+
+.quantity-input-box {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 80px;
+  font-size: 16px;
+}
+
 </style>
