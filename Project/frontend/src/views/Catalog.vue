@@ -17,8 +17,8 @@
         </div>
             <!-- Product list and other content here -->
             <div class="product-row">
-                <div v-for="product in products" :key="product.ProductID" class="product-column">
-                    <product-item :product="product" @item-clicked="goToProductPage(product)" class="product-item" />
+                <div v-for="product in products" :key="product.ProductID">
+                    <product-item :product="product" @item-clicked="goToProductPage(product)" />
                 </div>
             </div>
     </div>
@@ -93,7 +93,8 @@ onMounted(() => {
 .page {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Make the page fill the entire viewport height */
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .topbar {
@@ -162,8 +163,6 @@ background-color: #ff6b81;
   gap: 40px;
   justify-content: left;
 }
-
-
 
 
 </style>

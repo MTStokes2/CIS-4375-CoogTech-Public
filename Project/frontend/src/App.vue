@@ -2,31 +2,31 @@
   <div id="landing-page" class="flex flex-col min-h-screen bg-f8ebe6">
     <header class="py-4 px-6 shadow-sm bg-fafafa">
       <div class="container mx-auto flex justify-between items-center">
-        <router-link to="/" class="text-gray-600 hover:text-gray-500 flex items-center">
+        <router-link to="/" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
         <h1 class="text-2xl text-gray-700 font-semibold">The Craft Shack</h1>
         </router-link>
       <div class="flex space-x-4">
         <div class="flex space-x-2" v-if="loggedIn && role === 'customer'">
-        <router-link to="/AccountInfo" class="text-gray-600 hover:text-gray-500 flex items-center">
+        <router-link to="/AccountInfo" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
           <span class="material-icons">manage_accounts</span> My Account Info
         </router-link>
-        <router-link to="/orderHistory" class="text-gray-600 hover:text-gray-500 flex items-center">
+        <router-link to="/orderHistory" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
           <span class="material-icons">history</span> Order History
         </router-link>
       </div>
-      <router-link to="/cart" class="text-gray-600 hover:text-gray-500 flex items-center">
+      <router-link to="/cart" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
         <span class="material-icons">shopping_cart</span> Cart
       </router-link>
-      <a href="/#about-us" class="text-gray-600 hover:text-gray-500 flex items-center">
+      <a href="/#about-us" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
         <span class="material-icons">info</span> About Us
       </a>
-      <router-link to="/contact" class="text-gray-600 hover:text-gray-500 flex items-center">
+      <router-link to="/contact" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
         <span class="material-icons">phone</span> Contact Us
       </router-link>
-      <router-link to="/" v-if="loggedIn" @click="logout()" class="text-gray-600 hover:text-gray-500 flex items-center">
+      <router-link to="/" v-if="loggedIn" @click="logout()" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
         <span class="material-icons">exit_to_app</span> Logout
       </router-link>
-      <router-link v-else to="/login" class="text-gray-600 hover:text-gray-500 flex items-center">
+      <router-link v-else to="/login" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
         <span class="material-icons">login</span> Login
       </router-link>
         </div>
@@ -113,4 +113,14 @@ export default {
 .bg-fafafa {
   background-color: #FAFAFA;
 }
+
+.header-item {
+  padding: 5px
+}
+
+.header-item:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s ease-in-out;
+}
+
 </style>
