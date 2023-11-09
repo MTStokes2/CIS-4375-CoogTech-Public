@@ -1,7 +1,7 @@
 <template>
   <div class="cart-view-container">
     <div class="cart-info-container">
-      <v-btn @click="goToCatalog" color="#F5F5DC" variant="elevated">
+      <v-btn @click="goToCatalog" class="back-button">
         Back to catalog
       </v-btn>
       <div class="cart-item" v-for="(cartItem, index) in cartItems" :key="cartItem.ProductID">
@@ -115,7 +115,7 @@
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
-  margin-top: 10px; 
+  margin-top: 10px; /* Add margin between quantity input and remove button */
 }
 
 .item-details button:hover {
@@ -190,6 +190,23 @@
 
 .order-form-wrapper {
   margin-top: 40px; 
+}
+
+.back-button {
+  margin-bottom: 20px;
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
+}
+
+.back-button:hover {
+  background-color: #e74c3c;
 }
 
   </style>

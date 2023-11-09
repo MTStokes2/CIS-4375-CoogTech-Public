@@ -5,20 +5,30 @@
         <router-link to="/" class="text-gray-600 hover:text-gray-500">
         <h1 class="text-2xl text-gray-700 font-semibold">The Craft Shack</h1>
         </router-link>
-        
-        <div class="flex space-x-4">
-          <router-link to="/cart" class="text-gray-600 hover:text-gray-500">
-          <span class="material-icons">shopping_cart</span>
+      <div class="flex space-x-4">
+        <div class="flex space-x-2" v-if="loggedIn && role === 'customer'">
+        <router-link to="/AccountInfo" class="text-gray-600 hover:text-gray-500">
+          <span class="material-icons">account_circle</span>
         </router-link>
-          <a href="/#about-us" class="text-gray-600 hover:text-gray-500">
-            <span class="material-icons">search</span>
-          </a>
-          <router-link to="/contact" class="text-gray-600 hover:text-gray-500">
-            <span class="material-icons">phone</span>
-          </router-link>
-          <router-link to="/login" class="text-gray-600 hover:text-gray-500">
-            <span class="material-icons">person</span>
-          </router-link>
+        <router-link to="/orderHistory" class="text-gray-600 hover:text-gray-500">
+          <span class="material-icons">history</span>
+        </router-link>
+      </div>
+      <router-link to="/cart" class="text-gray-600 hover:text-gray-500">
+        <span class="material-icons">shopping_cart</span>
+      </router-link>
+      <a href="/#about-us" class="text-gray-600 hover:text-gray-500">
+        <span class="material-icons">info</span>
+      </a>
+      <router-link to="/contact" class="text-gray-600 hover:text-gray-500">
+        <span class="material-icons">phone</span>
+      </router-link>
+      <router-link to="/" v-if="loggedIn" @click="logout()" class="text-gray-600 hover:text-gray-500">
+        <span class="material-icons">exit_to_app</span>
+      </router-link>
+      <router-link v-else to="/login" class="text-gray-600 hover:text-gray-500">
+        <span class="material-icons">login</span>
+      </router-link>
         </div>
       </div>
     </header>
@@ -36,7 +46,63 @@
 </template>
 
 <script>
-const apiURL = import.meta.env.VITE_ROOT_API;
+export default {
+  data() {
+    return {
+      loggedIn: false,
+      role: '',
+    };
+  },
+  mounted() {
+    // Call the fetchUserInfo method after the component is mounted
+    this.fetchUserInfo();
+  },
+  methods: {
+    async fetchUserInfo() {
+            try {
+                const response = await fetch('http://localhost:8080/UserInformation', {
+                    method: 'GET',
+                    credentials: 'include', // Use 'include' to send cookies with the request
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (response.ok) {
+                  const data = await response.json();
+                  this.role = data.role;
+                  this.loggedIn = true
+                  console.log('User is logged in.', data.role);
+                } else {
+                    console.error('Failed to fetch user info');
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+          }
+      },
+    async logout() {
+    try {
+      const response = await fetch('http://localhost:8080/Logout', {
+        method: 'POST',
+        credentials: 'include', // Use 'include' to send cookies with the request
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // Successfully logged out, update the UI or perform any necessary actions
+        this.loggedIn = false; // Update the loggedIn property to false or clear user data
+        console.log('Logout successful');
+      } else {
+        console.error('Failed to logout');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  },
+}
+};
 </script>
 
 <style scoped>

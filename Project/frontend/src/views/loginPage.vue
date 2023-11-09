@@ -65,10 +65,14 @@ export default {
         if (role === 'customer') {
           // Redirect to the previous route or the desired protected route
           const redirectPath = this.$route.query.redirect || '/catalog';
-          this.$router.push(redirectPath);
+          this.$router.push(redirectPath).then(() => {
+            window.location.reload();
+          });
         } else if (role === 'admin') {
           const redirectPath = this.$route.query.redirect || '/AdminDashboard';
-          this.$router.push(redirectPath);
+          this.$router.push(redirectPath).then(() => {
+            window.location.reload();
+          });
         } else {
           console.error('Unknown role:', role);
         }
