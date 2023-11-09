@@ -128,6 +128,11 @@ const router = createRouter({
       path: '/OrderForm',
       name: 'OrderForm',
       component: () => import('../components/OrderForm.vue')
+    },
+    {
+      path: '/AccountInfo',
+      name: 'AccountInfo',
+      component: () => import('../views/AccountInfo.vue')
     }  
   ]
 });

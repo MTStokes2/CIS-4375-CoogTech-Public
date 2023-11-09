@@ -115,7 +115,7 @@
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
-  margin-top: 10px; /* Add margin between quantity input and remove button */
+  margin-top: 10px; 
 }
 
 .item-details button:hover {
