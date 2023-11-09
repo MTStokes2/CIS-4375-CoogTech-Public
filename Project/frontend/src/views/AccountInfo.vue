@@ -1,4 +1,5 @@
 <template>
+      <button @click="goToCatalog" class="back-button">Back to Catalog</button>
       <div class="container">
         <h1 v-if="!editMode">Customer Information</h1>
         <h2 v-if="editMode">Edit Information</h2>
@@ -141,13 +142,15 @@ import axios from 'axios';
     })
     .finally(() => {
       this.loading = false;
-    })}
-    
+    })
+  },
+  goToCatalog() {
+  this.$router.push('/catalog');
+}
 
 }};
 
 </script>
-
 <style scoped>
 body {
   font-family: Arial, sans-serif;
@@ -223,6 +226,24 @@ p {
   color: #008000;
   font-weight: bold;
 }
+
+.back-button {
+  margin-bottom: 20px;
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
+}
+
+.back-button:hover {
+  background-color: #e74c3c;
+}
+
 </style>
 
 
