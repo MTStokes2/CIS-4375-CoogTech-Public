@@ -262,6 +262,11 @@ router.post('/Orders/:id/products', async (req, res) => {
             return res.status(404).json({ message: 'Order or product not found' });
         }
 
+        // Check if there is enough stock for the product
+        if (parseInt(product.Stock) < parseInt(Quantity)) {
+            return res.status(400).json({ message: 'Insufficient stock' });
+        }
+
         //get Updated Total for the Order
         const updatedTotal = parseInt(order.Total) + (parseFloat(product.ProductPrice) * parseInt(Quantity))
 
@@ -281,6 +286,19 @@ router.post('/Orders/:id/products', async (req, res) => {
             ProductID: ProductID,
             Quantity: parseInt(Quantity)
         });
+
+        // Subtract ordered quantity from product stock
+        const updatedStock = parseInt(product.ProductStock) - parseInt(Quantity);
+        await Products_Model.update(
+            {
+                ProductStock: updatedStock,
+            },
+            {
+                where: {
+                    ProductID: ProductID
+                },
+            }
+        );
 
         res.status(201).json({ message: 'Product added to order successfully' });
 
