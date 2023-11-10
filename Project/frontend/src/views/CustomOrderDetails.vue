@@ -3,7 +3,7 @@
     <button @click="goToOrderHistory" class="back-button">Back to Order History</button>
       <div class="order-summary">
         <h2>Order Details</h2>
-        <div v-if="orderDetails">
+        <div v-if="orderDetails && orderDetails.CITY && orderDetails.STATE">
           <p><strong>Order Number:</strong> {{ orderDetails.CustomOrderID }}</p>
           <p><strong>Order Date:</strong> {{ formatDate(orderDetails.DateOrdered) }}</p>
           <p><strong>Address:</strong> {{ orderDetails.Address }}</p>
@@ -14,6 +14,9 @@
           <p><strong>Status:</strong> {{ orderDetails.STATUS.Status }}</p> 
           <p><strong>Scheduled Delivery Date:</strong> {{ formatDate(orderDetails.DateScheduled) }}</p>
           <p><strong>Date Delivered:</strong> {{ formatDate(orderDetails.DateDelivered) }}</p>
+        </div>
+        <div v-else>
+        <p>No order details available.</p>
         </div>
         <div class="product-container">
             <Products :OrderID="CustomOrderID"></Products>
@@ -46,9 +49,10 @@
         role: ''
       };
     },
-    created() {
-      this.fetchOrderDetails();
-      this.fetchUserInfo();
+    async created() {
+
+      await Promise.all([this.fetchOrderDetails(), this.fetchUserInfo()])
+      
     },
     methods: {
         async fetchUserInfo() {

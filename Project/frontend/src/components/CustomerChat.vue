@@ -75,8 +75,7 @@ export default {
       messageInput: '',
     };
   },
-  mounted() {
-    // Establish socket connection when the component is mounted
+  created() {
     this.fetchUserInfo();
   },
   updated() {
@@ -104,8 +103,6 @@ export default {
 
         if (response.ok) {
           const data = await response.json();
-          this.username = data.username;
-          this.role = data.role;
           console.log('Received UserInfo:', data);
         } else {
           console.error('Failed to fetch user info');

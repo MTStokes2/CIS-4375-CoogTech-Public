@@ -589,8 +589,25 @@ router.put('/CustomOrders/:id', async (req, res) => {
 //Add a Custom Order
 router.post('/CustomOrders', async (req, res) => {
     try {
-
         const parsedDateScheduled = moment(req.body.DateScheduled, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+
+        // Find CityID by City name
+        const city = await City_Model.findOne({
+            where: {
+                City: req.body.City,
+            },
+        });
+
+        // Find StateID by State name
+        const state = await State_Model.findOne({
+            where: {
+                State: req.body.State,
+            },
+        });
+
+        if (!city || !state) {
+            return res.status(404).json({ message: 'City or State not found' });
+        }
 
         const customer = await Usernames_Model.findOne({
             where: {
@@ -598,22 +615,22 @@ router.post('/CustomOrders', async (req, res) => {
             },
         });
 
-        //Adds a new Custom Order
-        Custom_Orders_Model.create(
-            {
+        // Adds a new Custom Order
+        const customOrder = await Custom_Orders_Model.create({
             CustomerID: customer.CustomerID,
             StatusID: req.body.StatusID,
-            CityID: req.body.CityID,
-            StateID: req.body.StateID,
+            CityID: city.CityID,
+            StateID: state.StateID,
             ZipCode: req.body.ZipCode,
             Address: req.body.Address,
             Total: "0",
-            DateScheduled: parsedDateScheduled
-            })
+            DateScheduled: parsedDateScheduled,
+        });
 
-        res.status(200).json({ message: 'Custom Order Added' });
-    } catch(err) {
-        console.log(err)
+        res.status(200).json({ message: 'Custom Order Added', customOrder });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
