@@ -157,64 +157,166 @@ router.post('/Products', upload.single('ProductImage'), async (req, res) => {
     }
 });
 
-//Update a Product
-router.put('/Products/:id', async (req, res) => {
-    try {
-  
-        const product = await Products_Model.findOne({
-        where: {
-            ProductID: req.params.id,
-        },
-        });
-        
-        if (product) {
-        const updatedFields = {};
-        const tableFields = ['ProductName', 'ProductType', 'ProductColor', 'ProductSize', 'ProductPrice', 'ProductStock', 'ProductImage'];
+// Updating a Product
+router.put('/Products/:productId', upload.single('ProductImage'), async (req, res) => {
+    const productId = req.params.productId;
+    const { ProductName, ProductType, ProductColor, ProductSize, ProductPrice, ProductStock } = req.body;
 
-        tableFields.forEach(field => {
-            if (req.body[field] !== undefined) {
-                updatedFields[field] = req.body[field];
+    // Set up the S3 client
+    const s3 = new S3Client({
+        region: process.env.BUCKET_REGION,
+        credentials: fromEnv(),
+    });
+
+    try {
+        let imageUrl;
+        if (req.file) {
+            // Read the file from the local file system
+            const fileContent = fs.readFileSync(req.file.path);
+
+            // Prepare the S3 upload parameters
+            const params = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: req.file.filename, // Consider adding a unique identifier (like the product ID) to the filename
+                Body: fileContent,
+                ContentType: req.file.mimetype,
+            };
+
+            // Upload the new image to S3
+            const uploadResult = await s3.send(new PutObjectCommand(params));
+            if (uploadResult.$metadata.httpStatusCode !== 200) {
+                throw new Error('Failed to upload image to S3');
+            }
+
+            imageUrl = `https://${process.env.BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com/${req.file.filename}`;
+            
+            // Delete the local file after uploading to S3
+            fs.unlinkSync(req.file.path);
+        }
+
+        // Update the product with Sequelize
+        const updateValues = { ProductName, ProductType, ProductColor, ProductSize, ProductPrice, ProductStock };
+
+        if (imageUrl) {
+            updateValues.ProductImage = imageUrl;
+        }
+
+        const [numberOfAffectedRows] = await Products_Model.update(updateValues, {
+            where: {
+                ProductID: productId // This should match the primary key column name in your table
             }
         });
 
-        Products_Model.update(updatedFields,{
-            where: {
-            ProductID: product.ProductID
-            },
-        });
+        if (numberOfAffectedRows > 0) {
+            res.status(200).json({ message: 'Product Updated' });
+        } else {
+            res.status(404).json({ message: 'Product Not Found' });
+        }
 
-        res.status(200).json({ message: 'Product Updated' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Failed to update product', error: err.message });
 
-    }} catch (err) {
-        console.log(err)
+        // Delete the local file if there was an error and a file was uploaded
+        if (req.file && req.file.path) {
+            fs.unlinkSync(req.file.path);
+        }
     }
-  });
+});
 
-//Delete a Product
-router.delete('/Products', async (req, res) => {
+// Deleting a Product
+router.delete('/Products/:productId', async (req, res) => {
+    const productId = req.params.productId; // Ensure this is a number in the actual request
+    console.log(`Attempting to delete product with ID: ${productId}`);
+
     try {
-  
-        const product = await Products_Model.findOne({
-        where: {
-            ProductName: req.body.ProductName,
-        },
-        });
-        
-        if (product) {
-        Products_Model.destroy(
-            {
+        // Find the product to check if it exists before deletion
+        const product = await Products_Model.findByPk(productId);
+        console.log('Found product:', product);
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Delete the product with Sequelize
+        const deletedProduct = await Products_Model.destroy({
             where: {
-            ProductID: product.ProductID,
-            ProductName: req.body.ProductName,
-            },
+                ProductID: productId // This needs to match your model's primary key
+            }
         });
+        console.log('Delete operation result:', deletedProduct);
 
-        res.status(200).json({ message: 'Product Deleted' });
-
-    }} catch (err) {
-        console.log(err)
+        if (deletedProduct) {
+            res.status(200).json({ message: 'Product Deleted' });
+        } else {
+            // This condition might never be true since findByPk would have already returned null if the product didn't exist
+            res.status(404).json({ message: 'Product Not Found' });
+        }
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ message: 'Failed to delete product', error: err.message });
     }
-  });
+});
+
+// //Update a Product
+// router.put('/Products/:id', async (req, res) => {
+//     try {
+  
+//         const product = await Products_Model.findOne({
+//         where: {
+//             ProductID: req.params.id,
+//         },
+//         });
+        
+//         if (product) {
+//         const updatedFields = {};
+//         const tableFields = ['ProductName', 'ProductType', 'ProductColor', 'ProductSize', 'ProductPrice', 'ProductStock', 'ProductImage'];
+
+//         tableFields.forEach(field => {
+//             if (req.body[field] !== undefined) {
+//                 updatedFields[field] = req.body[field];
+//             }
+//         });
+
+//         Products_Model.update(updatedFields,{
+//             where: {
+//             ProductID: product.ProductID
+//             },
+//         });
+
+//         res.status(200).json({ message: 'Product Updated' });
+
+//     }} catch (err) {
+//         console.log(err)
+//     }
+//   });
+
+// //Delete a Product
+// router.delete('/Products', async (req, res) => {
+//     try {
+  
+//         const product = await Products_Model.findOne({
+//         where: {
+//             ProductName: req.body.ProductName,
+//         },
+//         });
+        
+//         if (product) {
+//         Products_Model.destroy(
+//             {
+//             where: {
+//             ProductID: product.ProductID,
+//             ProductName: req.body.ProductName,
+//             },
+//         });
+
+//         res.status(200).json({ message: 'Product Deleted' });
+
+//     }} catch (err) {
+//         console.log(err)
+//     }
+//   });
+
 
 //Get All Orders
 router.get('/Orders', async (req, res) => {
@@ -993,6 +1095,31 @@ router.get('/Reports/Unapproved-Custom-Orders', async (req, res) => {
         });
 
         res.status(200).json({ unapprovedCustomOrders });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+//Gets all of the Unapproved Orders
+router.get('/Reports/Unapproved-Orders', async (req, res) => {
+    try {
+        // Retrieve unapproved  orders
+        const unapprovedOrders = await Orders_Model.findAll({
+            where: {
+                StatusID: {
+                    [Sequelize.Op.not]: [2], // Assuming APPROVED_STATUS_ID is the ID for the approved status
+                },
+            },
+            include: [
+                { model: City_Model },
+                { model: State_Model },
+                { model: Status_Model },
+                { model: Customers_Model },
+            ],
+        });
+
+        res.status(200).json({ unapprovedOrders });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });

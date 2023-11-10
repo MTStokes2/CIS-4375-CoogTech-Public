@@ -3,7 +3,7 @@
     <button @click="goToOrderHistory" class="back-button">Back to Order History</button>
       <div class="order-summary">
         <h2>Order Details</h2>
-        <div v-if="orderDetails">
+        <div v-if="orderDetails && orderDetails.CITY && orderDetails.STATE">
           <p><strong>Order Number:</strong> {{ orderDetails.CustomOrderID }}</p>
           <p><strong>Order Date:</strong> {{ formatDate(orderDetails.DateOrdered) }}</p>
           <p><strong>Address:</strong> {{ orderDetails.Address }}</p>
@@ -15,8 +15,14 @@
           <p><strong>Scheduled Delivery Date:</strong> {{ formatDate(orderDetails.DateScheduled) }}</p>
           <p><strong>Date Delivered:</strong> {{ formatDate(orderDetails.DateDelivered) }}</p>
         </div>
+        <div v-else>
+        <p>No order details available.</p>
+        </div>
         <div class="product-container">
             <Products :OrderID="CustomOrderID"></Products>
+        </div>
+        <div class="notice">
+          <p>Please provide details about the custom item you wish to have, and an admin will work out the details.</p>
         </div>
         <div class="chat-container">
             <ChatComponent :customOrderID="orderDetails.CustomOrderID" :username="this.username" :role="this.role"></ChatComponent>
@@ -43,9 +49,10 @@
         role: ''
       };
     },
-    created() {
-      this.fetchOrderDetails();
-      this.fetchUserInfo();
+    async created() {
+
+      await Promise.all([this.fetchOrderDetails(), this.fetchUserInfo()])
+      
     },
     methods: {
         async fetchUserInfo() {
@@ -126,24 +133,42 @@
   margin-top: 20px;
 }
   
-.chat-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
 .back-button {
-  margin-bottom: 20px;
-  background-color: #2f2f2f;
-  color: #fff;
-  padding: 10px 20px;
+  background-color: #ff6b81;
+  color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
   cursor: pointer;
-  font-size: 16px;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
 }
 
 .back-button:hover {
-  background-color: #1f1f1f;
+  background-color: #e74c3c;
+}
+
+.chat-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.notice {
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.notice p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
 }
 
   </style>

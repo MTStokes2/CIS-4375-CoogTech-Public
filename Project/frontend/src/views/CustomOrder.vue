@@ -1,190 +1,289 @@
+
 <template>
-    <h1 class=" center text-3xl text-green-900 font-bold mb-6">Custom Order</h1>
-    <form @submit="submitOrder">
-        <div class="form-row mb-4">
-            <label for="quantity">Quantity </label>
-            <input type="number" id="quantity" v-model="order.quantity" required class="rounded-input">
-        </div>
-
-        <div class="form-row">
-            <label for="groupOrder">Group Order? </label>
-            <select id="groupOrder" v-model="order.groupOrder" class="rounded-input">
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-            </select>
-        </div>
-
-        <div class="form-row">
-            <label for="eventType">Event Type </label>
-            <input type="text" id="eventType" v-model="order.eventType" required class="rounded-input">
-        </div>
-
-        <div class="form-row">
-            <label for="size">Size</label>
-            <select id="size" v-model="order.size" class="rounded-input">
-                <optgroup label="Toddler">
-                    <option value="6-12 months">6-12 months</option>
-                    <option value="12-18 months">12-18 months</option>
-                    <!-- Add more toddler sizes -->
-                    <option value="larger size">Larger size: specify</option>
-                </optgroup>
-                <!-- Add other size groups similarly -->
-            </select>
-        </div>
-
-        <div class="form-row">
-            <label for="color">Color</label>
-            <select id="color" v-model="order.color" class="rounded-input">
-                <option value="black">Black</option>
-                <option value="white">White</option>
-                <option value="green">Green</option>
-                <option value="white">Health grey</option>
-                <option value="grey">Grey</option>
-                <option value="blue">Blue</option>
-                <option value="red">Red</option>
-                <option value="pink">Pink</option>
-                <option value="orange">Orange</option>
-                <option value="yellow">yellow</option>
-                <!-- Add more colors -->
-                <option value="other">Other color: specify</option>
-            </select>
-        </div>
-
-        <div class="form-row">
-            <label for="tieDye">Tie Dye (extra cost)</label>
-            <input type="checkbox" id="tieDye" v-model="order.tieDye">
-        </div>
-
-        <div class="form-row">
-            <label for="designImages">Design Information/ Images</label>
-            <input type="file" id="designImages" @change="uploadImages" class="rounded-input">
-        </div>
-
-
-
-        <div class="form-row">
-            <label for="dateNeeded">Date Needed </label>
-            <input type="date" id="dateNeeded" v-model="order.dateNeeded" required class="rounded-input">
-        </div>
-
-        <div class="form-row">
-            <label for="deliveryMethod">Pick Up/ Delivery</label>
-            <select id="deliveryMethod" v-model="order.deliveryMethod" class="rounded-input">
-                <option value="pickup">Picking up</option>
-                <option value="delivery">Delivery</option>
-            </select>
-        </div>
-
-        <div class="form-row">
-            <label for="paymentMethod">Payment Method</label>
-            <div>
-                <input type="radio" id="paypal" value="PayPal" v-model="order.paymentMethod">
-                <label for="paypal">PayPal</label>
-            </div>
-            <div>
-                <input type="radio" id="venmo" value="Venmo" v-model="order.paymentMethod">
-                <label for="venmo">Venmo</label>
-            </div>
-            <div>
-                <input type="radio" id="cash" value="Cash (only pick up)" v-model="order.paymentMethod">
-                <label for="cash">Cash (only pick up)</label>
-            </div>
-            <div>
-                <input type="radio" id="zelle" value="Zelle" v-model="order.paymentMethod">
-                <label for="zelle">Zelle</label>
-            </div>
-            <div>
-                <input type="radio" id="cashapp" value="CashApp" v-model="order.paymentMethod">
-                <label for="cashapp">CashApp</label>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <button type="submit" class="rounded-button">Submit Order</button>
-        </div>
-    </form>
-</template>
+  <button @click="goToCatalog" class="back-button">Back to Catalog</button>
+  <div class="order-page">
+    <div class="form-section">
+      <div class="order-form-container">
+          <h1 class="center text-3xl text-green-900 font-bold mb-6">Custom Order</h1>
+          <form @submit.prevent="submitOrder()" class="order-form">
   
+            <div class="form-group" v-if="userInfoReceived">
+              <button @click="loadCustomerInfo" class="load-address-button">Use My Address</button>
+            </div>
+  
+            <div class="form-group">
+              <label for="city">City</label>
+              <input type="text" id="city" v-model="this.City" required class="rounded-input">
+            </div>
+  
+            <div class="form-group">
+              <label for="state">State</label>
+              <input type="text" id="state" v-model="this.State" required class="rounded-input">
+            </div>
+            <div class="form-group">
+              <label for="address">Address</label>
+              <input type="text" id="address" v-model="this.Address" required class="rounded-input">
+            </div>
+  
+            <div class="form-group">
+              <label for="zipcode">Zip Code</label>
+              <input type="text" id="zipcode" v-model="this.Zipcode" required class="rounded-input">
+            </div>
+  
+            <div class="form-group">
+              <label for="deliveryDay">When do you want it delivered?:</label>
+              <input type="date" id="deliveryDay" v-model="this.DateScheduled" required class="rounded-input">
+            </div>
+  
+            <div class="form-group">
+              <button type="submit" class="submit-button">Submit Order</button>
+            </div>
+          </form>
+        </div>
+        </div>
+  
+    <div class="details-section">
+      <h2 class="text-2xl text-green-900 font-bold mb-6">Custom Order Details</h2>
+      <div class="custom-order-info">
+        <p>
+          <strong class="text-green-900 font-bold">Order Approval:</strong> 
+          <br>All custom orders start as "Unapproved" and require review and approval by our Admin team.
+        </p>
+        <br>
+        <p>
+          <strong class="text-green-900 font-bold">Communication and Design:</strong> 
+          <br>Describe your design or provide any relevant information. Our Admins are here to assist you in the design process.
+          <br>Use the chat section in the Custom Order Details Page to communicate with our Admins. Describe your design or provide any relevant information.
+        </p>
+        <br>
+        <p>
+          <strong class="text-green-900 font-bold">Pricing:</strong>
+          <br>The price for custom products is determined by our Admins based on materials and design complexity.
+        </p>
+        <br>
+        <p>
+          <strong class="text-green-900 font-bold">Material Options for Shirts:</strong> 
+          <br>Choose from quality shirt materials, including: 
+          <br> - 100% Cotton
+          <br> - 50/50 Polyester/Cotton
+          <br> - Blend
+          <br> - Dri-Fit
+        </p>
+        <br>
+        <p>
+        <strong class="text-green-900 font-bold">Delivery and Shipping:</strong>
+        <br>Details about the estimated delivery date and shipping options will be provided once the order is finalized.
+        Inquire about expedited shipping or special delivery by contacting us at:
+        <br><strong class="text-green-900 font-bold">Email:</strong> <a href="mailto:VargasErikaY@gmail.com ">VargasErikaY@gmail.com </a>
+        <br><strong class="text-green-900 font-bold">Phone:</strong> <a href="tel:+18327243673">(832)724-3673</a>
+        </p>
+        <br>
+        <p>
+        <strong class="text-green-900 font-bold">Our Commitment:</strong> 
+
+        <br>We are dedicated to providing you with a personalized and seamless experience.
+        Our Admins are here to ensure your custom product meets your expectations.
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script>
+import axios from 'axios';
+import moment from 'moment';
+
 export default {
     data() {
         return {
-            order: {
-                quantity: 0,
-                groupOrder: 'no',
-                eventType: '',
-                size: '',
-                color: 'black',
-                tieDye: false,
-                designImages: [], // Store uploaded images here
-                contactName: '',
-                contactEmail: '',
-                contactPhone: '',
-                contactAddress: '',
-                dateNeeded: '',
-                deliveryMethod: 'pickup',
-                paymentMethod: '',
-            },
+            Username: '',
+            Address: '',
+            City: '',
+            State: '',
+            Zipcode: '',
+            DateScheduled: new Date().toISOString().split('T')[0],
+            userInfoReceived: false
         };
     },
+    mounted() {
+        this.fetchUserInfo();
+    },
     methods: {
-        submitOrder() {
-            // Handle form submission, e.g., send data to a server
-            console.log(this.order);
+        async fetchUserInfo() {
+        try {
+        const response = await fetch('http://localhost:8080/UserInformation', {
+            method: 'GET',
+            credentials: 'include', // Use 'include' to send cookies with the request
+            headers: {
+            "Content-Type": "application/json"
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            this.Username = data.username;
+            console.log('Received UserInfo:', data);
+            this.userInfoReceived = true;
+        } else {
+            console.error('Failed to fetch user info');
+        }
+        } catch (error) {
+        console.error('Error fetching user info:', error);
+        }
+    },
+        async loadCustomerInfo() {
+            try {
+                const response = await axios.get('http://localhost:8080/customerData/AccountInfo/', {
+                    withCredentials: true // Include credentials for authentication if needed
+                });
+
+                if (response.status === 200) {
+                    const data = response.data.customer;
+                    this.City = data.CITY.City;
+                    this.State = data.STATE.State;
+                    this.Zipcode = data.ZipCode;
+                    this.Address = data.CustomerAddress;
+                    console.log('Received Customer:', data);
+                } else {
+                    console.error('Failed to fetch user info');
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
         },
-        uploadImages(event) {
-            // Handle file uploads and store them in this.order.designImages
-            this.order.designImages = event.target.files;
+
+        async submitOrder() {
+            try {
+                const formattedDate = moment(this.DateScheduled).format('MM/DD/YYYY');
+
+                const response = await axios.post('http://localhost:8080/customerData/CustomOrders', {
+                    Username: this.Username,
+                    StatusID: 1,
+                    Address: this.Address,
+                    City: this.City,
+                    State: this.State,
+                    ZipCode: this.Zipcode,
+                    DateScheduled: formattedDate,
+                    withCredentials: true // Include credentials for authentication if needed
+                });
+                const OrderID = response.data.customOrder.CustomOrderID;
+                console.log(response.data)
+                // Check if the request was successful
+
+                // Redirect to the order history page or perform any other actions
+                this.$router.push({ name: 'CustomOrderDetails', params: { id: OrderID } });
+
+            } catch (error) {
+                console.error('Error submitting order:', error);
+            }
         },
+        goToCatalog() {
+            this.$router.push('/catalog');
+        }
     },
 };
 </script>
   
 <style scoped>
-.form-row {
-    margin-bottom: 20px;
+.order-page {
+  display: flex;
+  justify-content: space-between;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-label {
-    width: 180px;
-    clear: left;
-    text-align: right;
-    padding-right: 10px;
+.form-section {
+  flex: 1;
+  margin-right: 20px; /* Adjust the margin as needed */
 }
 
-
-.rounded-input {
-    border-radius: 10px;
-    padding: 10px;
+.order-form-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-
-
-
-.rounded-button {
-    background-color: #F5F5DC;
-    color: rgb(16, 82, 25);
-    padding: 10px 20px;
-    text-decoration: none;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
+.order-form {
+  display: flex;
+  flex-direction: column;
 }
 
-.rounded-button:hover {
-    background-color: #F5F5DC;
+.form-group {
+  margin-bottom: 16px;
 }
 
-.center-radio-group {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.label {
+  font-weight: bold;
+  margin-bottom: 8px;
 }
 
-.center-radio-group div {
-    margin: 0 10px;
-    /* Adjust the margin as needed */
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
+
+.submit-button {
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
+}
+
+.submit-button:hover {
+  background-color: #e74c3c;
+}
+
+.load-address-button {
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px;
+}
+
+.load-address-button:hover {
+  background-color: #e74c3c;
+}
+
+.details-section {
+  flex: 1;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.back-button {
+  margin-bottom: 20px;
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
+}
+
+.back-button:hover {
+  background-color: #e74c3c;
+}
+
 </style>
   

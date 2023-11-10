@@ -234,16 +234,18 @@ export default {
 
 .back-button {
   margin-bottom: 20px;
-  background-color: #2f2f2f;
-  color: #fff;
-  padding: 10px 20px;
+  background-color: #ff6b81;
+  color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
   cursor: pointer;
-  font-size: 16px;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
 }
 
 .back-button:hover {
-  background-color: #1f1f1f;
+  background-color: #e74c3c;
 }
 </style>

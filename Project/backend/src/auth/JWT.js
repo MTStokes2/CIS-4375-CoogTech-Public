@@ -1,4 +1,5 @@
 const {sign, verify} = require('jsonwebtoken')
+const rateLimit = require('express-rate-limit');
 const secret_key = process.env.JWT_SECRET
 
 const createToken = (user) => {
@@ -47,4 +48,10 @@ const validateToken = (req, res, next) => {
     }
 };
 
-module.exports = { createToken, validateToken }
+const resetPasswordLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes window
+    max: 5, // limit each IP to 5 requests per windowMs
+    message: { error: 'Too many password reset requests from this IP, please try again later.' }
+  });
+
+module.exports = { createToken, validateToken, resetPasswordLimiter }

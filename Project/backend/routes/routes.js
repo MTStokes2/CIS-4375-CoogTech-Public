@@ -130,6 +130,51 @@ router.post('/Login', async (req, res) => {
   }
 });
 
+//Logout
+router.post('/Logout', validateToken, async (req, res) => {
+  try {
+    const { userId, username, role } = req.user;
+      
+      // Check if the username exists in either customers or admins table
+      const customer = await Usernames_Model.findOne({
+        where: {
+            Username: username,
+        },
+        include: [
+            {
+                model: Customers_Model,
+                required: false, // Use false for LEFT JOIN
+            },
+            {
+                model: Admins_Model,
+                required: false, // Use false for LEFT JOIN
+            },
+        ],
+    });
+    
+    if (customer) {
+
+      const token = ''
+
+      res.cookie('access-token', token, {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: false,
+        maxAge: 0,
+        domain: 'localhost'
+      });
+
+      res.status(200).json({ message: 'Logout successful', token: token});
+
+      } else {
+          return res.status(401).json({ message: 'Invalid user' });
+      }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+    });
+
 router.get('/UserInformation', validateToken, (req, res) => {
   // Access user information from the token payload
   const { userId, username, role } = req.user;

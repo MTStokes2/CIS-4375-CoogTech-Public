@@ -75,8 +75,7 @@ export default {
       messageInput: '',
     };
   },
-  mounted() {
-    // Establish socket connection when the component is mounted
+  created() {
     this.fetchUserInfo();
   },
   updated() {
@@ -104,8 +103,6 @@ export default {
 
         if (response.ok) {
           const data = await response.json();
-          this.username = data.username;
-          this.role = data.role;
           console.log('Received UserInfo:', data);
         } else {
           console.error('Failed to fetch user info');
@@ -257,7 +254,7 @@ export default {
 }
 
 .message-container {
-  max-height: 300px;
+  max-height: 400px;
   overflow-y: auto;
   margin-top: 10px;
   padding-right: 10px;
@@ -278,9 +275,9 @@ export default {
   border-radius: 10px;
   line-height: 1.2;
   font-size: 14px;
-  padding: 10px;
+  padding: 5px;
   margin-bottom: 30px;
-  margin-left: 200px;
+  margin-left: 500px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -289,9 +286,9 @@ export default {
   border-radius: 10px;
   line-height: 1.2;
   font-size: 14px;
-  padding: 10px;
+  padding: 5px;
   margin-bottom: 30px;
-  margin-right: 200px;
+  margin-right: 500px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 

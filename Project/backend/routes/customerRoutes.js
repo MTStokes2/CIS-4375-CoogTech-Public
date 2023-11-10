@@ -18,8 +18,7 @@ let { Order_Products_Model } = require('../models/modelAssociations');
 let { City_Model } = require('../models/modelAssociations');
 let { State_Model } = require('../models/modelAssociations');
 let { Status_Model } = require('../models/modelAssociations');
-const { validateToken } = require('../src/auth/JWT')
-
+const { validateToken, resetPasswordLimiter } = require('../src/auth/JWT')
 //GET all Products
 router.get('/Products', (req, res) =>
     Products_Model.findAll()
@@ -31,11 +30,12 @@ router.get('/Products', (req, res) =>
 
 //Maybe use params for all of the CustomerID stuff since it should have one if they are logged in?
 //Update a Customer's Information
-router.put('/AccountInfo', async (req, res) => {
+router.put('/AccountInfo', validateToken, async (req, res) => {
+    const { userId, username, role } = req.user
     try {
         const customer = await Customers_Model.findOne({
             where: {
-                CustomerID: req.body.CustomerID,
+                CustomerID: userId,
             },
         });
 
@@ -43,6 +43,25 @@ router.put('/AccountInfo', async (req, res) => {
             // Extract only the fields that are present in req.body
             const updatedFields = {};
             const tableFields = ['CityID', 'StateID', 'ZipCode', 'CustomerLastName', 'CustomerFirstName', 'CustomerAddress', 'CustomerPhone', 'CustomerEmail'];
+
+            // Fetch CityID and StateID based on the provided city and state names
+            const city = await City_Model.findOne({
+                where: {
+                    City: req.body.City,
+                },
+            });
+
+            const state = await State_Model.findOne({
+                where: {
+                    State: req.body.State,
+                },
+            });
+
+            // If city and state are found, update the corresponding IDs
+            if (city && state) {
+                updatedFields.CityID = city.CityID;
+                updatedFields.StateID = state.StateID;
+            }
 
             tableFields.forEach(field => {
                 if (req.body[field] !== undefined) {
@@ -66,6 +85,41 @@ router.put('/AccountInfo', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
+//Get Customer Info
+router.get('/AccountInfo/', validateToken, async (req, res) => {
+    const { userId, username, role } = req.user
+    try {
+        const customerId = userId
+
+        const customer = await Customers_Model.findOne({
+            where: {
+                CustomerID: customerId,
+            },
+            attributes: ['CustomerID', 'CityID', 'StateID', 'ZipCode', 'CustomerLastName', 'CustomerFirstName', 'CustomerAddress', 'CustomerPhone', 'CustomerEmail'],
+            include: [
+                {
+                    model: City_Model,
+                    attributes: ['CityID', 'City'],
+                },
+                {
+                    model: State_Model,
+                    attributes: ['StateID', 'State'],
+                },
+            ],
+        });
+
+        if (customer) {
+            res.status(200).json({ customer });
+        } else {
+            res.status(404).json({ message: 'Customer not found' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
 
 //Update a Customer's Username
 router.put('/ChangeUsername', async (req, res) => {
@@ -95,7 +149,7 @@ router.put('/ChangeUsername', async (req, res) => {
   });
 
 // Update a Customer's Password
-router.put('/ChangePassword', async (req, res) => {
+router.put('/ChangePassword', resetPasswordLimiter, async (req, res) => {
     try {
 
         // Hash the new password before updating
@@ -106,7 +160,6 @@ router.put('/ChangePassword', async (req, res) => {
                 CustomerEmail: req.body.CustomerEmail,
             },
         });
-
         if (customer) {
             // Update the password with the hashed value
             await Passwords_Model.update(
@@ -229,6 +282,11 @@ router.post('/Orders/:id/products', async (req, res) => {
             return res.status(404).json({ message: 'Order or product not found' });
         }
 
+        // Check if there is enough stock for the product
+        if (parseInt(product.Stock) < parseInt(Quantity)) {
+            return res.status(400).json({ message: 'Insufficient stock' });
+        }
+
         //get Updated Total for the Order
         const updatedTotal = parseInt(order.Total) + (parseFloat(product.ProductPrice) * parseInt(Quantity))
 
@@ -248,6 +306,19 @@ router.post('/Orders/:id/products', async (req, res) => {
             ProductID: ProductID,
             Quantity: parseInt(Quantity)
         });
+
+        // Subtract ordered quantity from product stock
+        const updatedStock = parseInt(product.ProductStock) - parseInt(Quantity);
+        await Products_Model.update(
+            {
+                ProductStock: updatedStock,
+            },
+            {
+                where: {
+                    ProductID: ProductID
+                },
+            }
+        );
 
         res.status(201).json({ message: 'Product added to order successfully' });
 
@@ -391,6 +462,7 @@ router.post('/Orders', async (req, res) => {
 
 
         const parsedDateScheduled = moment(req.body.DateScheduled, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+        console.log('Parsed DateScheduled:', parsedDateScheduled);
 
         const customer = await Usernames_Model.findOne({
             where: {
@@ -398,22 +470,43 @@ router.post('/Orders', async (req, res) => {
             },
         });
 
+        // Find CityID by City name
+        const city = await City_Model.findOne({
+            where: {
+                City: req.body.City,
+            },
+        });
+
+        // Find StateID by State name
+        const state = await State_Model.findOne({
+            where: {
+                State: req.body.State,
+            },
+        });
+
+        if (!city || !state) {
+            return res.status(404).json({ message: 'City or State not found' });
+        }
+
         //Adds a new Order
-        Orders_Model.create(
+        const newOrder = await Orders_Model.create(
             {
             CustomerID: customer.CustomerID,
             StatusID: req.body.StatusID,
-            CityID: req.body.CityID,
-            StateID: req.body.StateID,
+            CityID: city.CityID,
+            StateID: state.StateID,
             ZipCode: req.body.ZipCode,
             Address: req.body.Address,
             Total: "0",
             DateScheduled: parsedDateScheduled
             })
 
-        res.status(200).json({ message: 'Order Added' });
+        OrderID = newOrder.OrderID
+
+        res.status(200).json({ message: 'Order Added', OrderID });
     } catch(err) {
         console.log(err)
+        res.status(401).json({ error: 'User not authenticated' });
     }
 });
 
@@ -533,8 +626,25 @@ router.put('/CustomOrders/:id', async (req, res) => {
 //Add a Custom Order
 router.post('/CustomOrders', async (req, res) => {
     try {
-
         const parsedDateScheduled = moment(req.body.DateScheduled, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
+
+        // Find CityID by City name
+        const city = await City_Model.findOne({
+            where: {
+                City: req.body.City,
+            },
+        });
+
+        // Find StateID by State name
+        const state = await State_Model.findOne({
+            where: {
+                State: req.body.State,
+            },
+        });
+
+        if (!city || !state) {
+            return res.status(404).json({ message: 'City or State not found' });
+        }
 
         const customer = await Usernames_Model.findOne({
             where: {
@@ -542,22 +652,22 @@ router.post('/CustomOrders', async (req, res) => {
             },
         });
 
-        //Adds a new Custom Order
-        Custom_Orders_Model.create(
-            {
+        // Adds a new Custom Order
+        const customOrder = await Custom_Orders_Model.create({
             CustomerID: customer.CustomerID,
             StatusID: req.body.StatusID,
-            CityID: req.body.CityID,
-            StateID: req.body.StateID,
+            CityID: city.CityID,
+            StateID: state.StateID,
             ZipCode: req.body.ZipCode,
             Address: req.body.Address,
             Total: "0",
-            DateScheduled: parsedDateScheduled
-            })
+            DateScheduled: parsedDateScheduled,
+        });
 
-        res.status(200).json({ message: 'Custom Order Added' });
-    } catch(err) {
-        console.log(err)
+        res.status(200).json({ message: 'Custom Order Added', customOrder });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 

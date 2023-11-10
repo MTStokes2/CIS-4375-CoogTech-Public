@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Catalog from '../views/Catalog.vue';
 import ProductDetail from '../views/ProductDetail.vue';
 import Cart from '../views/Cart.vue';
+import AdminDashboard from '../views/AdminDashboard.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,11 +68,6 @@ const router = createRouter({
       component: () => import('../views/ResetPassword.vue')
     },
     {
-      path: '/resetusername',
-      name: 'resetusername',
-      component: () => import('../views/ResetUsername.vue')
-    },
-    {
       path: '/orderdetails/:id',
       name: 'OrderDetails',
       component: () => import('../views/OrderDetails.vue')
@@ -90,6 +86,77 @@ const router = createRouter({
       path: '/OrderedCustomProducts',
       name: 'OrderedCustomProducts',
       component: () => import('../components/OrderedCustomProducts.vue')
+    },
+    {
+      path: '/AdminDashboard',
+      component: AdminDashboard,
+      children: [
+        {
+          path: 'orders',
+          component: () => import('../components/Orders.vue'),
+          name: 'Order Management'
+        },
+        {
+          path: 'customers',
+          component: () => import('../components/CustomerList.vue'),
+          name: 'Customers'
+        },
+        {
+          path: 'chats',
+          component: () => import('../components/ChatList.vue'),
+          name: 'AdminChats'
+        },
+        // Include a route for the individual chat if necessary
+        {
+          path: 'chats/:id',
+          component: () => import('../components/ChatWindow.vue'),
+          name: 'AdminChatWindow'
+        },
+        {
+          path: 'productsedit',
+          component: () => import('../components/ProductsEdit.vue'),
+          name: 'ProductsEdit'
+        },
+        {
+          path: 'productsedit',
+          component: () => import('../components/ProductsEdit.vue'),
+          name: 'ProductsEdit',
+          children: [
+            {
+              path: 'add',
+              component: () => import('../components/ProductAddForm.vue'),
+              name: 'ProductAdd'
+            },
+            {
+              path: 'edit/:id',
+              component: () => import('../components/ProductUpdateForm.vue'),
+              name: 'ProductUpdate',
+              props: true
+            },
+            // ... potentially more children like ProductDetails, etc. ...
+          ]
+        }
+      ]
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('../views/NotFound.vue')
+    } ,
+    {
+      path: '/OrderForm',
+      name: 'OrderForm',
+      component: () => import('../components/OrderForm.vue')
+    },
+    {
+      path: '/AccountInfo',
+      name: 'AccountInfo',
+      component: () => import('../views/AccountInfo.vue')
+    },
+    {
+      path: '/guestpage',
+      name: 'guestpage',
+      component: () => import('../views/GuestPage.vue')
     }
   ]
 });
