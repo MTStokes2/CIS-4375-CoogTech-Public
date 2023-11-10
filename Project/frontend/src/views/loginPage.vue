@@ -29,8 +29,7 @@
                 <button type="submit" class="custom-button text-2xl">Login</button>
             </div>
             <p class="mt-4 text-green-900 text-2xl">
-                <router-link to="/resetusername" class="text-green-700 font-bold">Forget Username</router-link> |
-                <router-link to="/resetpassword" class="text-green-700 font-bold">Forget Password</router-link> |
+                <router-link to="/resetpassword" class="text-green-700 font-bold">Forget Password</router-link>
 
             </p>
             <p class="mt-4 text-green-900 text-2xl">

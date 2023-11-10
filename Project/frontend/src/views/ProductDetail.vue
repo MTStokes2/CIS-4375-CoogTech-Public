@@ -1,6 +1,7 @@
 <template>
     <div class="product-details">
-        <h1>Product Details</h1>
+        <h2 class="text-4xl text-green-900 font-bold mb-6">Product Detail</h2>
+        <br>
         <div class="product-column">
             <div class="product-item" v-if="product">
                 <v-card style="background-color: #ffb7c2;">
@@ -13,8 +14,9 @@
                     <p>Color: {{ product.ProductColor }}</p>
                     <p>Size: {{ product.ProductSize }}</p>
                     <p>Stock: {{ product.ProductStock }}</p>
-                    <v-btn @click="addToCart">Add to Cart</v-btn>
                 </v-card>
+                <br>
+                <v-btn variant="elevated" color=#F5F5DC @click="addToCart">Add to cart</v-btn>
             </div>
             <div v-else>
                 <p>Product not found.</p>

@@ -16,8 +16,8 @@
       </v-card-text>
 
       <v-card-actions>
-        <v-btn @click="addToCart(product.ProductID)">
-          Add to cart
+        <br>
+        <v-btn variant="elevated" color=#F5F5DC @click="addToCart(product.ProductID)">Add to cart
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -48,3 +48,34 @@ const addToCart = (productId) => {
   emit('item-clicked', productId);
 };
 </script>
+<style scoped>
+.product-details {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.product-column {
+  display: flex;
+  justify-content: center;
+}
+
+.product-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  max-width: 300px;
+  display: inline-block;
+}
+
+.product-item h2 {
+  margin: 0;
+}
+
+.product-item p {
+  margin: 10px 0;
+}
+
+.product-item v-btn {
+  background-color: #ffb7c2;
+  color: #fff;
+}
+</style>
