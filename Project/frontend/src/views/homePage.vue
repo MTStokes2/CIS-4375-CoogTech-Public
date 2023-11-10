@@ -5,7 +5,7 @@
             <h1 class="text-5xl font-bold mb-4" style="color: rgb(4, 69, 4);">Discover Our Unique Collection</h1>
             <p class="text-lg font-bold mb-8 text-white-500" style="color: rgb(4, 69, 4);">Explore a wide range of
                 high-quality balloons and stylish t-shirts.</p>
-            <router-link to="/guestpage" class="custom-button">Shop Now</router-link>
+            <router-link to="/catalog" class="custom-button">Shop Now</router-link>
         </div>
     </section>
 
