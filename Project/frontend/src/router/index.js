@@ -111,6 +111,30 @@ const router = createRouter({
           path: 'chats/:id',
           component: () => import('../components/ChatWindow.vue'),
           name: 'AdminChatWindow'
+        },
+        {
+          path: 'productsedit',
+          component: () => import('../components/ProductsEdit.vue'),
+          name: 'ProductsEdit'
+        },
+        {
+          path: 'productsedit',
+          component: () => import('../components/ProductsEdit.vue'),
+          name: 'ProductsEdit',
+          children: [
+            {
+              path: 'add',
+              component: () => import('../components/ProductAddForm.vue'),
+              name: 'ProductAdd'
+            },
+            {
+              path: 'edit/:id',
+              component: () => import('../components/ProductUpdateForm.vue'),
+              name: 'ProductUpdate',
+              props: true
+            },
+            // ... potentially more children like ProductDetails, etc. ...
+          ]
         }
       ]
     },

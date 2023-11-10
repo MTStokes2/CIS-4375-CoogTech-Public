@@ -3,6 +3,9 @@
     <div class="tab" @click="selectTab('mainDashboard')">
       <i class="icon">🏠</i> Main
     </div>
+    <div class="tab" @click="selectTab('products')">
+      <i class="icon">📦</i> Products
+    </div>
     <div class="tab" @click="selectTab('chats')">
       <i class="icon">💬</i> Chats
     </div>
@@ -39,13 +42,13 @@
 
 <style scoped>
 .sidebar {
-  width: 250px;
+  width: 200px;
   background-color: rgba(255, 255, 255, 0.75); /* Semi-transparent white background */
   backdrop-filter: blur(10px); /* Blur effect for glassmorphism */
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   border-right: 1px solid rgba(255, 255, 255, 0.2); /* Light border for depth */
-  height: 49vh; /* Fixed */
+  height: 60vh; /* Fixed */
   position: fixed; /* Fixed position */
   overflow-y: auto; /* Scroll for overflow */
 }

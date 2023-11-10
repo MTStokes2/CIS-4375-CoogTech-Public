@@ -8,8 +8,9 @@
         <NewOrdersList />
         <CalendarView />
       </div>
-      <Orders v-if="activeTab === 'orderManagement'" />
+      <ProductsEdit v-if="activeTab === 'products'" />
       <CustomerList v-if="activeTab === 'customers'" />
+      <Orders v-if="activeTab === 'orderManagement'" />
       <section class="chat-area" v-if="activeTab === 'chats'">
       <ChatList class="chat-list" @chatSelected="chatSelected" />
       <ChatWindow class="chat-window" v-if="selectedChat" :chat="selectedChat" />
@@ -31,6 +32,7 @@ import ChatList from '@/components/ChatList.vue';
 import ChatWindow from '@/components/ChatWindow.vue';
 import NewOrdersList from '@/components/NewOrdersList.vue';
 import CalendarView from '@/components/CalendarView.vue';
+import ProductsEdit from '@/components/ProductsEdit.vue';
 
 
 export default {
@@ -41,7 +43,8 @@ export default {
     ChatList,
     ChatWindow,
     NewOrdersList,
-    CalendarView
+    CalendarView,
+    ProductsEdit
   },
   setup() {
     const tabStore = useTabStore();
@@ -72,27 +75,28 @@ export default {
 <style scoped>
 .admin-layout {
   display: flex;
+  height: 100vh; /* Full height of the viewport */
 }
 
 aside {
-  min-width: 250px;  /* Adjust the width as needed for your sidebar */
-  border-right: 1px solid #ddd;
+  width: 250px; /* Fixed width for the sidebar */
+  flex-shrink: 0; /* Prevents the sidebar from shrinking */
   /* Add other styles for your sidebar if necessary */
 }
 
 section {
-  flex-grow: 1;
-  /* This ensures that the section takes the remaining space */
+  flex-grow: 1; /* Allows section to take up the remaining width */
+  overflow-x: hidden; /* Prevents horizontal scrolling */
   /* Add other styles for your section if necessary */
 }
 
 .chat-area {
   display: flex;
-  height: calc(100vh - headerHeight); /* Adjust height as necessary */
+  height: 100%; /* Take up full height of the parent container */
 }
 
 .chat-list {
-  width: 300px; /* Width of the chat list */
+  width: 300px; /* Fixed width for the chat list */
   overflow-y: auto; /* Scrollable chat list */
   border-right: 1px solid #ddd; /* Separate chat list from chat window */
 }
