@@ -32,4 +32,4 @@ export const productsStore = defineStore('products', {
       this.cart = this.cart.filter((item) => item.id !== id);
     },
   },
-});
+});   

@@ -60,6 +60,11 @@ const router = createRouter({
       path: '/resetusername',
       name: 'resetusername',
       component: () => import('../views/ResetUsername.vue')
+    },
+    {
+      path: '/guestpage',
+      name: 'guestpage',
+      component: () => import('../views/GuestPage.vue')
     }
   ]
 });

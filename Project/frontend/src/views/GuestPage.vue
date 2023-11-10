@@ -1,22 +1,14 @@
 <template>
-    <div class="page">
-        <div class="sidebar">
-            <router-link to="orderHistory"><i class="icon">📦</i> Order History</router-link>
-            <router-link to="customOrder"><i class="icon">🛒</i> Custom Order</router-link>
+    <div class="main-content">
 
-        </div>
-
-        <div class="main-content">
-
-            <div class="product-row">
-                <div v-for="product in products" :key="product.ProductID" class="product-column">
-                    <product-item :product="product" @item-clicked="goToProductPage(product)" />
-                </div>
+        <div class="product-row">
+            <div v-for="product in products" :key="product.ProductID" class="product-column">
+                <product-item :product="product" @item-clicked="goToProductPage(product)" />
             </div>
         </div>
     </div>
 </template>
-  
+
 <script>
 import ProductItem from "@/components/ProductItem.vue";
 import { defineComponent } from "vue";
@@ -30,14 +22,14 @@ export default defineComponent({
     },
 });
 </script>
-  
+
 <style scoped>
 .page {
     display: flex;
 }
 
 .sidebar {
-    width: 400px;
+    width: 200px;
     /* Adjust the width as needed */
     background-color: #f999a8;
     /* Sidebar background color */
@@ -85,7 +77,7 @@ h1 {
     margin-bottom: 20px;
 }
 </style>
-  
+
 <script setup>
 import { ref, onMounted } from "vue";
 import { productsStore } from "@/stores/products";
@@ -118,4 +110,3 @@ onMounted(() => {
     fetchProductsFromAPI();
 });
 </script>
-  
