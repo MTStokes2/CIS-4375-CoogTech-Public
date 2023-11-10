@@ -4,39 +4,42 @@
             <h2 class="text-3xl text-green-900 font-bold mb-6">Reset Password</h2>
             <div class="mb-4">
 
-                <label class="block text-green-900 text-sm font-bold mb-2" for="newPassword">Enter Email</label>
+                <label class="block text-green-900 text-2xl font-bold mb-2" for="newPassword">Enter Email</label>
                 <div class="relative">
                     <input class="py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                         type="email" id="email" v-model="email" required
                         placeholder="Enter your Email Address" />
                 </div>
-                <label class="block text-green-900 text-sm font-bold mb-2" for="newPassword">New Password</label>
+                <div class="mb-4">
+                <label class="block text-2xl text-green-900 font-bold mb-2" for="newPassword">New Password</label>
                 <div class="relative">
-                    <input class="py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
-                        type="password" id="newPassword" v-model="newPassword" required
-                        placeholder="Enter your new password" />
-                    <span class="absolute top-2 right-2 text-gray-500 cursor-pointer" @click="togglePasswordVisibility">
-                        {{ showPassword ? 'Hide' : '👁️' }}
-                    </span>
-                    <label class="block text-green-900 text-sm font-bold mb-2" for="newPassword">Confirm Password</label>
-                    <div class="relative">
-                        <input class="py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
-                            type="password" id="newPassword" v-model="newPassword" required
-                            placeholder="Enter your new password" />
-                        <span class="absolute top-2 right-2 text-gray-500 cursor-pointer" @click="togglePasswordVisibility">
-                            {{ showPassword ? 'Hide' : '👁️' }}
-                        </span>
-                    </div>
+                    <input
+                        class="py-2 px-3 text-xl border border-green-300 rounded focus:outline-none focus:border-green-500"
+                        type="password" id="newPassword" v-model="newPassword" required>
+                    <input type="checkbox" @click="togglePasswordVisibility('newPassword')"
+                        class="absolute top-2 right-2 cursor-pointer">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-2xl text-green-900 font-bold mb-2" for="confirmpassword">Confirm Password</label>
+                <div class="relative">
+                    <input
+                        class="py-2 px-3 text-xl border border-green-300 rounded focus:outline-none focus:border-green-500"
+                        type="password" id="confirmpassword" v-model="confirmpassword" required>
+                    <input type="checkbox" @click="togglePasswordVisibility('confirmpassword')"
+                        class="absolute top-2 right-2 cursor-pointer">
+                </div>
                 </div>
             </div>
 
             <!-- Display error message -->
-            <div v-if="error" class="text-red-600 font-bold mb-4">
+            <div v-if="error" class="text-red-600 font-bold mb-4 text-2xl">
                 {{ error }}
             </div>
 
             <div class="flex items-center justify-between">
-                <button type="submit" class="custom-button">Reset Password</button>
+                <button type="submit" class="custom-button text-2xl">Reset Password</button>
             </div>
         </form>
     </div>
@@ -51,7 +54,6 @@ export default {
             newPassword: '',
             email: '',
             error: '',
-            showPassword: false
         };
     },
     methods: {
@@ -82,11 +84,10 @@ export default {
                 this.error = 'Password reset failed';
             }
         },
-        togglePasswordVisibility() {
-            // Toggle the visibility of the password
-            this.showPassword = !this.showPassword;
-            const input = document.getElementById('newPassword');
-            input.type = this.showPassword ? 'text' : 'password';
+        togglePasswordVisibility(field) {
+            // Toggle the visibility of the password for the specified field
+            const input = document.getElementById(field);
+            input.type = input.type === 'password' ? 'text' : 'password';
         }
     }
 };

@@ -68,11 +68,6 @@ const router = createRouter({
       component: () => import('../views/ResetPassword.vue')
     },
     {
-      path: '/resetusername',
-      name: 'resetusername',
-      component: () => import('../views/ResetUsername.vue')
-    },
-    {
       path: '/orderdetails/:id',
       name: 'OrderDetails',
       component: () => import('../views/OrderDetails.vue')
@@ -133,7 +128,12 @@ const router = createRouter({
       path: '/AccountInfo',
       name: 'AccountInfo',
       component: () => import('../views/AccountInfo.vue')
-    }  
+    },
+    {
+      path: '/guestpage',
+      name: 'guestpage',
+      component: () => import('../views/GuestPage.vue')
+    }
   ]
 });
 
