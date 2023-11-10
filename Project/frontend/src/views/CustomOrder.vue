@@ -1,43 +1,91 @@
 
 <template>
-    <div>
-        <h1 class="center text-3xl text-green-900 font-bold mb-6">Custom Order</h1>
-        <form @submit.prevent="submitOrder()">
-
+  <div class="order-page">
+    <div class="form-section">
+      <div class="order-form-container">
+          <h1 class="center text-3xl text-green-900 font-bold mb-6">Custom Order</h1>
+          <form @submit.prevent="submitOrder()" class="order-form">
+  
             <div class="form-group" v-if="userInfoReceived">
-            <button @click="loadCustomerInfo" class="load-address-button">Use My Address</button>
+              <button @click="loadCustomerInfo" class="load-address-button">Use My Address</button>
             </div>
+  
+            <div class="form-group">
+              <label for="city">City</label>
+              <input type="text" id="city" v-model="this.City" required class="rounded-input">
+            </div>
+  
+            <div class="form-group">
+              <label for="state">State</label>
+              <input type="text" id="state" v-model="this.State" required class="rounded-input">
+            </div>
+            <div class="form-group">
+              <label for="address">Address</label>
+              <input type="text" id="address" v-model="this.Address" required class="rounded-input">
+            </div>
+  
+            <div class="form-group">
+              <label for="zipcode">Zip Code</label>
+              <input type="text" id="zipcode" v-model="this.Zipcode" required class="rounded-input">
+            </div>
+  
+            <div class="form-group">
+              <label for="deliveryDay">Delivery Day</label>
+              <input type="date" id="deliveryDay" v-model="this.DateScheduled" required class="rounded-input">
+            </div>
+  
+            <div class="form-group">
+              <button type="submit" class="submit-button">Submit Order</button>
+            </div>
+          </form>
+        </div>
+        </div>
+  
+    <div class="details-section">
+      <h2 class="text-xl font-semibold mb-4">Custom Order Details</h2>
+      <div class="custom-order-info">
+        <p>
+          <strong>Order Approval:</strong> 
+          <br>All custom orders start as "Unapproved" and require review and approval by our Admin team.
+        </p>
+        <br>
+        <p>
+          <strong>Communication and Design:</strong> 
+          <br>Describe your design or provide any relevant information. Our Admins are here to assist you in the design process.
+          <br>Use the chat section in the Custom Order Details Page to communicate with our Admins. Describe your design or provide any relevant information.
+        </p>
+        <br>
+        <p>
+          <strong>Pricing:</strong>
+          <br>The price for custom products is determined by our Admins based on materials and design complexity.
+        </p>
+        <br>
+        <p>
+          <strong>Material Options for Shirts:</strong> 
+          <br>Choose from quality shirt materials, including: 
+          <br> - 100% Cotton
+          <br> - 50/50 Polyester/Cotton
+          <br> - Blend
+          <br> - Dri-Fit
+        </p>
+        <br>
+        <p>
+        <strong>Delivery and Shipping:</strong>
+        <br>Details about the estimated delivery date and shipping options will be provided once the order is finalized.
+        Inquire about expedited shipping or special delivery by contacting us at:
+        <br><strong>Email:</strong> <a href="mailto:VargasErikaY@gmail.com ">VargasErikaY@gmail.com </a>
+        <br><strong>Phone:</strong> <a href="tel:+18327243673">(832)724-3673</a>
+        </p>
+        <br>
+        <p>
+        <strong>Our Commitment:</strong> 
 
-            <div class="form-row mb-4">
-                <label for="address">Address</label>
-                <input type="text" id="address" v-model="this.Address" required class="rounded-input">
-            </div>
-
-            <div class="form-row mb-4">
-                <label for="city">City</label>
-                <input type="text" id="city" v-model="this.City" required class="rounded-input">
-            </div>
-
-            <div class="form-row mb-4">
-                <label for="state">State</label>
-                <input type="text" id="state" v-model="this.State" required class="rounded-input">
-            </div>
-
-            <div class="form-row mb-4">
-                <label for="zipcode">Zip Code</label>
-                <input type="text" id="zipcode" v-model="this.Zipcode" required class="rounded-input">
-            </div>
-
-            <div class="form-row mb-4">
-                <label for="deliveryDay">Delivery Day</label>
-                <input type="date" id="deliveryDay" v-model="this.DateScheduled" required class="rounded-input">
-            </div>
-
-            <div class="form-row">
-                <button type="submit" class="submit-button">Submit Order</button>
-            </div>
-        </form>
+        <br>We are dedicated to providing you with a personalized and seamless experience.
+        Our Admins are here to ensure your custom product meets your expectations.
+        </p>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -133,40 +181,88 @@ export default {
 </script>
   
 <style scoped>
-.form-row {
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
+.order-page {
+  display: flex;
+  justify-content: space-between;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-label {
-    width: 180px;
-    text-align: right;
-    padding-right: 10px;
+.form-section {
+  flex: 1;
+  margin-right: 20px; /* Adjust the margin as needed */
 }
 
-input {
-    margin-left: 10px;
-    /* Adjust the margin as needed to add space between text and input */
-    padding: 10px;
-    border-radius: 10px;
+.order-form-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.rounded-button {
-    background-color: #F5F5DC;
-    color: rgb(16, 82, 25);
-    padding: 10px 20px;
-    text-decoration: none;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-    margin-left: 190px;
-    /* Adjust the margin to align the button with the input fields */
+.order-form {
+  display: flex;
+  flex-direction: column;
 }
 
-.rounded-button:hover {
-    background-color: #F5F5DC;
+.form-group {
+  margin-bottom: 16px;
 }
+
+.label {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.submit-button {
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
+}
+
+.submit-button:hover {
+  background-color: #e74c3c;
+}
+
+.load-address-button {
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px;
+}
+
+.load-address-button:hover {
+  background-color: #e74c3c;
+}
+
+.details-section {
+  flex: 1;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
 </style>
   
