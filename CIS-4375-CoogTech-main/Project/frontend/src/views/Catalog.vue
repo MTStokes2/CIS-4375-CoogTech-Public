@@ -1,25 +1,32 @@
 <template>
     <div class="page">
-        <div class="sidebar">
-            <!-- <router-link to="orderHistory">Order History</router-link> -->
-            <!-- <router-link to="customOrder">Custom Order</router-link> -->
-            <router-link to="customOrder" class="button">Custom Order</router-link>
+        <div class="topbar">
+            <input v-model="search" @keyup.enter="performSearch" class="search-input" placeholder="Search products..." />
+            <label for="productType" class="dropdown-label">Select Type:</label>
+            <select v-model="selectedType" id="productType" class="dropdown">
+                <option value="">All</option>
+                <option value="Tshirt">Tshirts</option>
+                <option value="type2">Type 2</option>
+                <!-- Add options for other types as needed -->
+            </select>
+            <!-- Add buttons for other types as needed -->
+            <button @click="resetFilters" class="button">Reset Filter</button>
+            <router-link to="/customorder" class="link">
+                    <span class="material-icons">add_box</span> Create a Custom Order
+                </router-link>
         </div>
-
-        <div class="main-content">
-
+            <!-- Product list and other content here -->
             <div class="product-row">
-                <div v-for="product in products" :key="product.ProductID" class="product-column">
+                <div v-for="product in products" :key="product.ProductID">
                     <product-item :product="product" @item-clicked="goToProductPage(product)" />
                 </div>
             </div>
-        </div>
     </div>
 </template>
   
 <script>
 import ProductItem from "@/components/ProductItem.vue";
-import { defineComponent } from "vue";
+import { defineComponent, watch } from "vue";
 import { productsStore } from "@/stores/products";
 import { useRouter } from "vue-router";
 
@@ -31,83 +38,6 @@ export default defineComponent({
 });
 </script>
   
-<style scoped>
-.page {
-    display: flex;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
-}
-
-.sidebar {
-    width: 200px;
-    background-color: #ffb7c2; 
-    color: #FFFFFF; /* White text for better readability */
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.sidebar .button {
-    display: block;
-    padding: 10px 20px;
-    background-color: #eb6bb9;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    text-align: center;
-    font-weight: bold;
-    text-decoration: none;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-}
-
-.sidebar .button:hover {
-    background-color: #c41882;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
-}
-
-.main-content {
-    flex: 1;
-    padding: 20px;
-    background-color: #ffffff; /* Pure white for the main content area */
-}
-
-.product-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 20px;
-}
-
-.product-column {
-    flex: 0 1 calc(33.333% - 20px); /* 3 columns layout with gap */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    background-color: #ffffff; /* Match main content background */
-    transition: transform 0.3s ease;
-}
-
-.product-column:hover {
-    transform: translateY(-5px); /* Slight raise effect on hover */
-}
-
-.product-item {
-    border-radius: 4px;
-    overflow: hidden; /* Ensures inner content conforms to border radius */
-}
-
-.product-item img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 40px;
-    color: #333; /* Dark text color for headings */
-}
-</style>
-
-  
 <script setup>
 import { ref, onMounted } from "vue";
 import { productsStore } from "@/stores/products";
@@ -117,19 +47,37 @@ const store = productsStore();
 const router = useRouter();
 const search = ref("");
 const products = ref([]);
+const selectedType = ref("");
+
+watch(selectedType, () => {
+    fetchProductsFromAPI();
+});
+
+const performSearch = () => {
+    fetchProductsFromAPI();
+};
 
 const fetchProductsFromAPI = async () => {
     try {
         const response = await fetch("http://localhost:8080/adminData/Products");
         if (response.ok) {
             const data = await response.json();
-            products.value = data;
+            products.value = data.filter(product => 
+                product.ProductName.toLowerCase().includes(search.value.toLowerCase()) &&
+                (!selectedType.value || product.ProductType === selectedType.value)
+            );
         } else {
             console.error("Failed to fetch products from the API");
         }
     } catch (error) {
         console.error("Error fetching products:", error);
     }
+};
+
+const resetFilters = () => {
+    search.value = "";
+    selectedType.value = null;
+    fetchProductsFromAPI();
 };
 
 const goToProductPage = (product) => {
@@ -140,4 +88,82 @@ onMounted(() => {
     fetchProductsFromAPI();
 });
 </script>
+
+<style scoped>
+.page {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.topbar {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -20px;
+}
+
+.search-input {
+  flex: 1;
+  margin-right: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.dropdown {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  font-size: 16px;
+  margin-right: 30px;
+}
+.dropdown-label {
+  padding: 8px;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.button {
+background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.button:hover {
+    background-color: #e74c3c;
+}
+
+.link {
+  text-decoration: none;
+  color: #333;
+  margin-left: 10px;
+  font-size: 16px;
+}
+
+.link:hover {
+  color: #4caf50;
+}
+
+.product-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: left;
+}
+
+
+</style>
   

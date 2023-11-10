@@ -15,9 +15,6 @@
     <div class="tab" @click="selectTab('orderManagement')">
       <i class="icon">🛒</i> Order Management
     </div>
-    <div class="tab" @click="selectTab('inventory')">
-      <i class="icon">📦</i> Inventory
-    </div>
     <div class="tab" @click="selectTab('reports')">
       <i class="icon">📊</i> Reports
     </div>

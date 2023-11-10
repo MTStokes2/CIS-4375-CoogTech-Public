@@ -11,10 +11,6 @@
       <ProductsEdit v-if="activeTab === 'products'" />
       <CustomerList v-if="activeTab === 'customers'" />
       <Orders v-if="activeTab === 'orderManagement'" />
-      <section class="chat-area" v-if="activeTab === 'chats'">
-      <ChatList class="chat-list" @chatSelected="chatSelected" />
-      <ChatWindow class="chat-window" v-if="selectedChat" :chat="selectedChat" />
-      </section>
 
       <!-- ... other components for the remaining tabs ... -->
     </section>
@@ -88,22 +84,6 @@ section {
   flex-grow: 1; /* Allows section to take up the remaining width */
   overflow-x: hidden; /* Prevents horizontal scrolling */
   /* Add other styles for your section if necessary */
-}
-
-.chat-area {
-  display: flex;
-  height: 100%; /* Take up full height of the parent container */
-}
-
-.chat-list {
-  width: 300px; /* Fixed width for the chat list */
-  overflow-y: auto; /* Scrollable chat list */
-  border-right: 1px solid #ddd; /* Separate chat list from chat window */
-}
-
-.chat-window {
-  flex-grow: 1; /* Chat window takes up the rest of the space */
-  overflow-y: auto; /* Scrollable chat content */
 }
 </style>
 

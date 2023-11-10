@@ -93,6 +93,16 @@ const router = createRouter({
       component: () => import('../components/OrderedCustomProducts.vue')
     },
     {
+      path: '/OrderForm',
+      name: 'OrderForm',
+      component: () => import('../components/OrderForm.vue')
+    },
+    {
+      path: '/AccountInfo',
+      name: 'AccountInfo',
+      component: () => import('../views/AccountInfo.vue')
+    },
+    {
       path: '/AdminDashboard',
       component: AdminDashboard,
       children: [
