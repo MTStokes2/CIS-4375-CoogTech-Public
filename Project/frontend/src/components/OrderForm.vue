@@ -8,18 +8,12 @@
   
         <div class="form-group">
         <label for="city">City:</label>
-        <select v-model="orderInfo.CityID" id="city" required>
-          <option value="1">City A</option>
-          <option value="2">Houston</option>
-          <option value="3">City C</option>
-        </select>
+        <input v-model="orderInfo.City" type="text" id="city" required />
       </div>
 
       <div class="form-group">
         <label for="state">State:</label>
-        <select v-model="orderInfo.StateID" id="state" required>
-          <option value="1">Texas</option>
-        </select>
+        <input v-model="orderInfo.State" type="text" id="state" required />
       </div>
   
         <div class="form-group">
@@ -59,8 +53,8 @@ setup(props) {
     const orderInfo = ref({
         Username: '',
         StatusID: 1,
-        CityID: 1,
-        StateID: 1,
+        City: '',
+        State: '',
         ZipCode: '',
         Address: '',
         DateScheduled: new Date().toISOString().split('T')[0],
@@ -107,8 +101,8 @@ setup(props) {
 
         if (response.status === 200) {
           const data = response.data.customer;
-          orderInfo.value.CityID = data.CityID;
-          orderInfo.value.StateID = data.StateID;
+          orderInfo.value.City = data.CITY.City;
+          orderInfo.value.State = data.STATE.State;
           orderInfo.value.ZipCode = data.ZipCode;
           orderInfo.value.Address = data.CustomerAddress;
           console.log('Received Customer:', data);
@@ -129,8 +123,8 @@ setup(props) {
             const response = await axios.post('http://localhost:8080/customerData/Orders', {
               Username: orderInfo.value.Username,
               StatusID: orderInfo.value.StatusID,
-              CityID: orderInfo.value.CityID,
-              StateID: orderInfo.value.StateID,
+              City: orderInfo.value.City,
+              State: orderInfo.value.State,
               ZipCode: orderInfo.value.ZipCode,
               Address: orderInfo.value.Address,
               DateScheduled: formattedDate,

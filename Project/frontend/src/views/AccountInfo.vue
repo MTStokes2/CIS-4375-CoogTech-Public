@@ -10,8 +10,8 @@
 
       <div v-if="!editMode && customer" class="info-container">
         <p><strong>Name:</strong> {{ customer.CustomerFirstName }} {{ customer.CustomerLastName }}</p>
-        <p><strong>Email:</strong> {{ customer.CustomerEmail }}</p>
-        <p><strong>Phone:</strong> {{ customer.CustomerPhone }}</p>
+        <p><strong>Email:</strong> <a href="mailto:{{ customer.CustomerEmail }}"> {{ customer.CustomerEmail }} </a></p>
+        <p><strong>Phone:</strong> <a href="tel:{{ customer.CustomerPhone }}"> {{ customer.CustomerPhone }} </a></p>
         <p><strong>City:</strong> {{ customer.CITY.City }}</p>
         <p><strong>State:</strong> {{ customer.STATE.State }}</p>
         <p><strong>Address:</strong> {{ customer.CustomerAddress }}</p>
@@ -37,17 +37,11 @@
           </div>
           <div>
             <label for="city">City:</label>
-            <select v-model="updatedCity" id="city">
-            <option value="1">City A</option>
-            <option value="2">Houston</option>
-            <option value="3">City C</option>
-            </select>
+            <input type="text" id="city" v-model="updatedCity">
         </div>
           <div>
             <label for="state">State:</label>
-            <select v-model="updatedState" id="state">
-            <option value="1">Texas</option>
-            </select>
+            <input type="text" id="state" v-model="updatedState">
           </div>
           <div>
             <label for="address">Address:</label>

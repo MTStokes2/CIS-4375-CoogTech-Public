@@ -44,6 +44,25 @@ router.put('/AccountInfo', validateToken, async (req, res) => {
             const updatedFields = {};
             const tableFields = ['CityID', 'StateID', 'ZipCode', 'CustomerLastName', 'CustomerFirstName', 'CustomerAddress', 'CustomerPhone', 'CustomerEmail'];
 
+            // Fetch CityID and StateID based on the provided city and state names
+            const city = await City_Model.findOne({
+                where: {
+                    City: req.body.City,
+                },
+            });
+
+            const state = await State_Model.findOne({
+                where: {
+                    State: req.body.State,
+                },
+            });
+
+            // If city and state are found, update the corresponding IDs
+            if (city && state) {
+                updatedFields.CityID = city.CityID;
+                updatedFields.StateID = state.StateID;
+            }
+
             tableFields.forEach(field => {
                 if (req.body[field] !== undefined) {
                     updatedFields[field] = req.body[field];
@@ -451,13 +470,31 @@ router.post('/Orders', async (req, res) => {
             },
         });
 
+        // Find CityID by City name
+        const city = await City_Model.findOne({
+            where: {
+                City: req.body.City,
+            },
+        });
+
+        // Find StateID by State name
+        const state = await State_Model.findOne({
+            where: {
+                State: req.body.State,
+            },
+        });
+
+        if (!city || !state) {
+            return res.status(404).json({ message: 'City or State not found' });
+        }
+
         //Adds a new Order
         const newOrder = await Orders_Model.create(
             {
             CustomerID: customer.CustomerID,
             StatusID: req.body.StatusID,
-            CityID: req.body.CityID,
-            StateID: req.body.StateID,
+            CityID: city.CityID,
+            StateID: state.StateID,
             ZipCode: req.body.ZipCode,
             Address: req.body.Address,
             Total: "0",

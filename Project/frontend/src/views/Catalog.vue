@@ -12,8 +12,8 @@
             <!-- Add buttons for other types as needed -->
             <button @click="resetFilters" class="button">Reset Filter</button>
             <router-link to="/customorder" class="link">
-                    <span class="material-icons">add_box</span> Create a Custom Order
-                </router-link>
+                    <span class="material-icons items-center">add_box</span> Want something Custom?
+            </router-link>
         </div>
             <!-- Product list and other content here -->
             <div class="product-row">
@@ -151,6 +151,7 @@ background-color: #ff6b81;
   color: #333;
   margin-left: 10px;
   font-size: 16px;
+  padding: 5px;
 }
 
 .link:hover {
