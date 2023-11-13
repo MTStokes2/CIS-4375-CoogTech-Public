@@ -19,7 +19,7 @@
         <p>No order details available.</p>
         </div>
         <div class="product-container">
-            <Products :OrderID="CustomOrderID"></Products>
+            <Products :OrderID="this.$route.params.id"></Products>
         </div>
         <div class="notice">
           <p>Please provide details about the custom item you wish to have, and an admin will help work out the details.</p>
@@ -28,7 +28,7 @@
             <p>Prices based on materials and design complexity.</p>
         </div>
         <div class="chat-container">
-            <ChatComponent :customOrderID="orderDetails.CustomOrderID" :username="this.username" :role="this.role"></ChatComponent>
+            <ChatComponent :customOrderID="this.$route.params.id" :username="this.username" :role="this.role"></ChatComponent>
         </div>
       </div>
     </div>

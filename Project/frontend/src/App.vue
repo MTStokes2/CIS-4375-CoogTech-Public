@@ -8,7 +8,7 @@
       <div class="flex space-x-4">
         <div class="flex space-x-2" v-if="loggedIn && role === 'customer'">
         <router-link to="/AccountInfo" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
-          <span class="material-icons">manage_accounts</span> Customers
+          <span class="material-icons">manage_accounts</span> Account Info
         </router-link>
         <router-link to="/orderHistory" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
           <span class="material-icons">history</span> Order History

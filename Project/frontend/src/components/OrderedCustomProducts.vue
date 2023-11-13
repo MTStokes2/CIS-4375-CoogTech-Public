@@ -13,7 +13,7 @@
               <th>Size</th>
               <th>Price Per Unit</th>
               <th>Quantity</th>
-              <th>Image</th>
+              <th>Design Image</th>
             </tr>
           </thead>
           <!-- Table body -->
@@ -26,7 +26,7 @@
               <td>{{ product.CustomProductSize }}</td>
               <td>${{ product.CustomProductPrice.toFixed(2) }}</td>
               <td>{{ product.Quantity }}</td>
-              <td>{{ product.DesignImage }}</td>
+              <td><v-img :src="product.DesignImage" cover /></td>
             </tr>
           </tbody>
         </table>
@@ -44,7 +44,7 @@
   export default {
     props: {
     OrderID: {
-      type: Number, 
+      type: String, 
       required: true
     }
   },
