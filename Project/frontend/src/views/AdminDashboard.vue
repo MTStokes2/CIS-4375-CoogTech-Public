@@ -5,20 +5,16 @@
     </aside>
     <section>
       <div v-if="activeTab === 'mainDashboard'">
-        <NewOrdersList />
+        <!-- <NewOrdersList /> -->
         <CalendarView />
       </div>
+      <ChatList v-if="activeTab === 'chats'" />
       <ProductsEdit v-if="activeTab === 'products'" />
       <CustomerList v-if="activeTab === 'customers'" />
       <Orders v-if="activeTab === 'orderManagement'" />
-      <section class="chat-area" v-if="activeTab === 'chats'">
-      <ChatList class="chat-list" @chatSelected="chatSelected" />
-      <ChatWindow class="chat-window" v-if="selectedChat" :chat="selectedChat" />
-      </section>
 
       <!-- ... other components for the remaining tabs ... -->
     </section>
-
   </div>
 </template>
 
@@ -29,10 +25,9 @@ import Orders from '@/components/Orders.vue';
 import CustomerList from '@/components/CustomerList.vue';
 import Sidebar from '@/components/Sidebar.vue';
 import ChatList from '@/components/ChatList.vue';
-import ChatWindow from '@/components/ChatWindow.vue';
-import NewOrdersList from '@/components/NewOrdersList.vue';
 import CalendarView from '@/components/CalendarView.vue';
 import ProductsEdit from '@/components/ProductsEdit.vue';
+import CustomerChat from '@/components/CustomerChat.vue';
 
 
 export default {
@@ -41,10 +36,9 @@ export default {
     CustomerList,
     Sidebar,
     ChatList,
-    ChatWindow,
-    NewOrdersList,
     CalendarView,
-    ProductsEdit
+    ProductsEdit,
+    CustomerChat
   },
   setup() {
     const tabStore = useTabStore();
@@ -75,35 +69,18 @@ export default {
 <style scoped>
 .admin-layout {
   display: flex;
-  height: 100vh; /* Full height of the viewport */
+  height: auto;
 }
 
 aside {
-  width: 250px; /* Fixed width for the sidebar */
-  flex-shrink: 0; /* Prevents the sidebar from shrinking */
-  /* Add other styles for your sidebar if necessary */
+  width: 250px;
+  flex-shrink: 0;
+  /* Add other styles for the outer sidebar container if necessary */
 }
 
 section {
-  flex-grow: 1; /* Allows section to take up the remaining width */
-  overflow-x: hidden; /* Prevents horizontal scrolling */
+  flex-grow: 1;
+  overflow-x: hidden;
   /* Add other styles for your section if necessary */
 }
-
-.chat-area {
-  display: flex;
-  height: 100%; /* Take up full height of the parent container */
-}
-
-.chat-list {
-  width: 300px; /* Fixed width for the chat list */
-  overflow-y: auto; /* Scrollable chat list */
-  border-right: 1px solid #ddd; /* Separate chat list from chat window */
-}
-
-.chat-window {
-  flex-grow: 1; /* Chat window takes up the rest of the space */
-  overflow-y: auto; /* Scrollable chat content */
-}
 </style>
-

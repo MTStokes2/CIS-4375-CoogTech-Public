@@ -1,5 +1,5 @@
 <template>
-  <div id="landing-page" class="flex flex-col min-h-screen bg-f8ebe6">
+  <div id="landing-page" class="flex flex-col min-h-screen bg-f8ebe6 justify-center">
     <header class="py-4 px-6 shadow-sm bg-fafafa">
       <div class="container mx-auto flex justify-between items-center">
         <router-link to="/" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
@@ -8,13 +8,12 @@
       <div class="flex space-x-4">
         <div class="flex space-x-2" v-if="loggedIn && role === 'customer'">
         <router-link to="/AccountInfo" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
-          <span class="material-icons">manage_accounts</span> My Account Info
+          <span class="material-icons">manage_accounts</span> Customers
         </router-link>
         <router-link to="/orderHistory" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
           <span class="material-icons">history</span> Order History
         </router-link>
-      </div>
-      <router-link to="/cart" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
+        <router-link to="/cart" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
         <span class="material-icons">shopping_cart</span> Cart
       </router-link>
       <a href="/#about-us" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
@@ -23,6 +22,22 @@
       <router-link to="/contact" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
         <span class="material-icons">phone</span> Contact Us
       </router-link>
+      </div>
+      <div class="flex space-x-2" v-if="loggedIn && role === 'admin'">
+        <router-link to="/AdminOrderHistory" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
+          <span class="material-icons">storefront</span> Products
+        </router-link>
+        <router-link to="/AccountInfo" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
+          <span class="material-icons">people_alt</span> Customers
+        </router-link>
+        <router-link to="/AdminOrderHistory" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
+          <span class="material-icons">forum</span> Orders
+        </router-link>
+        <router-link to="/AdminOrderHistory" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
+          <span class="material-icons">insert_chart</span> Reports
+        </router-link>
+      </div>
+      
       <router-link to="/" v-if="loggedIn" @click="logout()" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
         <span class="material-icons">exit_to_app</span> Logout
       </router-link>

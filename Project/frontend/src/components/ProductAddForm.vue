@@ -28,7 +28,7 @@
         </div>
         <div class="form-group">
           <label for="productImage">Product Image:</label>
-          <input type="file" id="productImage" @change="handleImageUpload">
+          <input type="file" id="productImage" @change="handleImageUpload" required>
         </div>
         <button type="submit">Add Product</button>
       </form>
@@ -48,25 +48,22 @@ export default {
       ProductSize: '',
       ProductPrice: 0,
       ProductStock: 0,
-      ProductImage: ''
+      ProductImage: null
     });
+
     const imageUrl = ref('');
 
     const submitForm = async () => {
       try {
-        let formData = new FormData();
-        formData.append('ProductName', product.value.ProductName);
-        formData.append('ProductType', product.value.ProductType);
-        formData.append('ProductColor', product.value.ProductColor);
-        formData.append('ProductSize', product.value.ProductSize);
-        formData.append('ProductPrice', product.value.ProductPrice);
-        formData.append('ProductStock', product.value.ProductStock);
-        formData.append('ProductImage', product.value.ProductImage);
+        const formData = new FormData();
+        Object.keys(product.value).forEach(key => {
+          formData.append(key, product.value[key]);
+        });
 
-        await axios.post('http://localhost:8080/adminData/Products', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+        console.log(formData)
+
+        const response = await axios.post('http://localhost:8080/adminData/Products', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
 
         // Reset form after submission
@@ -74,7 +71,10 @@ export default {
           product.value[key] = key === 'ProductPrice' || key === 'ProductStock' ? 0 : '';
         });
         imageUrl.value = '';
+        
+        // Provide feedback to the user
         alert('Product added successfully');
+        console.log('Server response:', response.data);
       } catch (error) {
         console.error('There was an error submitting the form', error);
       }

@@ -3,32 +3,20 @@
     <button @click="goToOrderHistory" class="back-button">Back to Order History</button>
       <div class="order-summary">
         <h2>Order Details</h2>
-        <div v-if="orderDetails && orderDetails.CITY && orderDetails.STATE">
-          <p><strong>Order Number:</strong> {{ orderDetails.CustomOrderID }}</p>
+        <div v-if="orderDetails">
+          <p><strong>Order Number:</strong> {{ orderDetails.OrderID }}</p>
           <p><strong>Order Date:</strong> {{ formatDate(orderDetails.DateOrdered) }}</p>
           <p><strong>Address:</strong> {{ orderDetails.Address }}</p>
           <p><strong>City:</strong> {{ orderDetails.CITY.City }}</p>
           <p><strong>State:</strong> {{ orderDetails.STATE.State }}</p>
           <p><strong>Zip Code:</strong> {{ orderDetails.ZipCode }}</p>
           <p><strong>Total Price:</strong> ${{ orderDetails.Total }}</p>
-          <p><strong>Status:</strong> {{ orderDetails.STATUS.Status }}</p> 
+          <p><strong>Status:</strong> {{ orderDetails.STATUS.Status }}</p>
           <p><strong>Scheduled Delivery Date:</strong> {{ formatDate(orderDetails.DateScheduled) }}</p>
           <p><strong>Date Delivered:</strong> {{ formatDate(orderDetails.DateDelivered) }}</p>
         </div>
-        <div v-else>
-        <p>No order details available.</p>
-        </div>
         <div class="product-container">
-            <Products :OrderID="CustomOrderID"></Products>
-        </div>
-        <div class="notice">
-          <p>Please provide details about the custom item you wish to have, and an admin will help work out the details.</p>
-            <p>Use the chat for additional notes/questions.</p>
-            <p>An admin will review and finalize details.</p>
-            <p>Prices based on materials and design complexity.</p>
-        </div>
-        <div class="chat-container">
-            <ChatComponent :customOrderID="orderDetails.CustomOrderID" :username="this.username" :role="this.role"></ChatComponent>
+            <Products :OrderID="OrderID"></Products>
         </div>
       </div>
     </div>
@@ -36,26 +24,20 @@
   
   <script>
   import axios from 'axios';
-  import ChatComponent from '../components/CustomerChat.vue';
-  import Products from '../components/OrderedCustomProducts.vue';
+  import Products from '../components/OrderedProducts.vue';
   
   export default {
     components: {
-    ChatComponent,
-    Products
+    Products,
     },
     data() {
       return {
         orderDetails: [],
-        CustomOrderID: this.$route.params.id,
-        username: '',
-        role: ''
+        OrderID: this.$route.params.id,
       };
     },
-    async created() {
-
-      await Promise.all([this.fetchOrderDetails(), this.fetchUserInfo()])
-      
+    created() {
+      this.fetchOrderDetails();
     },
     methods: {
         async fetchUserInfo() {
@@ -80,29 +62,29 @@
                 console.error('Error fetching user info:', error);
         }
       },
-          async fetchOrderDetails() {
-              try {
-                  const response = await axios.get(`http://localhost:8080/customerData/CustomOrders/${this.$route.params.id}`);
-                  if (response.status === 200) {
-                      this.orderDetails = response.data.OrderDetails;
-                  } else {
-                      console.error('Failed to fetch order details');
-                  }
-              } catch (error) {
-                  console.error('Error fetching order details:', error);
-              }
-          },
+        async fetchOrderDetails() {
+            try {
+                const response = await axios.get(`http://localhost:8080/customerData/Orders/${this.$route.params.id}`);
+                if (response.status === 200) {
+                    this.orderDetails = response.data.OrderDetails;
+                } else {
+                    console.error('Failed to fetch order details');
+                }
+            } catch (error) {
+                console.error('Error fetching order details:', error);
+        }
+      },
       formatDate(date) {
         if (!date) {
-            return "Not Delivered yet";
-          }
+          return "Not Delivered yet";
+        }
 
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(date).toLocaleDateString(undefined, options);
-      },
+    },
       goToOrderHistory() {
       // Navigate back to the order history page
-      this.$router.push('/orderhistory'); // Update this with the correct route path
+      this.$router.push('/AdminOrderHistory'); // Update this with the correct route path
     }
     }
   };
@@ -137,6 +119,11 @@
   margin-top: 20px;
 }
   
+.chat-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
 .back-button {
   background-color: #ff6b81;
   color: white;
@@ -151,31 +138,6 @@
 
 .back-button:hover {
   background-color: #e74c3c;
-}
-
-.chat-container {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.notice {
-  margin: 20px 0;
-  padding: 15px;
-  background-color: #ffeaa7; /* Update to your preferred color */
-  border: 1px solid #e17055; /* Update to your preferred color */
-  border-radius: 8px;
-  text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
-  color: #d35400; /* Update to your preferred text color */
-  font-weight: bold;
-}
-
-.notice p {
-  margin: 0;
-  font-size: 14px;
-  color: #333;
 }
 
   </style>

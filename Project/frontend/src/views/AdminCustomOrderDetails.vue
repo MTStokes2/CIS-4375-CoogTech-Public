@@ -102,7 +102,7 @@
       },
       goToOrderHistory() {
       // Navigate back to the order history page
-      this.$router.push('/orderhistory'); // Update this with the correct route path
+      this.$router.push('/AdminorderHistory'); // Update this with the correct route path
     }
     }
   };
