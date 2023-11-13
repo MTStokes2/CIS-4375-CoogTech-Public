@@ -35,7 +35,7 @@
         <div class="form-group">
           <label for="productImage">Product Image:</label>
           <input type="file" id="productImage" @change="handleImageUpload">
-          <img :src="imageUrl" alt="Product Image" v-if="imageUrl">
+          <img :src="imageUrl" alt="Product Image" v-if="imageUrl" class="small-image">
         </div>
   
         <button type="submit">Update Product</button>
@@ -140,11 +140,13 @@ input[type="number"]{
   border-radius: 5px;
 }
   .product-update-form {
+    height: 900px;
     width: 500px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #ffffff;
+    overflow: auto; /* Add overflow property to enable scrollbar */
   }
   
   .form-group {
@@ -157,15 +159,19 @@ input[type="number"]{
     font-weight: bold;
     margin-bottom: 8px;
   }
+  .small-image {
+  max-width: 100px; /* Adjust the maximum width as needed */
+  max-height: 100px; /* Adjust the maximum height as needed */
+}
   
-  .form-group input[type="text"],
-  .form-group input[type="number"],
-  .form-group input[type="file"] {
-    width: 100%;
-    padding: 0.375rem 0.75rem;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-  }
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="file"] {
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
   
   .form-group img {
     max-width: 100%;
