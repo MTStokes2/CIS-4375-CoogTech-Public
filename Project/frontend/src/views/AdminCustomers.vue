@@ -23,8 +23,8 @@
             <td>{{ customer.CITY.City }}</td>
             <td>{{ customer.STATE.State }}</td>
             <td>{{ customer.ZipCode }}</td>
-            <td>{{ customer.CustomerPhone }}</td>
-            <td>{{ customer.CustomerEmail }}</td>
+            <td><a href="tel:{{ customer.CustomerPhone }}">{{ customer.CustomerPhone }}</a></td>
+            <td><a href="mailto:{{ customer.CustomerEmail }}"> {{ customer.CustomerEmail }} </a></td>
           </tr>
         </tbody>
       </table>
