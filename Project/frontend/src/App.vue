@@ -27,7 +27,7 @@
         <router-link to="/AdminProducts" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
           <span class="material-icons">storefront</span> Products
         </router-link>
-        <router-link to="/AccountInfo" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
+        <router-link to="/AdminCustomers" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
           <span class="material-icons">people_alt</span> Customers
         </router-link>
         <router-link to="/AdminOrderHistory" class="text-gray-600 hover:text-gray-500 flex items-center header-item">

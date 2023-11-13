@@ -44,6 +44,7 @@
         <h1 class="table-header">Regular Products</h1>
 
         <button class="add-product-btn" @click="showAddForm">Add Product</button>
+        <button class="cancel" @click="cancelForm">Cancel</button>
         <product-add-form v-if="currentForm === 'add'" @formClosed="currentForm = null" />
         <!-- Edit Form Component -->
         <product-update-form v-if="currentForm === 'edit'" :product="selectedProduct" @formClosed="currentForm = null" :productId="this.selectedProduct.ProductID" />
@@ -159,11 +160,15 @@ export default {
             this.$router.push('/AdminDashboard');
         },
         showAddForm() {
-        this.currentForm = 'add';
+        this.currentForm = 'add'
+    
       },
       showEditForm(product) {
         this.selectedProduct = product;
         this.currentForm = 'edit';
+      },
+      cancelForm(){
+        this.currentForm = null;
       },
       deleteProduct(productId) {
         // Replace with your actual API endpoint

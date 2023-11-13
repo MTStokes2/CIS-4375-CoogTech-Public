@@ -178,6 +178,11 @@ const router = createRouter({
       name: 'AdminProducts',
       component: () => import('../views/AdminProducts.vue')
     },
+    {
+      path: '/AdminCustomers',
+      name: 'AdminCustomers',
+      component: () => import('../views/AdminCustomers.vue')
+    },
   ]
 });
 
