@@ -989,7 +989,7 @@ router.get('/Reports/Between-Dates/', async (req, res) => {
         // Retrieve orders within the specified date range
         const orders = await Orders_Model.findAll({
             where: {
-                DateOrdered: {
+                DateScheduled: {
                     [Sequelize.Op.and]: {
                         [Sequelize.Op.gte]: parsedStartDate,
                         [Sequelize.Op.lte]: parsedEndDate,
@@ -1006,7 +1006,7 @@ router.get('/Reports/Between-Dates/', async (req, res) => {
         // Retrieve custom orders within the specified date range
         const customOrders = await Custom_Orders_Model.findAll({
             where: {
-                DateOrdered: {
+                DateScheduled: {
                     [Sequelize.Op.and]: {
                         [Sequelize.Op.gte]: parsedStartDate,
                         [Sequelize.Op.lte]: parsedEndDate,
@@ -1096,14 +1096,14 @@ router.get('/Reports/Top-Selling-Products', async (req, res) => {
 
         // Retrieve top-selling products within the specified date range
         const topSellingProducts = await Order_Products_Model.findAll({
-            where: {
+             /* where: {
                 createdAt: {
                     [Sequelize.Op.and]: {
                         [Sequelize.Op.gte]: parsedStartDate,
                         [Sequelize.Op.lte]: parsedEndDate,
                     }
                 }
-            },
+            }, */
             attributes: ['ProductID', [Sequelize.fn('sum', Sequelize.col('Quantity')), 'totalQuantity']],
             group: ['ProductID'],
             order: [[Sequelize.literal('totalQuantity'), 'DESC']],
@@ -1260,6 +1260,8 @@ router.get('/Reports/TopPayingCustomers', async (req, res) => {
                 'CustomerID',
                 'CustomerFirstName',
                 'CustomerLastName',
+                'CustomerEmail',
+                'CustomerPhone',
                 [
                     Sequelize.literal('COALESCE((SELECT SUM(ORDERS.Total) FROM ORDERS WHERE ORDERS.CustomerID = CUSTOMERS.CustomerID AND ORDERS.DateDelivered IS NOT NULL), 0)'),
                     'totalOrderSpending'
@@ -1272,6 +1274,7 @@ router.get('/Reports/TopPayingCustomers', async (req, res) => {
             order: [
                 Sequelize.literal('COALESCE(totalOrderSpending, 0) + COALESCE(totalCustomOrderSpending, 0) DESC')
             ],
+            having: Sequelize.literal('COALESCE(totalOrderSpending, 0) + COALESCE(totalCustomOrderSpending, 0) > 0'),
             limit: 10
         });
 

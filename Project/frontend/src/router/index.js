@@ -183,6 +183,11 @@ const router = createRouter({
       name: 'AdminCustomers',
       component: () => import('../views/AdminCustomers.vue')
     },
+    {
+      path: '/AdminReports',
+      name: 'AdminReports',
+      component: () => import('../views/AdminReports.vue')
+    },
   ]
 });
 

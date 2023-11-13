@@ -33,7 +33,7 @@
         <router-link to="/AdminOrderHistory" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
           <span class="material-icons">forum</span> Orders
         </router-link>
-        <router-link to="/AdminOrderHistory" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
+        <router-link to="/AdminReports" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
           <span class="material-icons">insert_chart</span> Reports
         </router-link>
       </div>
