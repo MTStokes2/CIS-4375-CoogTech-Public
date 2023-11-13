@@ -1,6 +1,6 @@
 <template>
     <div class="product-update-form">
-      <h2>Update Product</h2>
+      <h2 class="center text-3xl text-green-900 font-bold mb-6">Update Product</h2>
       <form @submit.prevent="submitForm">
         <div class="form-group">
           <label for="productName">Product Name:</label>
@@ -69,9 +69,10 @@
       onMounted(async () => {
         try {
           const response = await axios.get(`http://localhost:8080/adminData/Products/${props.productId}`);
-          product.value = { ...response.data };
+          product.value = { ...response.data.ProductDetails };
+          
           // If the product has an image URL, set it for preview
-          if (product.value.ProductImage) {
+          if (product.value.ProductImage != null) {
             imageUrl.value = product.value.ProductImage;
           }
         } catch (error) {
@@ -110,12 +111,18 @@
         product.value.ProductImage = file;
         imageUrl.value = URL.createObjectURL(file);
       };
+
+      const closeForm = () => {
+      // Emit the custom event when the form is closed
+      this.$emit('formClosed');
+    };
   
       return {
         product,
         imageUrl,
         submitForm,
-        handleImageUpload
+        handleImageUpload,
+        closeForm
       };
     }
   };
@@ -123,16 +130,21 @@
   
 
   <style scoped>
+
+input[type="text"],
+input[type="number"]{
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
   .product-update-form {
-    max-width: 600px;
-    margin: 0 auto;
+    width: 500px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 8px;
-  }
-  
-  .product-update-form h2 {
-    text-align: center;
+    background-color: #ffffff;
   }
   
   .form-group {
@@ -142,6 +154,8 @@
   .form-group label {
     display: block;
     margin-bottom: 0.5rem;
+    font-weight: bold;
+    margin-bottom: 8px;
   }
   
   .form-group input[type="text"],
@@ -160,18 +174,21 @@
   }
   
   button {
-    width: 100%;
-    padding: 0.375rem 0.75rem;
-    border: none;
-    border-radius: 0.25rem;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
+  margin-bottom: 20px;
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
+  margin-left: 5px;
+}
+
+button:hover {
+  background-color: #e74c3c;
+}
   </style>
   

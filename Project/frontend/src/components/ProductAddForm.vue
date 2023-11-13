@@ -1,6 +1,6 @@
 <template>
     <div class="product-add-form">
-      <h2>Add New Product</h2>
+      <h2 class="center text-3xl text-green-900 font-bold mb-6">Add a Product</h2>
       <form @submit.prevent="submitForm">
         <div class="form-group">
           <label for="productName">Product Name:</label>
@@ -86,21 +86,45 @@ export default {
       imageUrl.value = URL.createObjectURL(file);
     };
 
+    const closeForm = () => {
+      // Emit the custom event when the form is closed
+      this.$emit('formClosed');
+    };
+
     return {
       product,
       imageUrl,
       submitForm,
-      handleImageUpload
+      handleImageUpload,
+      closeForm
     };
   }
 };
 </script>
 
 <style scoped>
-.product-add-form {
-  max-width: 500px;
-  margin: auto;
+
+label {
+  font-weight: bold;
+  margin-bottom: 8px;
 }
+.product-add-form {
+  width: 500px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
 .form-group {
   margin-bottom: 1rem;
 }
@@ -108,21 +132,22 @@ label {
   display: block;
   margin-bottom: 0.5rem;
 }
-input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+
 button {
-  padding: 0.5rem 1rem;
-  background-color: #5cb85c;
+  margin-bottom: 20px;
+  background-color: #ff6b81;
   color: white;
   border: none;
   border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
   cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
+  margin-left: 5px;
 }
+
 button:hover {
-  background-color: #4cae4c;
+  background-color: #e74c3c;
 }
 </style>

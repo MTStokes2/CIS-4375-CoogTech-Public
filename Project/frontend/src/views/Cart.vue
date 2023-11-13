@@ -33,7 +33,8 @@
   </div>
 </template>
 
-  <script>
+<script>
+
   import { defineComponent, computed, watch, ref } from 'vue';
   import { productsStore } from "@/stores/products";
   import { useRouter } from "vue-router";

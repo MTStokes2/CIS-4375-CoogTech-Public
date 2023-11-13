@@ -6,6 +6,7 @@
       <div v-if="customProducts.length > 0" class="table-section">
         <h1 class="table-header">Custom Products</h1>
         <div class="table-container">
+          <input v-model="searchCustom" @input="performSearchCustomProducts" class="search-input" placeholder="Search products..." />
           <table class="custom-table table">
             <!-- Table headers -->
             <thead>
@@ -31,7 +32,7 @@
                 <td>{{ product.CustomProductPrice }}</td>
                 <td>{{ product.CustomProductStock }}</td>
                 <td>
-                <button class="delete-btn" @click="deleteCustomProduct(product.ProductID)">Delete</button>
+                <button class="back-button" @click="deleteCustomProduct(product.ProductID)">Delete</button>
                 </td>
               </tr>
             </tbody>
@@ -43,13 +44,17 @@
       <div v-if="Products.length > 0" class="table-section">
         <h1 class="table-header">Regular Products</h1>
 
-        <button class="add-product-btn" @click="showAddForm">Add Product</button>
-        <button class="cancel" @click="cancelForm">Cancel</button>
+        <button class="back-button" @click="showAddForm">Add Product</button>
+
+        <div v-if="currentForm !== null" class="form-overlay">
         <product-add-form v-if="currentForm === 'add'" @formClosed="currentForm = null" />
         <!-- Edit Form Component -->
         <product-update-form v-if="currentForm === 'edit'" :product="selectedProduct" @formClosed="currentForm = null" :productId="this.selectedProduct.ProductID" />
+        <button v-if="currentForm != null" class="close-button" @click="cancelForm">Close Form</button>
+        </div>
 
         <div class="table-container">
+          <input v-model="search" @input="performSearchProducts" class="search-input" placeholder="Search products..." />
           <table class="custom-table table">
             <!-- Table headers -->
             <thead>
@@ -72,11 +77,11 @@
                 <td>{{ product.ProductType }}</td>
                 <td>{{ product.ProductColor }}</td>
                 <td>{{ product.ProductSize  }}</td>
-                <td>{{ product.ProductPrice }}</td>
+                <td>${{ product.ProductPrice }}</td>
                 <td>{{ product.ProductStock }}</td>
                 <td>
-                  <button class="edit-btn" @click="showEditForm(product)">Edit</button>
-                  <button class="delete-btn" @click="deleteProduct(product.ProductID)">Delete</button>
+                  <button class="back-button" @click="showEditForm(product)">Edit</button>
+                  <button class="back-button" @click="deleteProduct(product.ProductID)">Delete</button>
                 </td>
               </tr>
             </tbody>
@@ -111,11 +116,13 @@ export default {
           role: '',
           currentForm: null,
           selectedProduct: null,
+          searchCustom: '',
+          search: ''
         };
     },
     created() {
         this.fetchCustomProducts();
-        this.fetchProducts();
+        this.fetchProductsFromAPI();
     },
     methods: {
         async fetchCustomProducts() {
@@ -124,8 +131,9 @@ export default {
 
                 if (response.ok) {
                     const data = await response.json();
-                    this.customProducts = data;
-                    console.log('Received Custom Products:', data);
+                    this.customProducts = data.filter(Product => 
+                      Product.CustomProductName.toLowerCase().includes(this.searchCustom.toLowerCase())
+                  );
                 } else {
                     console.error('Failed to fetch custom products');
                 }
@@ -133,21 +141,21 @@ export default {
                 console.error('Error fetching custom product:', error);
             }
         },
-        async fetchProducts() {
-            try {
-                const response = await fetch('http://localhost:8080/adminData/Products');
-
-                if (response.ok) {
-                    const data = await response.json();
-                    this.Products = data;
-                    console.log('Received Product:', data);
-                } else {
-                    console.error('Failed to fetch product');
-                }
-            } catch (error) {
-                console.error('Error fetching product:', error);
-            }
-        },
+        async fetchProductsFromAPI() {
+          try {
+              const response = await fetch("http://localhost:8080/adminData/Products");
+              if (response.ok) {
+                  const data = await response.json();
+                this.Products = data.filter(Product => 
+                      Product.ProductName.toLowerCase().includes(this.search.toLowerCase())
+                  );
+              } else {
+                  console.error("Failed to fetch products from the API");
+              }
+          } catch (error) {
+              console.error("Error fetching products:", error);
+          }
+          },
         navigateToCustomOrderDetails(customOrderID) {
             // Navigate to the order details page with the CustomOrderID as a route parameter
             this.$router.push({ name: 'AdminCustomOrderDetails', params: { id: customOrderID } });
@@ -193,8 +201,14 @@ export default {
             // Handle error
             console.error("There was an error deleting the product:", error);
           });
-      }
+      },
+      performSearchProducts() {
+      this.fetchProductsFromAPI();
+    },
+      performSearchCustomProducts() {
+      this.fetchCustomProducts();
     }
+}
 };
 </script>
   
@@ -263,22 +277,50 @@ export default {
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
   margin-top: 10px; 
+  margin-left: 5px;
 }
 
 .back-button:hover {
   background-color: #e74c3c;
 }
 
-.products-edit {
-  padding: 1rem;
+.search-bar {
+  margin-bottom: 10px;
 }
 
-.add-product-btn {
-  margin-bottom: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #4CAF50;
+.search-bar label {
+  margin-right: 5px;
+}
+
+.form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* Adjust the z-index to make sure it's on top */
+}
+
+.close-button {
+  background-color: #ff6b81;
   color: white;
   border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
   cursor: pointer;
+  position: relative;
+  right: 0px;
+  bottom: 360px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
 }
+
+.close-button:hover {
+  background-color: #e74c3c;
+}
+
 </style>
