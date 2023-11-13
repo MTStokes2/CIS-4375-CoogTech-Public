@@ -74,7 +74,6 @@ export default {
         
         // Provide feedback to the user
         alert('Product added successfully');
-        console.log('Server response:', response.data);
       } catch (error) {
         console.error('There was an error submitting the form', error);
       }

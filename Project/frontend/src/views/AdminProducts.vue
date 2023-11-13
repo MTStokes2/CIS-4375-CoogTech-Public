@@ -146,8 +146,8 @@ export default {
               const response = await fetch("http://localhost:8080/adminData/Products");
               if (response.ok) {
                   const data = await response.json();
-                this.Products = data.filter(Product => 
-                      Product.ProductName.toLowerCase().includes(this.search.toLowerCase())
+                this.Products = data.filter(product => 
+                      product.ProductName.toLowerCase().includes(this.search.toLowerCase())
                   );
               } else {
                   console.error("Failed to fetch products from the API");
@@ -177,13 +177,15 @@ export default {
       },
       cancelForm(){
         this.currentForm = null;
+        this.fetchCustomProducts();
+        this.fetchProductsFromAPI();
       },
       deleteProduct(productId) {
         // Replace with your actual API endpoint
         axios.delete(`http://localhost:8080/adminData/Products/${productId}`)
           .then(() => {
             // Refresh the list of products
-            this.fetchProducts();
+            this.fetchProductsFromAPI();
           })
           .catch(error => {
             // Handle error
@@ -195,7 +197,7 @@ export default {
         axios.delete(`http://localhost:8080/adminData/CustomProducts/${productId}`)
           .then(() => {
             // Refresh the list of products
-            this.fetchProducts();
+            this.fetchCustomProducts();
           })
           .catch(error => {
             // Handle error
