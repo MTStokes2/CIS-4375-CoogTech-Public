@@ -1,6 +1,7 @@
 <template>
   <div class="admin-reports-page">
     <button @click="goToDashboard" class="back-button">Back to Dashboard</button>
+    <div class="tabs">
     <div class="tab-container">
       <button @click="showPastAndFutureReports">Quarterly Reports</button>
       <button @click="showFinancialReports">Financials</button>
@@ -24,6 +25,7 @@
       <ProductReports />
     </div>
   </div>
+</div>
 </template>
   
 <script>
@@ -87,14 +89,19 @@ export default {
 
 .admin-reports-page {
   background-color: #ffffff; /* White background color */
-  padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1); /* Subtle box shadow for embossed effect */
 }
 
 .tab-container {
   display: flex;
+  margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.tabs {
+  border-radius: 20px;
+  background-color: #f2f2f2;
 }
 
 button {

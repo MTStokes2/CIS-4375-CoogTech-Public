@@ -1,9 +1,9 @@
 <template>
     <div>
-      <button @click="goToDashboard" class="back-button">Back to Dashboard</button>
       <div class="tables-container">
       <!-- Custom Orders Table -->
       <div v-if="customProducts.length > 0" class="table-section">
+        <button @click="goToDashboard" class="back-button">Back to Dashboard</button>
         <h1 class="table-header">Custom Products</h1>
         <div class="table-container">
           <input v-model="searchCustom" @input="performSearchCustomProducts" class="search-input" placeholder="Search products..." />

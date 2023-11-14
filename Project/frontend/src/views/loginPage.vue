@@ -1,6 +1,6 @@
 <template>
   <div class="login-form ma-3 pa-4">
-      <form @submit.prevent="login" class="login-form-container p-5 rounded shadow-md center">
+      <form @submit.prevent="login" class="login-form-container shadow-md center">
         <div class="form-content">
           <h2 class="text-4xl text-green-900 font-bold mb-6">Login</h2>
           <div class="mb-4">
@@ -122,12 +122,13 @@ export default {
   justify-content: center;
   align-items: center;
   height: 70vh;
-  background-color: #f2f2f2;;
+  background-color: #f2f2f2;
 }
 
 .login-form-container {
-  width: 600px;
+  width: 500px;
   background-color: #fff;
+  padding: 25px;
 }
 
 .form-content {

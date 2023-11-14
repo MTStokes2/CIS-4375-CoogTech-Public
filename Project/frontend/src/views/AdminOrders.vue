@@ -1,9 +1,9 @@
 <template>
     <div>
-      <button @click="goToDashboard" class="back-button">Back to Dashboard</button>
       <div class="tables-container">
       <!-- Custom Orders Table -->
       <div v-if="customOrderHistory.length > 0" class="table-section">
+        <button @click="goToDashboard" class="back-button">Back to Dashboard</button>
         <h1 class="table-header">Custom Orders</h1>
         <div class="table-container">
           <table class="custom-table table">

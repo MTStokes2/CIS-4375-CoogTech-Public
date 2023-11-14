@@ -54,7 +54,7 @@
     
     <!-- Footer section -->
     <section id="#contact-us"></section>
-    <footer style="background-color: #F5F5DC;">
+    <footer style="background-color: #FAFAFA;">
       <div class="container mx-auto text-center">
         <div class="grid grid-cols-3 gap-8 py-8">
           <!-- Contact Us Column -->
@@ -179,7 +179,7 @@ export default {
 
 <style scoped>
 .bg-f8ebe6 {
-  background-color: #F8EBE6;
+  background-color: #f1ebe9;
 }
 
 .bg-fafafa {
@@ -195,8 +195,5 @@ export default {
   transition: transform 0.3s ease-in-out;
 }
 
-.footer-item {
-  padding: 5px
-}
 
 </style>

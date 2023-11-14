@@ -1,11 +1,11 @@
 <template>
     <div id="landing-page"></div>
-    <section class="text-green-700 py-16">
+    <section class="text-green-900 py-16">
         <div class="container mx-auto text-center">
             <h1 class="text-5xl font-bold mb-4" style="color: rgb(4, 69, 4);">Discover Our Unique Collection</h1>
             <p class="text-lg font-bold mb-8 text-white-500" style="color: rgb(4, 69, 4);">Explore a wide range of
                 high-quality balloons and stylish t-shirts.</p>
-            <router-link to="/catalog" class="custom-button">Shop Now</router-link>
+            <router-link to="/catalog" class="button">Shop Now</router-link>
         </div>
     </section>
 
@@ -65,33 +65,23 @@
     <br>
 </template>
   
-<script>
-export default {
-    // Your component's script remains unchanged
-};
-</script>
   
 <style scoped>
-/* Add any additional CSS styling for your landing page components here */
-/* You can customize this further to match your desired design */
 
-/* Set the background color of the body element to yellow */
-body {
-    background-color: yellow;
+.button {
+    margin: 5px;
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
 }
 
-.custom-button {
-    background-color: #F5F5DC;
-    color: rgb(9, 135, 66);
-    padding: 10px 20px;
-    text-decoration: none;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-}
-
-.custom-button:hover {
-    background-color: #F5F5DC;
+.button:hover {
+  background-color: #e74c3c;
 }
 </style>
