@@ -148,7 +148,7 @@ body {
   margin: 0 auto;
   flex: 1;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: #fff;
 }
 
 h1, h2 {

@@ -1,18 +1,19 @@
 <template>
-  <div class="login-form">
-      <form @submit.prevent="login" class="p-5 rounded shadow-md center">
+  <div class="login-form ma-3 pa-4">
+      <form @submit.prevent="login" class="login-form-container p-5 rounded shadow-md center">
+        <div class="form-content">
           <h2 class="text-4xl text-green-900 font-bold mb-6">Login</h2>
           <div class="mb-4">
-              <label class="block text-2xl text-green-900 font-bold mb-2" for="username">Username</label>
-              <input class="py-2 px-3 text-xl border border-green-300 rounded focus:outline-none focus:border-green-500"
+              <label class="block text-1xl text-green-900 font-bold mb-2" for="username">Username</label>
+              <input class="py-2 px-3 text-1xl border border-green-300 rounded focus:outline-none focus:border-green-500"
                   type="text" id="username" v-model="username" required placeholder="Enter your username" />
           </div>
 
           <div class="mb-6">
-              <label class="block text-2xl text-green-900 font-bold mb-2" for="password">Password</label>
+              <label class="block text-1xl text-green-900 font-bold mb-2" for="password">Password</label>
               <div class="password-input">
                   <input
-                      class="py-2 px-3 text-xl border border-green-300 rounded focus:outline-none focus:border-green-500"
+                      class="py-2 px-3 text-1xl border border-green-300 rounded focus:outline-none focus:border-green-500"
                       id="password" v-model="password" :type="showPassword ? 'text' : 'password'" required
                       placeholder="Enter your password" />
               </div>
@@ -21,18 +22,20 @@
               </label>
           </div>
 
+          
           <div v-if="error" class="text-red-600 font-bold mb-4 text-2xl">
               {{ error }}
           </div>
 
           <div class="flex items-center justify-between">
-              <button type="submit" class="custom-button text-2xl">Login</button>
+              <button type="submit" class="button">Login</button>
           </div>
-          <p class="mt-4 text-green-900 text-2xl">
+        </div>
+          <p class="mt-4 text-green-800 text-1xl">
               <router-link to="/resetpassword" class="text-green-700 font-bold">Forgot Password</router-link>
 
           </p>
-          <p class="mt-4 text-green-900 text-2xl">
+          <p class="mt-4 text-green-900 text-1xl">
               Don't have an account? <router-link to="/signup" class="text-green-700 font-bold">Sign up</router-link>
           </p>
       </form>
@@ -113,19 +116,42 @@ export default {
 </script>
   
 <style>
-.custom-button {
-    background-color: #F5F5DC;
-    color: rgb(6, 77, 27);
-    padding: 10px 20px;
-    text-decoration: none;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
+
+.login-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  background-color: #f2f2f2;;
 }
 
-.custom-button:hover {
-    background-color: #F5F5DC;
+.login-form-container {
+  width: 600px;
+  background-color: #fff;
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+    margin: 5px;
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
+}
+
+.button:hover {
+  background-color: #e74c3c;
 }
 
 .password-input {

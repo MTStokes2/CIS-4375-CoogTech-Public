@@ -1,7 +1,7 @@
 <template>
-    <div class="min-h-screen flex justify-center items-center">
-        <form class="p-20 rounded shadow-md" @submit.prevent="signup">
-            <h2 class="text-3xl text-green-700 font-bold mb-6">Sign Up</h2>
+  <div class="signup-form ma-3 pa-4">
+    <form class="signup-form-container p-20 rounded shadow-md bg-white" @submit.prevent="signup">
+      <h2 class="text-3xl text-green-900 font-bold mb-6 text-center">Sign Up</h2>
 
             <!-- First Name -->
             <div class="mb-4">
@@ -35,22 +35,6 @@
                     type="tel" id="phoneNumber" placeholder="Phone Number" required />
             </div>
 
-            <!-- Address -->
-            <div class="mb-4">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="address">Address</label>
-                <input v-model="userData.CustomerAddress"
-                    class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
-                    type="text" id="address" placeholder="Address" required />
-            </div>
-
-            <!-- Zipcode -->
-            <div class="mb-4">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="zipcode">Zipcode</label>
-                <input v-model="userData.ZipCode"
-                    class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
-                    type="text" id="zipcode" placeholder="Zipcode" required />
-            </div>
-
             <!-- City -->
             <div class="mb-4">
                 <label class="block text-green-700 text-sm font-bold mb-2" for="city">City</label>
@@ -66,7 +50,25 @@
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="text" id="state" placeholder="State" required />
             </div>
-            <!-- Password -->
+
+            <!-- Address -->
+            <div class="mb-4">
+            <label class="block text-green-700 text-sm font-bold mb-2" for="address">Street Address</label>
+            <input v-model="userData.CustomerAddress"
+                class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
+                type="text" id="address" placeholder="Address" required />
+            </div>
+
+            <!-- Zipcode -->
+            <div class="mb-4">
+                <label class="block text-green-700 text-sm font-bold mb-2" for="zipcode">Zipcode</label>
+                <input v-model="userData.ZipCode"
+                    class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
+                    type="text" id="zipcode" placeholder="Zipcode" required />
+            </div>
+
+            <div class="border">
+            <!-- Username -->
             <div class="mb-6">
                 <label class="block text-green-700 text-sm font-bold mb-2" for="username">Username</label>
                 <input v-model="userData.Username"
@@ -81,6 +83,8 @@
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="password" id="Password" placeholder="Enter your password" required />
             </div>
+            <button class="suggest-button" @click.prevent="suggestUsername">Suggest Username</button>
+            </div>
 
             <!-- Display error message -->
             <div v-if="error" class="text-red-600 font-bold mb-4">
@@ -89,7 +93,7 @@
 
             <div class="flex items-center justify-between">
                 <button
-                    class="bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    class="button"
                     type="submit">
                     Sign Up
                 </button>
@@ -120,6 +124,15 @@ export default {
         };
     },
     methods: {
+        suggestUsername() {
+            const { CustomerFirstName, CustomerLastName, ZipCode } = this.userData;
+            const firstNameInitial = CustomerFirstName.charAt(0).toUpperCase();
+            const lastNameInitial = CustomerLastName.charAt(0).toUpperCase();
+            const suggestedUsername = `${firstNameInitial}${lastNameInitial}${ZipCode}`;
+
+            // Set the suggested username
+            this.userData.Username = suggestedUsername;
+        },
         signup() {
             // Make a POST request to the backend /SignUp endpoint
             axios.post('http://localhost:8080/SignUp', this.userData)
@@ -144,6 +157,55 @@ export default {
 };
 </script>
   
-<style>
-/* Add any additional CSS styling for your signup page components here */
+<style scoped>
+
+
+.signup-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: #f2f2f2;;
+}
+
+.border {
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.signup-form-container {
+  width: 600px;
+  background-color: #fff;
+}
+
+.button {
+    margin: 5px;
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px; 
+}
+
+.button:hover {
+  background-color: #e74c3c;
+}
+
+.suggest-button {
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.suggest-button:hover {
+  background-color: #e74c3c;
+}
+
 </style>
