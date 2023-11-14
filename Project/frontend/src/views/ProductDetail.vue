@@ -1,33 +1,33 @@
 <template>
-    <div class="product-details">
-      <h1>Product Details</h1>
-      <div class="product-column">
-        <div class="product-item" v-if="product">
-          <v-card class="product-card">
-            <div class="product-image" v-if="product.ProductImage">
-              <img :src="product.ProductImage" alt="Product Image" />
-            </div>
-            <h2 class="product-name">{{ product.ProductName }}</h2>
-            <div class="product-info">
-              <p><strong>Price:</strong> ${{ product.ProductPrice }}</p>
-              <p><strong>Type:</strong> {{ product.ProductType }}</p>
-              <p><strong>Color:</strong> {{ product.ProductColor }}</p>
-              <p><strong>Size:</strong> {{ product.ProductSize }}</p>
-              <p><strong>Stock:</strong> {{ product.ProductStock }}</p>
-            </div>
-            <div class="quantity-input">
-              <label for="quantity" class="quantity-label">Qty:</label>
-              <input id="quantity" type="number" class="quantity-input-box" v-model="quantity" min="1" :max="product.ProductStock" />
-            </div>
-            <v-btn @click="addToCart" class="add-to-cart-btn">Add to Cart</v-btn>
-          </v-card>
-        </div>
-        <div v-else>
-          <p class="not-found-message">Product not found.</p>
-        </div>
+  <div class="product-details">
+    <h1>Product Details</h1>
+    <div v-for="similarProduct in similarProducts" :key="similarProduct.ProductID" class="product-column">
+      <div class="product-item" v-if="product">
+        <v-card  class="product-card">
+          <div class="product-image" v-if="product.ProductImage">
+            <img :src="similarProduct.ProductImage" alt="Product Image" />
+          </div>
+          <h2 class="product-name">{{ similarProduct.ProductName }}</h2>
+          <div class="product-info">
+            <p><strong>Price:</strong> ${{ similarProduct.ProductPrice }}</p>
+            <p><strong>Type:</strong> {{ similarProduct.ProductType }}</p>
+            <p><strong>Color:</strong> {{ similarProduct.ProductColor }}</p>
+            <p><strong>Size:</strong> {{ similarProduct.ProductSize }}</p>
+            <p><strong>Stock:</strong> {{ similarProduct.ProductStock }}</p>
+          </div>
+          <div class="quantity-input">
+            <label for="quantity" class="quantity-label">Qty:</label>
+            <input id="quantity" type="number" class="quantity-input-box" v-model="quantity" min="1" :max="similarProduct.ProductStock" />
+          </div>
+          <v-btn @click="() => addToCart(similarProduct.ProductID)" class="add-to-cart-btn">Add to Cart</v-btn>
+        </v-card>
+      </div>
+      <div v-else>
+        <p class="not-found-message">Product not found.</p>
       </div>
     </div>
-  </template>
+  </div>
+</template>
 
 <script>
 import { ref, computed, onMounted } from 'vue';
@@ -41,6 +41,8 @@ export default {
         const store = productsStore();
         const product = ref(null);
         const quantity = ref(1); // Default quantity is set to 1
+        const similarProducts = ref([]);
+        const selectedProduct = ref(null);
 
 
         // Fetch product details when the component is mounted
@@ -50,6 +52,8 @@ export default {
                 if (response.ok) {
                     const data = await response.json();
                     product.value = data.ProductDetails;
+                    // Fetch other products with the same name
+                    fetchSimilarProducts(data.ProductDetails.ProductName);
                 } else {
                     console.error('Failed to fetch product details.');
                 }
@@ -63,24 +67,76 @@ export default {
             return product.value !== null && quantity.value !== undefined && quantity.value > 0;
         });
 
-        const addToCart = () => {
-            if (isProductValid.value) {
-                const productWithQuantity = { ...product.value, Quantity: quantity.value };
-                store.addToCart(productWithQuantity);
-                console.log(productWithQuantity)
-                router.push({ name: 'CartView' });
+
+        const fetchSimilarProducts = async (productName) => {
+          try {
+            const response = await fetch(`http://localhost:8080/adminData/Products?name=${productName}`);
+            if (response.ok) {
+              const data = await response.json();
+              
+              // Filter similar products based on ProductName
+              similarProducts.value = data.filter(similarProduct => 
+                similarProduct.ProductName == product.value.ProductName
+              );
+          
+            } else {
+              console.error('Failed to fetch similar products.');
             }
+          } catch (error) {
+            console.error('Error fetching similar products:', error);
+          }
+        };
+
+        const addToCart = (productId) => {
+          if (isProductValid.value) {
+              // Find the similarProduct with the matching productId
+              const selectedSimilarProduct = similarProducts.value.find(product => product.ProductID === productId);
+
+              if (selectedSimilarProduct) {
+                  // Create an object with ProductID, Quantity, and other product details
+                  const productWithQuantity = { ...selectedSimilarProduct, Quantity: quantity.value };
+
+                  // Add the product to the cart
+                  store.addToCart(productWithQuantity);
+
+                  // Log the added product
+                  console.log("sent to cart:", productWithQuantity);
+
+                  // Redirect to the CartView
+                  router.push({ name: 'CartView' });
+              } else {
+                  console.error('Selected product not found in similarProducts array.');
+              }
+          }
+      };
+          const selectProduct = (productId) => {
+          selectedProduct.value = productId;
         };
 
         const backToCatalog = () => {
             router.push({ name: 'Catalog' });
         };
 
+        const uniqueColors = computed(() => {
+          // Extract all colors from similarProducts
+          const colors = similarProducts.value.map(product => product.ProductColor);
+          
+          // Use Set to get unique colors
+          const uniqueColorSet = new Set(colors);
+          
+          // Convert Set back to an array
+          return Array.from(uniqueColorSet);
+});
+
         return {
             product,
             quantity,
             addToCart,
             backToCatalog,
+            selectedColor: '',
+            uniqueColors,
+            similarProducts,
+            selectProduct,
         };
     },
 };
@@ -95,6 +151,7 @@ export default {
 .product-column {
   display: flex;
   justify-content: center;
+  margin-bottom: 20px;
 }
 
 .product-item {
