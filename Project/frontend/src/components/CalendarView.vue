@@ -96,6 +96,7 @@ export default {
 <style>
 .calendar-container {
   flex: 1;
+  background-color: #fff;
   padding: 10px;
   min-width: 0;
   overflow-x: auto;
