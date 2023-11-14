@@ -18,6 +18,7 @@
             <tr>
               <th>Order ID</th>
               <th>Ordered Date</th>
+              <th>Scheduled Date</th>
               <th>Delivered Date</th>
               <th>Total</th>
             </tr>
@@ -26,6 +27,7 @@
             <tr v-for="order in orders" :key="order.OrderID">
               <td>{{ order.OrderID }}</td>
               <td>{{ formatDate(order.DateOrdered) }}</td>
+              <td>{{ formatDate(order.DateScheduled) }}</td>
               <td>{{ formatDate(order.DateDelivered) || 'Not Delivered' }}</td>
               <td>${{ order.Total }}</td>
             </tr>
@@ -119,8 +121,9 @@
         try {
           const startDate = moment(this.startDate);
 
-          const firstDayOfNextMonth = startDate.format('MM/DD/YYYY');;
-          const lastDayOfNextMonth = startDate.clone().add(1, 'months').endOf('month').format('MM/DD/YYYY');
+          const firstDayOfNextMonth = startDate.clone().subtract(1, 'months').endOf('month').format('MM/DD/YYYY');
+          const lastDayOfNextMonth = startDate.clone().add(0, 'months').endOf('month').format('MM/DD/YYYY');
+          console.log(firstDayOfNextMonth, lastDayOfNextMonth )
   
           const response = await axios.get('http://localhost:8080/adminData/Reports/Between-Dates/Total', {
             params: {

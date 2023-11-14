@@ -21,31 +21,31 @@
         <form @submit.prevent="saveChanges">
           <div>
             <label for="firstName">First Name:</label>
-            <input type="text" id="firstName" v-model="updatedFirstName">
+            <input type="text" id="firstName" v-model="customer.CustomerFirstName">
           </div>
           <div>
             <label for="lastName">Last Name:</label>
-            <input type="text" id="lastName" v-model="updatedLastName">
+            <input type="text" id="lastName" v-model="customer.CustomerLastName">
           </div>
           <div>
             <label for="email">Email:</label>
-            <input type="text" id="email" v-model="updatedEmail">
+            <input type="text" id="email" v-model="customer.CustomerEmail">
           </div>
           <div>
             <label for="phone">Phone Number:</label>
-            <input type="text" id="phone" v-model="updatedPhone">
+            <input type="text" id="phone" v-model="customer.CustomerPhone">
           </div>
           <div>
             <label for="city">City:</label>
-            <input type="text" id="city" v-model="updatedCity">
+            <input type="text" id="city" v-model="customer.CITY.City">
         </div>
           <div>
             <label for="state">State:</label>
-            <input type="text" id="state" v-model="updatedState">
+            <input type="text" id="state" v-model="customer.STATE.State">
           </div>
           <div>
             <label for="address">Address:</label>
-            <input type="text" id="address" v-model="updatedAddress">
+            <input type="text" id="address" v-model="customer.CustomerAddress">
           </div>
           <button type="submit" class="save-button">Save Changes</button>
           <button @click="editMode = false" class="cancel-button">Cancel</button>
@@ -66,13 +66,6 @@ import axios from 'axios';
       return {
         customer: null,
         editMode: false,
-        updatedFirstName: '',
-        updatedLastName: '',
-        updatedEmail: '',
-        updatedPhone: '',
-        updatedCity: '',
-        updatedState: '',
-        updatedAddress: '',
         loading: false,
         error: null,
         success: null,
@@ -90,7 +83,7 @@ import axios from 'axios';
 
         if (response.status === 200) {
           this.customer = response.data.customer
-          console.log('Received Customer:', response.data.customer);
+          console.log('Received Customer:', this.customer);
         } else {
           console.error('Failed to fetch user info');
         }
@@ -105,13 +98,13 @@ import axios from 'axios';
 
   // Construct the object with non-null and non-empty properties
   const updatedCustomerInfo = {
-    CustomerFirstName: this.updatedFirstName,
-    CustomerLastName: this.updatedLastName,
-    CustomerEmail: this.updatedEmail,
-    CustomerPhone: this.updatedPhone,
-    CustomerCity: this.updatedCity,
-    CustomerState: this.updatedState,
-    CustomerAddress: this.updatedAddress,
+    CustomerFirstName: this.customer.CustomerFirstName,
+    CustomerLastName: this.customer.CustomerLastName,
+    CustomerEmail: this.customer.CustomerEmail,
+    CustomerPhone: this.customer.CustomerPhone,
+    City: this.customer.CITY.City,
+    State: this.customer.STATE.State,
+    CustomerAddress: this.customer.CustomerAddress,
   };
 
   // Remove null or empty properties from the object

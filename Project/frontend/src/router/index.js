@@ -159,9 +159,9 @@ const router = createRouter({
       component: () => import('../views/GuestPage.vue')
     },
     {
-      path: '/AdminOrderHistory',
-      name: 'AdminOrderHistory',
-      component: () => import('../views/AdminorderHistory.vue')
+      path: '/AdminOrders',
+      name: 'AdminOrders',
+      component: () => import('../views/Adminorders.vue')
     },
     {
       path: '/AdminOrderDetails/:id',

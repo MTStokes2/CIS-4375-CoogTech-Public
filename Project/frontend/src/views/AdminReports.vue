@@ -1,7 +1,6 @@
 <template>
   <div class="admin-reports-page">
-    <h1>Admin Reports Page</h1>
-
+    <button @click="goToDashboard" class="back-button">Back to Dashboard</button>
     <div class="tab-container">
       <button @click="showPastAndFutureReports">Quarterly Reports</button>
       <button @click="showFinancialReports">Financials</button>
@@ -77,6 +76,9 @@ export default {
       this.showFinancialOrders = false;
       this.showCustomers = false;
     },
+    goToDashboard() {
+            this.$router.push('/AdminDashboard');
+        }
   },
 };
 </script>

@@ -1289,4 +1289,12 @@ router.get('/Reports/TopPayingCustomers', async (req, res) => {
     }
 });
 
+//GET all Status
+router.get('/Status', (req, res) =>
+    Status_Model.findAll()
+    .then(status => {
+        res.json(status);
+    })
+    .catch(err => console.log(err)));
+
 module.exports = router;

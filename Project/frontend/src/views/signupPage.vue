@@ -54,7 +54,7 @@
             <!-- City -->
             <div class="mb-4">
                 <label class="block text-green-700 text-sm font-bold mb-2" for="city">City</label>
-                <input v-model="userData.CityID"
+                <input v-model="userData.City"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="text" id="city" placeholder="City" required />
             </div>
@@ -62,7 +62,7 @@
             <!-- State -->
             <div class="mb-4">
                 <label class="block text-green-700 text-sm font-bold mb-2" for="state">State</label>
-                <input v-model="userData.StateID"
+                <input v-model="userData.State"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="text" id="state" placeholder="State" required />
             </div>
@@ -71,7 +71,7 @@
                 <label class="block text-green-700 text-sm font-bold mb-2" for="username">Username</label>
                 <input v-model="userData.Username"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
-                    type="text" id="Username" placeholder="Enter your password" required />
+                    type="text" id="Username" placeholder="Enter your Username" required />
             </div>
 
             <!-- Password -->
@@ -111,8 +111,8 @@ export default {
                 CustomerPhone: '',
                 CustomerAddress: '',
                 ZipCode: '',
-                CityID: '',
-                StateID: '',
+                City: '',
+                State: '',
                 Password: '',
                 Username: '',
             },

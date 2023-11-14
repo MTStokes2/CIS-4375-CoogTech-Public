@@ -19,9 +19,6 @@
       <a href="/#about-us" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
         <span class="material-icons">info</span> About Us
       </a>
-      <router-link to="/contact" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
-        <span class="material-icons">phone</span> Contact Us
-      </router-link>
       </div>
       <div class="flex space-x-2" v-if="loggedIn && role === 'admin'">
         <router-link to="/AdminProducts" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
@@ -30,7 +27,7 @@
         <router-link to="/AdminCustomers" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
           <span class="material-icons">people_alt</span> Customers
         </router-link>
-        <router-link to="/AdminOrderHistory" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
+        <router-link to="/AdminOrders" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
           <span class="material-icons">forum</span> Orders
         </router-link>
         <router-link to="/AdminReports" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
@@ -53,7 +50,7 @@
     </main>
     
     <!-- Footer section -->
-    <section id="contact-us"></section>
+    <section id="#contact-us"></section>
     <footer style="background-color: #F5F5DC;">
       <div class="container mx-auto text-center">
         <div class="grid grid-cols-3 gap-8 py-8">

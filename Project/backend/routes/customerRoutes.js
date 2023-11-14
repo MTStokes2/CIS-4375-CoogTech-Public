@@ -462,7 +462,6 @@ router.post('/Orders', async (req, res) => {
 
 
         const parsedDateScheduled = moment(req.body.DateScheduled, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
-        console.log('Parsed DateScheduled:', parsedDateScheduled);
 
         const customer = await Usernames_Model.findOne({
             where: {

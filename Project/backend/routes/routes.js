@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const secret_key = process.env.JWT_SECRET
 
-let {Usernames_Model, Passwords_Model, Customers_Model, Admins_Model, Chat_Model, Customer_Chat_Model, Admin_Chat_Model} = require('../models/modelAssociations')
+let {Usernames_Model, Passwords_Model, Customers_Model, Admins_Model, Chat_Model, Customer_Chat_Model, Admin_Chat_Model, City_Model, State_Model
+} = require('../models/modelAssociations')
 
 const { createToken, validateToken } = require('../src/auth/JWT')
 
@@ -15,10 +16,28 @@ router.post('/SignUp', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(req.body.Password, 10)
 
+    // Find CityID by City name
+    const city = await City_Model.findOne({
+      where: {
+          City: req.body.City,
+        },
+    });
+
+    // Find StateID by State name
+    const state = await State_Model.findOne({
+        where: {
+            State: req.body.State,
+        },
+    });
+
+    if (!city || !state) {
+        return res.status(404).json({ message: 'City or State not found' });
+    }
+
     //Adds Customer's information to Customers Table
     const customer = await Customers_Model.create({
-      CityID: req.body.CityID,
-      StateID: req.body.StateID,
+      CityID: city.CityID,
+      StateID: state.StateID,
       ZipCode: req.body.ZipCode,
       CustomerLastName: req.body.CustomerLastName,
       CustomerFirstName: req.body.CustomerFirstName,

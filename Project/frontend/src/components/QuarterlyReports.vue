@@ -20,6 +20,7 @@
               <tr>
                 <th>Order ID</th>
                 <th>Ordered Date</th>
+                <th>Scheduled Delivery Date</th>
                 <th>Delivered Date</th>
                 <th>Total</th>
               </tr>
@@ -28,6 +29,7 @@
               <tr v-for="order in orders" :key="order.OrderID" @click="navigateToOrderDetails(order.OrderID)">
                 <td>{{ order.OrderID }}</td>
                 <td>{{ formatDate(order.DateOrdered) }}</td>
+                <td>{{ formatDate(order.DateScheduled) }}</td>
                 <td>{{ formatDate(order.DateDelivered) || 'Not Delivered' }}</td>
                 <td>${{ order.Total }}</td>
               </tr>
@@ -43,6 +45,7 @@
               <tr>
                 <th>Custom Order ID</th>
                 <th>Ordered Date</th>
+                <th>Scheduled Delivery Date</th>
                 <th>Delivered Date</th>
                 <th>Total</th>
               </tr>
@@ -51,6 +54,7 @@
               <tr v-for="customOrder in customOrders" :key="customOrder.CustomOrderID" @click="navigateToCustomOrderDetails(customOrder.CustomOrderID)">
                 <td>{{ customOrder.CustomOrderID }}</td>
                 <td>{{ formatDate(customOrder.DateOrdered) }}</td>
+                <td>{{ formatDate(customOrder.DateScheduled) }}</td>
                 <td>{{ formatDate(customOrder.DateDelivered) || 'Not Delivered' }}</td>
                 <td>${{ customOrder.Total }}</td>
               </tr>
