@@ -3,7 +3,7 @@
     <button @click="goToOrderHistory" class="back-button">Back to Order History</button>
       <div class="order-summary">
         <h2>Order Details</h2>
-        <div v-if="orderDetails">
+        <div v-if="orderDetails && orderDetails.CITY && orderDetails.STATE">
           <p><strong>Order Number:</strong> {{ orderDetails.OrderID }}</p>
           <p><strong>Order Date:</strong> {{ formatDate(orderDetails.DateOrdered) }}</p>
           <p><strong>Address:</strong> {{ orderDetails.Address }}</p>
@@ -18,9 +18,19 @@
         <div class="product-container">
             <Products :OrderID="OrderID"></Products>
         </div>
+        <div v-if="orderDetails.STATUS.Status === 'Closed'">
+        <div class="feedback-container">
+          <h3>Feedback</h3>
+          <textarea
+            v-model="feedback"
+            placeholder="Enter your feedback"
+          ></textarea>
+          <button @click="submitFeedback" class="submit-button">Submit</button>
+        </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
   import axios from 'axios';
@@ -34,12 +44,40 @@
       return {
         orderDetails: [],
         OrderID: this.$route.params.id,
+        feedback: '',
+        isFeedbackSubmitted: false,
+        username: ''
       };
     },
     created() {
       this.fetchOrderDetails();
+      this.fetchUserInfo();
     },
     methods: {
+
+      async fetchOrderFeedback() {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/customerData/Feedback/${this.OrderID}`,
+          {
+            method: 'GET',
+            credentials: 'include', // Use 'include' to send cookies with the request
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        console.log('response feedback: ', response);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Feedback: ', data);
+        } else {
+          console.error('Failed to fetch user info');
+        }
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    },
         async fetchUserInfo() {
             try {
                 const response = await fetch('http://localhost:8080/UserInformation', {
@@ -67,6 +105,7 @@
                 const response = await axios.get(`http://localhost:8080/customerData/Orders/${this.$route.params.id}`);
                 if (response.status === 200) {
                     this.orderDetails = response.data.OrderDetails;
+                    this.fetchOrderFeedback(this.$route.params.id);
                 } else {
                     console.error('Failed to fetch order details');
                 }
@@ -85,9 +124,31 @@
       goToOrderHistory() {
       // Navigate back to the order history page
       this.$router.push('/orderhistory'); // Update this with the correct route path
-    }
-    }
-  };
+    },
+    async submitFeedback() {
+      try {
+        const response = await axios.post(
+          'http://localhost:8080/customerData/Feedback',
+          {
+            OrderID: this.orderDetails.OrderID,
+            Username: this.username,
+            Feedback: this.feedback,
+            Rating: 5,
+          }
+        );
+
+        if (response.status === 201) {
+          console.log('Feedback submitted successfully');
+        } else {
+          console.error('Failed to submit feedback');
+        }
+      } catch (error) {
+        console.error('Error submitting feedback:', error);
+      }
+    },
+  },
+};
+
   </script>
   
   <style scoped>
@@ -138,6 +199,33 @@
 
 .back-button:hover {
   background-color: #e74c3c;
+}
+
+.feedback-container {
+  width: 100%;
+}
+
+.feedback-container h3 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.feedback-container textarea {
+  width: 100%;
+  resize: none;
+  height: 120px;
+}
+
+.feedback-container button {
+  background-color: #ff6b81;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 10px;
 }
 
   </style>

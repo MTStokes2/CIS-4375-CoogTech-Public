@@ -57,7 +57,7 @@ import io from 'socket.io-client';
 export default {
   props: {
     customOrderID: {
-      type: Number, 
+      type: String,
       required: true
     },
     username: {

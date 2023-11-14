@@ -407,31 +407,41 @@ const Order_Products_Model = database.define('ORDER_PRODUCTS', {
 //---------------------------------------------------//
 //                Feedback Model                     //
 //---------------------------------------------------//
-const Feedback_Model = database.define('FEEDBACK', {
-    FeedbackID: {
+const Feedback_Model = database.define(
+    'FEEDBACK',
+    {
+      FeedbackID: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        autoIncrement: true
-    },
-    CustomerID: {
+        autoIncrement: true,
+      },
+      OrderID: {
         type: Sequelize.INTEGER,
         references: {
-            model: Customers_Model,
-            key: 'CustomerID'
-        }
+            model: Orders_Model,
+            key: 'OrderID',
+        },
     },
-    Feedback: {
-        type: Sequelize.STRING
+      CustomerID: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: Customers_Model,
+          key: 'CustomerID',
+        },
+      },
+      Feedback: {
+        type: Sequelize.STRING,
+      },
+      Rating: {
+        type: Sequelize.INTEGER,
+      },
     },
-    Rating: {
-        type: Sequelize.INTEGER
-    }},
-     {
-        freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
-        createdAt: true, //Removes the createdAt field from the query since we don't have it in our tables
-        updatedAt: false //Removes the updatedAt field from the query since we don't have it in our tables
+    {
+      freezeTableName: true, //makes sure the sql script uses the defined table name 'TEST' instead of TESTs
+      createdAt: true, //Removes the createdAt field from the query since we don't have it in our tables
+      updatedAt: false, //Removes the updatedAt field from the query since we don't have it in our tables
     }
-);
+  );
 
 //---------------------------------------------------//
 //                Reports Model                      //

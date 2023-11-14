@@ -462,7 +462,6 @@ router.post('/Orders', async (req, res) => {
 
 
         const parsedDateScheduled = moment(req.body.DateScheduled, 'MM/DD/YYYY').format('YYYY-MM-DD HH:mm:ss');
-        console.log('Parsed DateScheduled:', parsedDateScheduled);
 
         const customer = await Usernames_Model.findOne({
             where: {
@@ -710,26 +709,45 @@ router.get('/CustomOrders/:id/products', async (req, res) => {
 //Add Feedback
 router.post('/Feedback', async (req, res) => {
     try {
+      const customer = await Usernames_Model.findOne({
+        where: {
+          Username: req.body.Username,
+        },
+      });
+  
+      if (!customer) {
+        return res.status(404).json({ error: 'Customer not found' });
+      }
+  
+      //Adds Feedback
+      Feedback_Model.create({
+        OrderID: req.body.OrderID,
+        CustomerID: customer.CustomerID,
+        Feedback: req.body.Feedback,
+        Rating: req.body.Rating,
+      });
+  
+      res.status(201).json({ message: 'Feedback Added' });
+    } catch (err) {
+      console.log(err);
+    }
+  });
 
-        const customer = await Usernames_Model.findOne({
-            where: {
-                Username: req.body.Username,
-            },
+router.get('/Feedback/:OrderID', async (req, res) => {
+    try {
+  
+        const FeedbackDetails = await Feedback_Model.findOne({
+        where: {
+            OrderID: req.params.OrderID,
+        },
         });
 
-        //Adds Feedback
-        Feedback_Model.create(
-            {
-            CustomerID: customer.CustomerID,
-            Feedback: req.body.Feedback,
-            Rating: req.body.Rating
-            })
+        res.status(200).json({ FeedbackDetails });
 
-        res.status(200).json({ message: 'Feedback Added' });
-    } catch(err) {
+    } catch (err) {
         console.log(err)
     }
-});
+  });
 
 // Handle customer messages
 router.post('/customer/message', async (req, res) => {

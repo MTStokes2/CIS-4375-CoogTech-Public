@@ -157,7 +157,37 @@ const router = createRouter({
       path: '/guestpage',
       name: 'guestpage',
       component: () => import('../views/GuestPage.vue')
-    }
+    },
+    {
+      path: '/AdminOrders',
+      name: 'AdminOrders',
+      component: () => import('../views/Adminorders.vue')
+    },
+    {
+      path: '/AdminOrderDetails/:id',
+      name: 'AdminOrderDetails',
+      component: () => import('../views/AdminOrderDetails.vue')
+    },
+    {
+      path: '/AdminCustomOrderDetails/:id',
+      name: 'AdminCustomOrderDetails',
+      component: () => import('../views/AdminCustomOrderDetails.vue')
+    },
+    {
+      path: '/AdminProducts',
+      name: 'AdminProducts',
+      component: () => import('../views/AdminProducts.vue')
+    },
+    {
+      path: '/AdminCustomers',
+      name: 'AdminCustomers',
+      component: () => import('../views/AdminCustomers.vue')
+    },
+    {
+      path: '/AdminReports',
+      name: 'AdminReports',
+      component: () => import('../views/AdminReports.vue')
+    },
   ]
 });
 

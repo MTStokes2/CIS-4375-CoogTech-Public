@@ -6,7 +6,9 @@
             <select v-model="selectedType" id="productType" class="dropdown">
                 <option value="">All</option>
                 <option value="Tshirt">Tshirts</option>
-                <option value="type2">Type 2</option>
+                <option value="Candy">Candy</option>
+                <option value="Tumbler">Tumblers</option>
+                <option value="Balloon">Balloons</option>
                 <!-- Add options for other types as needed -->
             </select>
             <!-- Add buttons for other types as needed -->

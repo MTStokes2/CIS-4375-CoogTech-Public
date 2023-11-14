@@ -42,7 +42,7 @@
   export default {
     props: {
     OrderID: {
-      type: Number, 
+      type: String, 
       required: true
     }
   },

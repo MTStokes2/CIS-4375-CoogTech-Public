@@ -463,6 +463,11 @@ router.get('/CustomOrders', async (req, res) => {
                 {
                     model: Status_Model,
                     attributes: ['Status'] // Include only the Status attribute from Status_Model
+                },
+                ///Jesus Admin Custom Order Chats
+                {
+                    model: Customers_Model,
+                    attributes: ['CustomerFirstName', 'CustomerLastName']
                 }
             ]
         });
@@ -844,24 +849,66 @@ router.get('/CustomProducts', (req, res) =>
 
 
 //Add a Custom Product
-router.post('/CustomProducts', async (req, res) => {
+router.post('/CustomProducts', upload.single('DesignImage'), async (req, res) => {
+    // Set up the S3 client
+    const s3 = new S3Client({
+        region: process.env.BUCKET_REGION,
+        credentials: fromEnv(),
+    });
+
     try {
-        //Adds a new Product
-        Custom_Products_Model.create(
-            {
-            ChatID: req.body.ChatID,
-            CustomProductName: req.body.CustomProductName,
-            CustomProductType: req.body.CustomProductType,
-            CustomProductColor: req.body.CustomProductColor,
-            CustomProductSize: req.body.CustomProductSize,
-            CustomProductPrice: req.body.CustomProductPrice,
-            CustomProductStock: req.body.CustomProductStock,
-            DesignImage: req.body.DesignImage
-            })
-        //Sends 200 when and a message that the Product was added
-        res.status(200).json({ message: 'Custom Product Added' });
-    } catch(err) {
-        console.log(err)
+        const { ChatID, CustomProductName, CustomProductType, CustomProductColor, CustomProductSize, CustomProductPrice, CustomProductStock } = req.body;
+
+        // Check if the DesignImage is undefined
+        if (!req.file) {
+            return res.status(400).json({ message: 'No image provided' });
+        }
+
+        console.log('Uploaded File:', req.file); // Log the uploaded file to debug
+
+        // Read the file from the local file system
+        const fileContent = fs.readFileSync(req.file.path);
+
+        // Prepare the S3 upload parameters
+        const params = {
+            Bucket: process.env.BUCKET_NAME,
+            Key: req.file.filename, // You might want to add a file extension based on the mimetype
+            Body: fileContent,
+            ContentType: req.file.mimetype,
+        };
+
+        // Upload the file to S3
+        const uploadResult = await s3.send(new PutObjectCommand(params));
+        if (uploadResult.$metadata.httpStatusCode === 200) {
+            // The image was uploaded successfully
+            const imageUrl = `https://${process.env.BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com/${req.file.filename}`;
+
+            // Create the custom product with the S3 image URL
+            const newCustomProduct = await Custom_Products_Model.create({
+                ChatID,
+                CustomProductName,
+                CustomProductType,
+                CustomProductColor,
+                CustomProductSize,
+                CustomProductPrice,
+                CustomProductStock,
+                DesignImage: imageUrl,
+            });
+
+            res.status(200).json({ message: 'Custom Product Added', customProduct: newCustomProduct });
+
+            // Delete the local file after uploading to S3
+            fs.unlinkSync(req.file.path);
+        } else {
+            throw new Error('Failed to upload image to S3');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Failed to add custom product', error: err.message });
+        // Delete the local file if there was an error
+        if (req.file) {
+            fs.unlinkSync(req.file.path);
+        }
     }
 });
 
@@ -942,7 +989,7 @@ router.get('/Reports/Between-Dates/', async (req, res) => {
         // Retrieve orders within the specified date range
         const orders = await Orders_Model.findAll({
             where: {
-                DateOrdered: {
+                DateScheduled: {
                     [Sequelize.Op.and]: {
                         [Sequelize.Op.gte]: parsedStartDate,
                         [Sequelize.Op.lte]: parsedEndDate,
@@ -959,7 +1006,7 @@ router.get('/Reports/Between-Dates/', async (req, res) => {
         // Retrieve custom orders within the specified date range
         const customOrders = await Custom_Orders_Model.findAll({
             where: {
-                DateOrdered: {
+                DateScheduled: {
                     [Sequelize.Op.and]: {
                         [Sequelize.Op.gte]: parsedStartDate,
                         [Sequelize.Op.lte]: parsedEndDate,
@@ -1049,14 +1096,14 @@ router.get('/Reports/Top-Selling-Products', async (req, res) => {
 
         // Retrieve top-selling products within the specified date range
         const topSellingProducts = await Order_Products_Model.findAll({
-            where: {
+             /* where: {
                 createdAt: {
                     [Sequelize.Op.and]: {
                         [Sequelize.Op.gte]: parsedStartDate,
                         [Sequelize.Op.lte]: parsedEndDate,
                     }
                 }
-            },
+            }, */
             attributes: ['ProductID', [Sequelize.fn('sum', Sequelize.col('Quantity')), 'totalQuantity']],
             group: ['ProductID'],
             order: [[Sequelize.literal('totalQuantity'), 'DESC']],
@@ -1213,6 +1260,8 @@ router.get('/Reports/TopPayingCustomers', async (req, res) => {
                 'CustomerID',
                 'CustomerFirstName',
                 'CustomerLastName',
+                'CustomerEmail',
+                'CustomerPhone',
                 [
                     Sequelize.literal('COALESCE((SELECT SUM(ORDERS.Total) FROM ORDERS WHERE ORDERS.CustomerID = CUSTOMERS.CustomerID AND ORDERS.DateDelivered IS NOT NULL), 0)'),
                     'totalOrderSpending'
@@ -1225,6 +1274,7 @@ router.get('/Reports/TopPayingCustomers', async (req, res) => {
             order: [
                 Sequelize.literal('COALESCE(totalOrderSpending, 0) + COALESCE(totalCustomOrderSpending, 0) DESC')
             ],
+            having: Sequelize.literal('COALESCE(totalOrderSpending, 0) + COALESCE(totalCustomOrderSpending, 0) > 0'),
             limit: 10
         });
 
@@ -1238,5 +1288,13 @@ router.get('/Reports/TopPayingCustomers', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+//GET all Status
+router.get('/Status', (req, res) =>
+    Status_Model.findAll()
+    .then(status => {
+        res.json(status);
+    })
+    .catch(err => console.log(err)));
 
 module.exports = router;

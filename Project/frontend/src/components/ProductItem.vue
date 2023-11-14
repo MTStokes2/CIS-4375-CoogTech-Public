@@ -9,6 +9,12 @@
 
       <v-card-text class="product-details">
         <div class="product-type">{{ product.ProductType }}</div>
+        
+        <!-- Conditionally render color and size only for T-shirts -->
+        <div v-if="product.ProductType === 'Tshirt'">
+            <div class="product-type">{{ product.ProductColor }} - {{ product.ProductSize}}</div>
+        </div>
+
         <div class="product-price">$ {{ product.ProductPrice }}</div>
       </v-card-text>
 

@@ -22,7 +22,10 @@
             <Products :OrderID="CustomOrderID"></Products>
         </div>
         <div class="notice">
-          <p>Please provide details about the custom item you wish to have, and an admin will work out the details.</p>
+          <p>Please provide details about the custom item you wish to have, and an admin will help work out the details.</p>
+            <p>Use the chat for additional notes/questions.</p>
+            <p>An admin will review and finalize details.</p>
+            <p>Prices based on materials and design complexity.</p>
         </div>
         <div class="chat-container">
             <ChatComponent :customOrderID="orderDetails.CustomOrderID" :username="this.username" :role="this.role"></ChatComponent>
@@ -90,11 +93,12 @@
               }
           },
       formatDate(date) {
+        if (!date) {
+            return "Not Delivered yet";
+          }
+
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(date).toLocaleDateString(undefined, options);
-      },
-      getStatusText(statusID) {
-        return statusID === 1 ? 'Unapproved' : 'Approved';
       },
       goToOrderHistory() {
       // Navigate back to the order history page
@@ -158,11 +162,14 @@
 
 .notice {
   margin: 20px 0;
-  padding: 10px;
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 15px;
+  background-color: #ffeaa7; /* Update to your preferred color */
+  border: 1px solid #e17055; /* Update to your preferred color */
+  border-radius: 8px;
   text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+  color: #d35400; /* Update to your preferred text color */
+  font-weight: bold;
 }
 
 .notice p {

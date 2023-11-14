@@ -36,7 +36,7 @@
             </div>
   
             <div class="form-group">
-              <button type="submit" class="submit-button">Submit Order</button>
+              <button type="submit" class="submit-button">Proceed</button>
             </div>
           </form>
         </div>
@@ -90,6 +90,7 @@
 </template>
 
 <script>
+
 import axios from 'axios';
 import moment from 'moment';
 
