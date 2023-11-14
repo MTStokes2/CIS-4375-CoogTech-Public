@@ -1,11 +1,11 @@
 <template>
   <div class="signup-form ma-3 pa-4">
-    <form class="signup-form-container p-20 rounded shadow-md bg-white" @submit.prevent="signup">
+    <form class="signup-form-container shadow-md bg-white" @submit.prevent="signup">
       <h2 class="text-3xl text-green-900 font-bold mb-6 text-center">Sign Up</h2>
 
             <!-- First Name -->
             <div class="mb-4">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="firstName">First Name</label>
+                <label class="block text-green-900 text-sm font-bold mb-2" for="firstName">First Name</label>
                 <input v-model="userData.CustomerFirstName"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="text" id="firstName" placeholder="First Name" required />
@@ -13,7 +13,7 @@
 
             <!-- Last Name -->
             <div class="mb-4">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="lastName">Last Name</label>
+                <label class="block text-green-900 text-sm font-bold mb-2" for="lastName">Last Name</label>
                 <input v-model="userData.CustomerLastName"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="text" id="lastName" placeholder="Last Name" required />
@@ -21,7 +21,7 @@
 
             <!-- Email -->
             <div class="mb-4">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="email">Email Address</label>
+                <label class="block text-green-900 text-sm font-bold mb-2" for="email">Email Address</label>
                 <input v-model="userData.CustomerEmail"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="email" id="email" placeholder="Email Address" required />
@@ -29,7 +29,7 @@
 
             <!-- Phone Number -->
             <div class="mb-4">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="phoneNumber">Phone Number</label>
+                <label class="block text-green-900 text-sm font-bold mb-2" for="phoneNumber">Phone Number</label>
                 <input v-model="userData.CustomerPhone"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="tel" id="phoneNumber" placeholder="Phone Number" required />
@@ -37,7 +37,7 @@
 
             <!-- City -->
             <div class="mb-4">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="city">City</label>
+                <label class="block text-green-900 text-sm font-bold mb-2" for="city">City</label>
                 <input v-model="userData.City"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="text" id="city" placeholder="City" required />
@@ -45,7 +45,7 @@
 
             <!-- State -->
             <div class="mb-4">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="state">State</label>
+                <label class="block text-green-900 text-sm font-bold mb-2" for="state">State</label>
                 <input v-model="userData.State"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="text" id="state" placeholder="State" required />
@@ -53,7 +53,7 @@
 
             <!-- Address -->
             <div class="mb-4">
-            <label class="block text-green-700 text-sm font-bold mb-2" for="address">Street Address</label>
+            <label class="block text-green-900 text-sm font-bold mb-2" for="address">Street Address</label>
             <input v-model="userData.CustomerAddress"
                 class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                 type="text" id="address" placeholder="Address" required />
@@ -61,7 +61,7 @@
 
             <!-- Zipcode -->
             <div class="mb-4">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="zipcode">Zipcode</label>
+                <label class="block text-green-900 text-sm font-bold mb-2" for="zipcode">Zipcode</label>
                 <input v-model="userData.ZipCode"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="text" id="zipcode" placeholder="Zipcode" required />
@@ -70,7 +70,7 @@
             <div class="border">
             <!-- Username -->
             <div class="mb-6">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="username">Username</label>
+                <label class="block text-green-900 text-sm font-bold mb-2" for="username">Username</label>
                 <input v-model="userData.Username"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="text" id="Username" placeholder="Enter your Username" required />
@@ -78,12 +78,12 @@
 
             <!-- Password -->
             <div class="mb-6">
-                <label class="block text-green-700 text-sm font-bold mb-2" for="password">Password</label>
+                <label class="block text-green-900 text-sm font-bold mb-2" for="password">Password</label>
                 <input v-model="userData.Password"
                     class="w-full py-2 px-3 border border-green-300 rounded focus:outline-none focus:border-green-500"
                     type="password" id="Password" placeholder="Enter your password" required />
             </div>
-            <button class="suggest-button" @click.prevent="suggestUsername">Suggest Username</button>
+            <button class="suggest-button text-sm " @click.prevent="suggestUsername">Suggest Username</button>
             </div>
 
             <!-- Display error message -->
@@ -176,11 +176,12 @@ export default {
 .signup-form-container {
   width: 600px;
   background-color: #fff;
+  padding: 20px;
 }
 
 .button {
-    margin: 5px;
   background-color: #ff6b81;
+  width: 200px;
   color: white;
   border: none;
   border-radius: 4px;
@@ -188,7 +189,8 @@ export default {
   font-size: 15px;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
-  margin-top: 10px; 
+  margin-top: 20px; 
+  margin-left: 160px;
 }
 
 .button:hover {
