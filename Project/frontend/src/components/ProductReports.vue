@@ -1,16 +1,16 @@
 <template>
-    <div>
+    <div class="report-container">
       <div class="navbar-container">
+        <button @click="getTopSellingProducts">Top Selling Products</button>
         <button @click="getCurrentTotalSalesByType">Get Current Month Product Sales by Type</button>
         <button @click="getLastTotalSalesByType">Get Last Months Product Sales by Type</button>
-        <button @click="getTopSellingProducts">Top Selling Products</button>
       </div>
     
       <div v-if="loading">Loading...</div>
   
       <div v-if="error" class="error-message">{{ error }}</div>
   
-      <div v-if="totalSalesByType.length">
+      <div v-if="totalSalesByType.length > 0">
         <h3 class="header">Total Sales By Product Type:</h3>
         <table>
           <thead>
@@ -27,8 +27,24 @@
           </tbody>
         </table>
       </div>
+      <div v-if="lastSalesbyType.length > 0">
+      <h3 class="header">Last Months Total Sales By Product Type:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Total Quantity Sold</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in lastSalesbyType" :key="item.ProductType">
+            <td>{{ item.PRODUCT.ProductType }}</td>
+            <td>{{ item.totalSales.toFixed(2) }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <div v-if="topSellingProducts.length">
+    <div v-if="topSellingProducts.length > 0">
       <h3 class="header">Top Selling Products:</h3>
       <table>
         <thead>
@@ -45,6 +61,7 @@
         </tbody>
       </table>
     </div>
+  </div>
   </template>
   
   <script>
@@ -57,6 +74,7 @@
         startDate: new Date().toISOString().split('T')[0],
         endDate: '',
         totalSalesByType: [],
+        lastSalesbyType: [],
         topSellingProducts: [],
         loading: false,
         error: null,
@@ -109,7 +127,7 @@
             },
           });
   
-          this.totalSalesByType = response.data;
+          this.lastSalesByType = response.data;
           this.error = null;
         } catch (error) {
           console.error('Error fetching report:', error.response || error);
@@ -154,14 +172,23 @@
   </script>
   
   <style scoped>
+
+.report-container {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+
   table {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    background-color: #ffffff; /* White background color */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1); /* Subtle box shadow for embossed effect */
+  border-collapse: collapse;
+  margin-top: 10px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 }
 
 th, td {

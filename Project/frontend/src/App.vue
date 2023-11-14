@@ -21,6 +21,9 @@
       </a>
       </div>
       <div class="flex space-x-2" v-if="loggedIn && role === 'admin'">
+        <router-link to="/AdminDashboard" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
+          <span class="material-icons">calendar_month</span> Calendar
+        </router-link>
         <router-link to="/AdminProducts" class="text-gray-600 hover:text-gray-500 flex items-center header-item">
           <span class="material-icons">storefront</span> Products
         </router-link>

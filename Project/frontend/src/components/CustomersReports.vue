@@ -66,9 +66,10 @@
   
   <style scoped>
   .top-paying-customers-container {
-    max-width: 800px;
-    margin: auto;
-    margin-top: 20px;
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   }
   
   .error-message {
@@ -80,10 +81,10 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    background-color: #ffffff; /* White background color */
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1); /* Subtle box shadow for embossed effect */
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   }
   
   th, td {
@@ -116,8 +117,8 @@ button:hover {
 .header {
   text-align: center;
   font-size: 24px;
-  color: #333; /* Dark color for the headers */
-  margin-bottom: 10px; /* Add space between header and table */
+  color: #333;
+  margin-bottom: 10px;
 }
 
 table tbody tr:hover {

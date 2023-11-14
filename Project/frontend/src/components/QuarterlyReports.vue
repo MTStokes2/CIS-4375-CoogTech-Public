@@ -8,14 +8,14 @@
         <button @click="getLastTwoMonthReport">Get Last Two Months' Orders Report</button>
     </div>
   
-      <div v-if="loading">Loading...</div>
+      <div v-if="loading" class="loading-message">Loading...</div>
   
       <div v-if="error" class="error-message">{{ error }}</div>
   
       <div v-if="orders.length || customOrders.length" class="report-results">
         <div>
           <h3 class="header">Orders:</h3>
-          <table v-if="orders.length > 0">
+          <table v-if="orders.length > 0" class="data-table">
             <thead>
               <tr>
                 <th>Order ID</th>
@@ -35,12 +35,12 @@
               </tr>
             </tbody>
           </table>
-          <div v-else>No orders found within the specified date range.</div>
+          <div v-else class="no-data-message">No orders found within the specified date range.</div>
         </div>
   
         <div>
           <h3 class="header">Custom Orders:</h3>
-          <table v-if="customOrders.length > 0">
+          <table v-if="customOrders.length > 0" class="data-table">
             <thead>
               <tr>
                 <th>Custom Order ID</th>
@@ -60,7 +60,7 @@
               </tr>
             </tbody>
           </table>
-          <div v-else>No custom orders found within the specified date range.</div>
+          <div v-else class="no-data-message">No custom orders found within the specified date range.</div>
         </div>
       </div>
     </div>
@@ -253,41 +253,16 @@ export default {
   
 <style scoped>
 
-
-.error-message {
-  color: red;
-  margin-bottom: 10px;
+.report-container {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 }
-
-
-table {
-  width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    background-color: #ffffff; /* White background color */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1); /* Subtle box shadow for embossed effect */
-}
-
-table tbody tr:hover {
-  background-color: #ddd;
-}
-
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #f2f2f2;
-}
-
 
 .navbar-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: left;
   padding: 10px;
 }
 
@@ -308,11 +283,48 @@ button:hover {
   background-color: #e74c3c;
 }
 
+.loading-message, .error-message, .no-data-message {
+  margin-top: 10px;
+  padding: 10px;
+  text-align: center;
+  color: #e74c3c;
+}
+
+.report-results {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.data-table tbody tr:hover {
+  background-color: #ddd;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
 .header {
   text-align: center;
   font-size: 24px;
-  color: #333; /* Dark color for the headers */
-  margin-bottom: 10px; /* Add space between header and table */
+  color: #333;
+  margin-bottom: 10px;
 }
 
 </style>

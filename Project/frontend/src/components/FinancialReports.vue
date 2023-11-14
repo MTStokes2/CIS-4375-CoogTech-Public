@@ -153,14 +153,15 @@
   
   <style scoped>
   .total-report-container {
-    max-width: 600px;
-    margin: auto;
-    margin-top: 20px;
+    background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   }
 
   .navbar-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: left;
   padding: 10px;
 }
   
@@ -209,8 +210,8 @@ button:hover {
 .header {
   text-align: center;
   font-size: 24px;
-  color: #333; /* Dark color for the headers */
-  margin-bottom: 10px; /* Add space between header and table */
+  color: #333;
+  margin-bottom: 10px;
 }
 
 table tbody tr:hover {
