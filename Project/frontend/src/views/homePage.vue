@@ -67,15 +67,11 @@
   
 <script>
 export default {
-    // Your component's script remains unchanged
+
 };
 </script>
   
 <style scoped>
-/* Add any additional CSS styling for your landing page components here */
-/* You can customize this further to match your desired design */
-
-/* Set the background color of the body element to yellow */
 body {
     background-color: yellow;
 }
