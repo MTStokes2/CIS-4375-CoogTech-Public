@@ -70,7 +70,7 @@
 
           <!-- Useful Links and FAQ Column -->
           <div class="flex flex-col justify-center items-center">
-            <h2 class="text-lg font-semibold mb-2">Links</h2>
+            <h2 class="text-lg font-semibold mb-2">Link</h2>
             <div class="text-lg font-semibold mb-2 mt-4">
               <router-link to="/faq" class="text-green-900 hover:text-green-700">
                 FAQ
