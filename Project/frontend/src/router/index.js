@@ -142,7 +142,7 @@ const router = createRouter({
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
       component: () => import('../views/NotFound.vue')
-    } ,
+    },
     {
       path: '/OrderForm',
       name: 'OrderForm',
@@ -154,9 +154,9 @@ const router = createRouter({
       component: () => import('../views/AccountInfo.vue')
     },
     {
-      path: '/guestpage',
-      name: 'guestpage',
-      component: () => import('../views/GuestPage.vue')
+      path: '/faq',
+      name: 'faq',
+      component: () => import('../views/faq.vue')
     },
     {
       path: '/AdminOrders',
